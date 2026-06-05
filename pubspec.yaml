@@ -1,0 +1,47 @@
+name: spice_route_app
+description: "SpiceRoute management app (mobile + web)."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  flutter_riverpod: ^2.6.1
+  go_router: ^14.6.2
+  dio: ^5.7.0
+  flutter_secure_storage: ^9.2.2
+  freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
+  image_picker: ^1.1.2
+  cached_network_image: ^3.4.1
+  intl: ^0.20.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.4.13
+  freezed: ^2.5.7
+  json_serializable: ^6.9.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter:
+  uses-material-design: true
+
+flutter_launcher_icons:
+  image_path: "assets/icon/icon.png"
+  android: "ic_launcher"
+  ios: true
+  remove_alpha_ios: true
+  web:
+    generate: true
+    image_path: "assets/icon/icon.png"
+    background_color: "#C0392B"
+    theme_color: "#C0392B"
+  adaptive_icon_background: "#C0392B"
+  adaptive_icon_foreground: "assets/icon/icon.png"
