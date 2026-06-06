@@ -1,16 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:spice_route_app/shared/theme.dart';
+import 'package:savor_global/l10n/generated/app_localizations.dart';
+import 'package:savor_global/shared/theme.dart';
 
 void main() {
-  testWidgets('theme builds without errors', (tester) async {
+  testWidgets('theme + l10n builds without errors', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: buildTheme(Brightness.light),
-        home: const Scaffold(body: Text('hello')),
+        localizationsDelegates: const [
+          ...AppL10n.localizationsDelegates,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppL10n.supportedLocales,
+        home: Builder(
+          builder: (ctx) => Scaffold(
+            body: Center(child: Text(AppL10n.of(ctx).appTitle)),
+          ),
+        ),
       ),
     );
-    expect(find.text('hello'), findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(find.byType(Scaffold), findsOneWidget);
   });
 }

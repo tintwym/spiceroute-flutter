@@ -1,0 +1,396 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for English (`en`).
+class AppL10nEn extends AppL10n {
+  AppL10nEn([String locale = 'en']) : super(locale);
+
+  @override
+  String get appTitle => 'Savor Global Recipes';
+
+  @override
+  String get navExplore => 'Explore';
+
+  @override
+  String get navAiCreator => 'AI Creator';
+
+  @override
+  String get navAiCompanion => 'AI Companion';
+
+  @override
+  String get navSaved => 'Saved';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageChinese => 'Chinese';
+
+  @override
+  String get languageThai => 'Thai';
+
+  @override
+  String get languageJapanese => 'Japanese';
+
+  @override
+  String get languageKorean => 'Korean';
+
+  @override
+  String get cuisineAll => 'All';
+
+  @override
+  String get cuisineKorean => 'Korean';
+
+  @override
+  String get cuisineJapanese => 'Japanese';
+
+  @override
+  String get cuisineChinese => 'Chinese';
+
+  @override
+  String get cuisineBurmese => 'Burmese';
+
+  @override
+  String get cuisineThai => 'Thai';
+
+  @override
+  String get cuisineIndian => 'Indian';
+
+  @override
+  String get cuisineItalian => 'Italian';
+
+  @override
+  String get cuisineAmericanWestern => 'American/Western';
+
+  @override
+  String get cuisineMexican => 'Mexican';
+
+  @override
+  String get exploreSearchHint => 'Search recipes, ingredients, tags';
+
+  @override
+  String get exploreEmptyTitle => 'No recipes match yet';
+
+  @override
+  String get exploreEmptySubtitle =>
+      'Try a different cuisine or clear the search.';
+
+  @override
+  String get exploreErrorTitle => 'Couldn\'t load recipes';
+
+  @override
+  String get exploreErrorRetry => 'Retry';
+
+  @override
+  String recipeMinutesShort(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String recipeServings(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count servings',
+      one: '1 serving',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get recipePremiumBadge => 'Curated';
+
+  @override
+  String get recipeAiBadge => 'AI created';
+
+  @override
+  String get recipeSpiceLevel0 => 'Mild';
+
+  @override
+  String get recipeSpiceLevel1 => 'Light';
+
+  @override
+  String get recipeSpiceLevel2 => 'Spicy';
+
+  @override
+  String get recipeSpiceLevel3 => 'Fiery';
+
+  @override
+  String get detailIngredients => 'Ingredients';
+
+  @override
+  String get detailSteps => 'Steps';
+
+  @override
+  String detailStepNumber(int number) {
+    return 'Step $number';
+  }
+
+  @override
+  String get detailNoDescription => 'No description provided.';
+
+  @override
+  String get detailSave => 'Save';
+
+  @override
+  String get detailSaved => 'Saved';
+
+  @override
+  String get detailUnsave => 'Remove from saved';
+
+  @override
+  String get detailShare => 'Share';
+
+  @override
+  String get detailBack => 'Back';
+
+  @override
+  String get savedTitle => 'My Saved Recipes';
+
+  @override
+  String get savedEmptyTitle => 'Nothing saved yet';
+
+  @override
+  String get savedEmptySubtitle =>
+      'Tap the heart on any recipe to keep it here.';
+
+  @override
+  String get savedClearAll => 'Clear all';
+
+  @override
+  String get savedClearConfirm => 'Clear all saved recipes?';
+
+  @override
+  String get savedClearConfirmYes => 'Clear';
+
+  @override
+  String get savedClearConfirmNo => 'Cancel';
+
+  @override
+  String get aiCreatorTitle => 'AI Recipe Creator';
+
+  @override
+  String get aiCreatorIdeaLabel => 'What do you feel like cooking?';
+
+  @override
+  String get aiCreatorIdeaHint => 'e.g. Cozy mushroom pasta with leftover wine';
+
+  @override
+  String get aiCreatorCuisineLabel => 'Cuisine';
+
+  @override
+  String get aiCreatorCuisineAuto => 'Let the AI choose';
+
+  @override
+  String get aiCreatorLanguageLabel => 'Language for the recipe';
+
+  @override
+  String get aiCreatorGenerate => 'Generate recipe';
+
+  @override
+  String get aiCreatorRegenerate => 'Try again';
+
+  @override
+  String get aiCreatorSaveBtn => 'Save to my recipes';
+
+  @override
+  String get aiCreatorSavedToast => 'Saved! You can find it in My Saved.';
+
+  @override
+  String get aiCreatorErrorTitle => 'Couldn\'t generate that recipe';
+
+  @override
+  String get aiCreatorRateLimited =>
+      'You\'ve hit today\'s free generation limit. Try again tomorrow.';
+
+  @override
+  String get aiCompanionTitle => 'AI Kitchen Companion';
+
+  @override
+  String get aiCompanionEmptyTitle => 'Ask me anything about cooking';
+
+  @override
+  String get aiCompanionEmptySubtitle =>
+      'Substitutes, techniques, dietary swaps - I\'ve got you.';
+
+  @override
+  String get aiCompanionInputHint => 'Type your question…';
+
+  @override
+  String get aiCompanionSend => 'Send';
+
+  @override
+  String get aiCompanionStop => 'Stop';
+
+  @override
+  String get aiCompanionClear => 'Clear chat';
+
+  @override
+  String get aiCompanionTyping => 'Thinking…';
+
+  @override
+  String get aiCompanionRateLimited =>
+      'Too many messages this hour. Try again later.';
+
+  @override
+  String get aiCompanionSuggestion1 => 'Vegan substitute for fish sauce?';
+
+  @override
+  String get aiCompanionSuggestion2 => 'Quick gluten-free dinner ideas?';
+
+  @override
+  String get aiCompanionSuggestion3 => 'How do I temper Indian spices?';
+
+  @override
+  String get aiCompanionSuggestion4 => 'What goes well with kimchi?';
+
+  @override
+  String get settingsLanguage => 'Language';
+
+  @override
+  String get settingsAbout => 'About Savor';
+
+  @override
+  String get settingsAboutBody =>
+      'Savor Global Recipes brings together the foods of the world into one calm, beautiful library, plus AI tools to remix them for your kitchen.';
+
+  @override
+  String get settingsClose => 'Close';
+
+  @override
+  String get commonClose => 'Close';
+
+  @override
+  String get commonCancel => 'Cancel';
+
+  @override
+  String get commonRetry => 'Retry';
+
+  @override
+  String get commonError => 'Something went wrong';
+
+  @override
+  String get commonLoading => 'Loading…';
+
+  @override
+  String get commonNotFound => 'Not found';
+
+  @override
+  String get commonOk => 'OK';
+
+  @override
+  String get commonDelete => 'Delete';
+
+  @override
+  String get authSignIn => 'Sign in';
+
+  @override
+  String get authSignOut => 'Sign out';
+
+  @override
+  String get authRegister => 'Create account';
+
+  @override
+  String get authAccount => 'Account';
+
+  @override
+  String get authEmail => 'Email';
+
+  @override
+  String get authPassword => 'Password';
+
+  @override
+  String get authDisplayName => 'Display name';
+
+  @override
+  String get authContinueWithGoogle => 'Continue with Google';
+
+  @override
+  String get authOrDivider => 'or';
+
+  @override
+  String get authForgotPassword => 'Forgot your password?';
+
+  @override
+  String get authResetSent =>
+      'If that email is registered, a reset link is on its way.';
+
+  @override
+  String get authNoAccountYet => 'Don\'t have an account?';
+
+  @override
+  String get authHasAccount => 'Already have an account?';
+
+  @override
+  String get authSignUpHere => 'Create one';
+
+  @override
+  String get authSignInHere => 'Sign in';
+
+  @override
+  String get authProtectedTitle => 'Sign in required';
+
+  @override
+  String get authProtectedBody =>
+      'Sign in to publish your recipe so it stays attributed to you and you can edit or remove it later.';
+
+  @override
+  String get authNotConfigured =>
+      'Sign-in is not configured yet. Add Firebase config to enable it.';
+
+  @override
+  String get authErrorInvalid => 'Email or password isn\'t right.';
+
+  @override
+  String get authErrorEmailInUse => 'That email is already registered.';
+
+  @override
+  String get authErrorWeakPassword =>
+      'Pick a stronger password (at least 6 characters).';
+
+  @override
+  String get authErrorNetwork => 'Network error. Try again.';
+
+  @override
+  String get authErrorGeneric => 'Something went wrong with sign-in.';
+
+  @override
+  String get recipeOwnerYou => 'By you';
+
+  @override
+  String recipeOwnerBy(String name) {
+    return 'By $name';
+  }
+
+  @override
+  String get myRecipesTitle => 'My Recipes';
+
+  @override
+  String get myRecipesEmptyTitle => 'Nothing here yet';
+
+  @override
+  String get myRecipesEmptySubtitle =>
+      'Recipes you publish or save with AI Creator will appear here.';
+
+  @override
+  String get navMyRecipes => 'Mine';
+
+  @override
+  String get detailEdit => 'Edit';
+
+  @override
+  String get detailDelete => 'Delete';
+
+  @override
+  String get detailDeleteConfirm =>
+      'Delete this recipe? This can\'t be undone.';
+
+  @override
+  String get detailDeleteOk => 'Delete';
+
+  @override
+  String get detailDeletedToast => 'Recipe deleted.';
+}

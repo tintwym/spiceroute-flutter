@@ -1,5 +1,5 @@
-name: spice_route_app
-description: "SpiceRoute management app (mobile + web)."
+name: savor_global
+description: "Savor Global Recipes - mobile + web"
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   cupertino_icons: ^1.0.8
 
   flutter_riverpod: ^2.6.1
@@ -17,9 +19,13 @@ dependencies:
   flutter_secure_storage: ^9.2.2
   freezed_annotation: ^2.4.4
   json_annotation: ^4.9.0
-  image_picker: ^1.1.2
   cached_network_image: ^3.4.1
-  intl: ^0.20.1
+  intl: any
+  characters: ^1.4.0
+
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.1
+  google_sign_in: ^6.2.1
 
 dev_dependencies:
   flutter_test:
@@ -32,6 +38,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  generate: true
 
 flutter_launcher_icons:
   image_path: "assets/icon/icon.png"
@@ -41,7 +48,7 @@ flutter_launcher_icons:
   web:
     generate: true
     image_path: "assets/icon/icon.png"
-    background_color: "#C0392B"
-    theme_color: "#C0392B"
-  adaptive_icon_background: "#C0392B"
+    background_color: "#5B6E3F"
+    theme_color: "#5B6E3F"
+  adaptive_icon_background: "#5B6E3F"
   adaptive_icon_foreground: "assets/icon/icon.png"

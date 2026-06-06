@@ -7,41 +7,40 @@ import '../../shared/breakpoints.dart';
 import '../../state/auth.dart';
 import 'auth_helpers.dart';
 
-class RegisterScreen extends ConsumerStatefulWidget {
-  const RegisterScreen({super.key, this.redirectTo});
+class SignInScreen extends ConsumerStatefulWidget {
+  const SignInScreen({super.key, this.redirectTo});
+
+  /// Route to navigate to once sign-in succeeds. Defaults to `/`.
   final String? redirectTo;
 
   @override
-  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<SignInScreen> createState() => _SignInScreenState();
 }
 
-class _RegisterScreenState extends ConsumerState<RegisterScreen> {
+class _SignInScreenState extends ConsumerState<SignInScreen> {
   final _form = GlobalKey<FormState>();
-  final _name = TextEditingController();
   final _email = TextEditingController();
   final _password = TextEditingController();
   bool _busy = false;
 
   @override
   void dispose() {
-    _name.dispose();
     _email.dispose();
     _password.dispose();
     super.dispose();
   }
 
-  Future<void> _register() async {
+  Future<void> _signIn() async {
     if (!(_form.currentState?.validate() ?? false)) return;
     setState(() => _busy = true);
-    final result = await ref.read(authControllerProvider.notifier).registerWithEmail(
+    final result = await ref.read(authControllerProvider.notifier).signInWithEmail(
           email: _email.text,
           password: _password.text,
-          displayName: _name.text,
         );
     if (!mounted) return;
     setState(() => _busy = false);
     if (result.ok) {
-      context.go(widget.redirectTo ?? '/');
+      _goNext();
     } else {
       showSnack(context, localizeAuthError(AppL10n.of(context), result.error));
     }
@@ -54,10 +53,31 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (!mounted) return;
     setState(() => _busy = false);
     if (result.ok) {
-      context.go(widget.redirectTo ?? '/');
+      _goNext();
     } else if (result.error != 'cancelled') {
       showSnack(context, localizeAuthError(AppL10n.of(context), result.error));
     }
+  }
+
+  Future<void> _forgotPassword() async {
+    final l = AppL10n.of(context);
+    final email = _email.text.trim();
+    if (validateEmail(email) != null) {
+      showSnack(context, l.authErrorInvalid);
+      return;
+    }
+    final result =
+        await ref.read(authControllerProvider.notifier).sendPasswordReset(email);
+    if (!mounted) return;
+    showSnack(
+      context,
+      result.ok ? l.authResetSent : localizeAuthError(l, result.error),
+    );
+  }
+
+  void _goNext() {
+    final dest = widget.redirectTo ?? '/';
+    context.go(dest);
   }
 
   @override
@@ -67,7 +87,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final maxW = contentMaxWidth(context).clamp(0, 440);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l.authRegister)),
+      appBar: AppBar(title: Text(l.authSignIn)),
       body: Center(
         child: SingleChildScrollView(
           padding: pagePadding(context),
@@ -81,13 +101,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   Text(l.appTitle, style: theme.textTheme.headlineSmall),
                   const SizedBox(height: 24),
                   TextFormField(
-                    controller: _name,
-                    decoration: InputDecoration(labelText: l.authDisplayName),
-                    validator: (v) =>
-                        (v == null || v.trim().isEmpty) ? '' : null,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
                     controller: _email,
                     keyboardType: TextInputType.emailAddress,
                     autofillHints: const [AutofillHints.email],
@@ -98,21 +111,28 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   TextFormField(
                     controller: _password,
                     obscureText: true,
-                    autofillHints: const [AutofillHints.newPassword],
+                    autofillHints: const [AutofillHints.password],
                     decoration: InputDecoration(labelText: l.authPassword),
                     validator: validatePassword,
-                    onFieldSubmitted: (_) => _register(),
+                    onFieldSubmitted: (_) => _signIn(),
                   ),
-                  const SizedBox(height: 16),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: _busy ? null : _forgotPassword,
+                      child: Text(l.authForgotPassword),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   FilledButton(
-                    onPressed: _busy ? null : _register,
+                    onPressed: _busy ? null : _signIn,
                     child: _busy
                         ? const SizedBox(
                             height: 18,
                             width: 18,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : Text(l.authRegister),
+                        : Text(l.authSignIn),
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -135,15 +155,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(l.authHasAccount),
+                      Text(l.authNoAccountYet),
                       TextButton(
                         onPressed: _busy
                             ? null
                             : () => context.go(
-                                  '/sign-in',
+                                  '/register',
                                   extra: widget.redirectTo,
                                 ),
-                        child: Text(l.authSignInHere),
+                        child: Text(l.authSignUpHere),
                       ),
                     ],
                   ),
