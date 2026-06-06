@@ -333,6 +333,10 @@ class AppL10nTh extends AppL10n {
       'ยังไม่ได้ตั้งค่าการเข้าสู่ระบบ ต้องเพิ่มคอนฟิก Firebase';
 
   @override
+  String get authDevModeBanner =>
+      'โหมดนักพัฒนา — ยังไม่ได้ตั้งค่า Firebase ใส่อีเมลและรหัสผ่านอะไรก็ได้ ระบบจะสร้างบัญชีทดสอบในเครื่องนี้';
+
+  @override
   String get authErrorInvalid => 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
 
   @override

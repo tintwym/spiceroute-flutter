@@ -119,6 +119,7 @@
   "authProtectedTitle": "ログインが必要です",
   "authProtectedBody": "レシピを公開するにはログインしてください。投稿者として表示され、後で編集・削除できます。",
   "authNotConfigured": "ログインがまだ設定されていません。Firebase の設定を追加してください。",
+  "authDevModeBanner": "開発モード — Firebase が未設定です。任意のメールとパスワードでこの端末にローカルテストアカウントが作成されます。",
   "authErrorInvalid": "メールまたはパスワードが正しくありません。",
   "authErrorEmailInUse": "そのメールアドレスは既に登録されています。",
   "authErrorWeakPassword": "より強いパスワードを設定してください(6文字以上)。",

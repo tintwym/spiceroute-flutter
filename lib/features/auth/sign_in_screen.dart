@@ -85,6 +85,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     final l = AppL10n.of(context);
     final theme = Theme.of(context);
     final maxW = contentMaxWidth(context).clamp(0, 440);
+    final devMode =
+        ref.watch(authControllerProvider.notifier).devMode;
 
     return Scaffold(
       appBar: AppBar(title: Text(l.authSignIn)),
@@ -99,6 +101,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(l.appTitle, style: theme.textTheme.headlineSmall),
+                  if (devMode) ...[
+                    const SizedBox(height: 16),
+                    _DevModeBanner(text: l.authDevModeBanner),
+                  ],
                   const SizedBox(height: 24),
                   TextFormField(
                     controller: _email,
@@ -116,13 +122,14 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     validator: validatePassword,
                     onFieldSubmitted: (_) => _signIn(),
                   ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: _busy ? null : _forgotPassword,
-                      child: Text(l.authForgotPassword),
+                  if (!devMode)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: _busy ? null : _forgotPassword,
+                        child: Text(l.authForgotPassword),
+                      ),
                     ),
-                  ),
                   const SizedBox(height: 8),
                   FilledButton(
                     onPressed: _busy ? null : _signIn,
@@ -135,22 +142,25 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                         : Text(l.authSignIn),
                   ),
                   const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      const Expanded(child: Divider()),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Text(l.authOrDivider),
-                      ),
-                      const Expanded(child: Divider()),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  OutlinedButton.icon(
-                    onPressed: _busy ? null : _google,
-                    icon: const Icon(Icons.g_mobiledata, size: 28),
-                    label: Text(l.authContinueWithGoogle),
-                  ),
+                  if (!devMode) ...[
+                    Row(
+                      children: [
+                        const Expanded(child: Divider()),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Text(l.authOrDivider),
+                        ),
+                        const Expanded(child: Divider()),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  if (!devMode)
+                    OutlinedButton.icon(
+                      onPressed: _busy ? null : _google,
+                      icon: const Icon(Icons.g_mobiledata, size: 28),
+                      label: Text(l.authContinueWithGoogle),
+                    ),
                   const SizedBox(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -172,6 +182,37 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _DevModeBanner extends StatelessWidget {
+  const _DevModeBanner({required this.text});
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.tertiaryContainer.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.info_outline, size: 18, color: theme.colorScheme.primary),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: theme.textTheme.bodySmall,
+            ),
+          ),
+        ],
       ),
     );
   }

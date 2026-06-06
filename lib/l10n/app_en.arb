@@ -119,6 +119,7 @@
   "authProtectedTitle": "Sign in required",
   "authProtectedBody": "Sign in to publish your recipe so it stays attributed to you and you can edit or remove it later.",
   "authNotConfigured": "Sign-in is not configured yet. Add Firebase config to enable it.",
+  "authDevModeBanner": "Dev mode — Firebase isn't configured. Any email + password creates a local test account on this device.",
   "authErrorInvalid": "Email or password isn't right.",
   "authErrorEmailInUse": "That email is already registered.",
   "authErrorWeakPassword": "Pick a stronger password (at least 6 characters).",

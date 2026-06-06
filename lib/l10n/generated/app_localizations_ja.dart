@@ -329,6 +329,10 @@ class AppL10nJa extends AppL10n {
   String get authNotConfigured => 'ログインがまだ設定されていません。Firebase の設定を追加してください。';
 
   @override
+  String get authDevModeBanner =>
+      '開発モード — Firebase が未設定です。任意のメールとパスワードでこの端末にローカルテストアカウントが作成されます。';
+
+  @override
   String get authErrorInvalid => 'メールまたはパスワードが正しくありません。';
 
   @override

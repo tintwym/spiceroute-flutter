@@ -119,6 +119,7 @@
   "authProtectedTitle": "로그인이 필요해요",
   "authProtectedBody": "레시피를 공개로 등록하려면 로그인해 주세요. 작성자로 표시되고 나중에 수정·삭제할 수 있어요.",
   "authNotConfigured": "로그인 설정이 아직 안 됐어요. Firebase 설정을 추가해 주세요.",
+  "authDevModeBanner": "개발 모드 — Firebase가 설정돼 있지 않아요. 아무 이메일·비밀번호로 이 기기에 로컬 테스트 계정이 만들어져요.",
   "authErrorInvalid": "이메일 또는 비밀번호가 올바르지 않아요.",
   "authErrorEmailInUse": "이미 가입된 이메일이에요.",
   "authErrorWeakPassword": "더 강한 비밀번호를 사용해 주세요 (6자 이상).",

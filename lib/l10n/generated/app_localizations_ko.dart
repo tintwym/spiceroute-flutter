@@ -329,6 +329,10 @@ class AppL10nKo extends AppL10n {
   String get authNotConfigured => '로그인 설정이 아직 안 됐어요. Firebase 설정을 추가해 주세요.';
 
   @override
+  String get authDevModeBanner =>
+      '개발 모드 — Firebase가 설정돼 있지 않아요. 아무 이메일·비밀번호로 이 기기에 로컬 테스트 계정이 만들어져요.';
+
+  @override
   String get authErrorInvalid => '이메일 또는 비밀번호가 올바르지 않아요.';
 
   @override

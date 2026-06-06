@@ -727,6 +727,12 @@ abstract class AppL10n {
   /// **'Sign-in is not configured yet. Add Firebase config to enable it.'**
   String get authNotConfigured;
 
+  /// No description provided for @authDevModeBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Dev mode — Firebase isn\'t configured. Any email + password creates a local test account on this device.'**
+  String get authDevModeBanner;
+
   /// No description provided for @authErrorInvalid.
   ///
   /// In en, this message translates to:

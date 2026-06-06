@@ -328,6 +328,10 @@ class AppL10nZh extends AppL10n {
   String get authNotConfigured => '尚未配置登录功能,需添加 Firebase 配置。';
 
   @override
+  String get authDevModeBanner =>
+      '开发模式 — 尚未配置 Firebase。任何邮箱与密码都会在本设备上创建一个本地测试账号。';
+
+  @override
   String get authErrorInvalid => '邮箱或密码不正确。';
 
   @override

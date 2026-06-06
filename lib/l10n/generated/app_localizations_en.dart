@@ -342,6 +342,10 @@ class AppL10nEn extends AppL10n {
       'Sign-in is not configured yet. Add Firebase config to enable it.';
 
   @override
+  String get authDevModeBanner =>
+      'Dev mode — Firebase isn\'t configured. Any email + password creates a local test account on this device.';
+
+  @override
   String get authErrorInvalid => 'Email or password isn\'t right.';
 
   @override
