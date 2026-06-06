@@ -333,6 +333,36 @@ class AppL10nJa extends AppL10n {
       '開発モード — Firebase が未設定です。任意のメールとパスワードでこの端末にローカルテストアカウントが作成されます。';
 
   @override
+  String get authWelcomeTitle => 'おかえりなさい';
+
+  @override
+  String get authWelcomeSubtitle => 'ログインしてカスタムレシピと料理メモを取り戻しましょう';
+
+  @override
+  String get authRegisterTitle => '料理アカウントを作成';
+
+  @override
+  String get authRegisterSubtitle => '登録してレシピを同期・管理しましょう';
+
+  @override
+  String get authNameLabel => 'あなたのシェフネーム';
+
+  @override
+  String get authNameHint => '例: シェフ・オリバー';
+
+  @override
+  String get authEmailHint => 'chef@example.com';
+
+  @override
+  String get authPrimarySignIn => 'スタジオへ';
+
+  @override
+  String get authPrimaryRegister => 'アカウント作成';
+
+  @override
+  String get authFirebaseNote => '注意: Firebase コンソールでメール/パスワードログインを有効にしてください。';
+
+  @override
   String get authErrorInvalid => 'メールまたはパスワードが正しくありません。';
 
   @override

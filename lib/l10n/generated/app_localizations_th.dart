@@ -337,6 +337,38 @@ class AppL10nTh extends AppL10n {
       'โหมดนักพัฒนา — ยังไม่ได้ตั้งค่า Firebase ใส่อีเมลและรหัสผ่านอะไรก็ได้ ระบบจะสร้างบัญชีทดสอบในเครื่องนี้';
 
   @override
+  String get authWelcomeTitle => 'ยินดีต้อนรับกลับ';
+
+  @override
+  String get authWelcomeSubtitle =>
+      'เข้าสู่ระบบเพื่อดูสูตรและบันทึกการครัวของคุณ';
+
+  @override
+  String get authRegisterTitle => 'สร้างบัญชีนักทำอาหาร';
+
+  @override
+  String get authRegisterSubtitle => 'ร่วมกับเราเพื่อจัดการและซิงค์สูตรของคุณ';
+
+  @override
+  String get authNameLabel => 'ชื่อนักทำอาหารของคุณ';
+
+  @override
+  String get authNameHint => 'เช่น เชฟโอลิเวอร์';
+
+  @override
+  String get authEmailHint => 'chef@example.com';
+
+  @override
+  String get authPrimarySignIn => 'เข้าสู่สตูดิโอ';
+
+  @override
+  String get authPrimaryRegister => 'สร้างบัญชี';
+
+  @override
+  String get authFirebaseNote =>
+      'หมายเหตุ: ตรวจสอบให้แน่ใจว่าเปิดการเข้าสู่ระบบด้วยอีเมล/รหัสผ่านในคอนโซล Firebase แล้ว';
+
+  @override
   String get authErrorInvalid => 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
 
   @override

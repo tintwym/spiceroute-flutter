@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
 
 /// Color tokens for Savor Global Recipes — calm, editorial, warm.
+///
+/// Aligned with the AI-Studio reference prototype:
+///   primary olive   #5A5A40
+///   accent terracotta #D4A373
+///   text     charcoal  #423F3B
+///   surface  cream     #FAF9F6 (pages) / #F5F2ED (raised)
+///   borders  lineSoft  #E5E1D8
+///   muted    stone     #8C887D
 class SavorPalette {
   SavorPalette._();
 
-  static const cream = Color(0xFFF5EFE2);
-  static const cream2 = Color(0xFFEDE5D2);
-  static const olive = Color(0xFF5B6E3F);
-  static const oliveDeep = Color(0xFF3F4D2C);
-  static const terracotta = Color(0xFFC9663A);
-  static const charcoal = Color(0xFF2A2A24);
-  static const stone = Color(0xFF7A7868);
-  static const lineSoft = Color(0xFFDED5C2);
+  static const cream = Color(0xFFFAF9F6);
+  static const cream2 = Color(0xFFF5F2ED);
+  static const olive = Color(0xFF5A5A40);
+  static const oliveDeep = Color(0xFF3F3F2C);
+  static const terracotta = Color(0xFFD4A373);
+  static const charcoal = Color(0xFF423F3B);
+  static const stone = Color(0xFF8C887D);
+  static const lineSoft = Color(0xFFE5E1D8);
 }
 
 ThemeData buildTheme(Brightness brightness) {

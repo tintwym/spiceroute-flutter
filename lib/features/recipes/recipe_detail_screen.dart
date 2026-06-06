@@ -121,6 +121,12 @@ class _DetailBody extends ConsumerWidget {
     final theme = Theme.of(context);
     final saved = ref.watch(savedRecipesProvider);
     final isSaved = saved.isSaved(recipe.id);
+    final myId = ref.watch(meProvider).valueOrNull;
+    final ownerLabel = recipe.owner == null
+        ? null
+        : (myId == recipe.owner!.id
+            ? l.recipeOwnerYou
+            : l.recipeOwnerBy(recipe.owner!.displayName));
 
     return ListView(
       padding: EdgeInsets.zero,
@@ -173,6 +179,17 @@ class _DetailBody extends ConsumerWidget {
                       const SizedBox(height: 12),
                       Text(recipe.title,
                           style: theme.textTheme.displayMedium),
+                      if (ownerLabel != null) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          ownerLabel,
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: theme.colorScheme.onSurface
+                                .withValues(alpha: 0.6),
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ],
                       const SizedBox(height: 12),
                       if ((recipe.description ?? '').isNotEmpty)
                         Text(recipe.description!,

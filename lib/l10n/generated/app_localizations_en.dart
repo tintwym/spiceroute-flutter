@@ -346,6 +346,39 @@ class AppL10nEn extends AppL10n {
       'Dev mode — Firebase isn\'t configured. Any email + password creates a local test account on this device.';
 
   @override
+  String get authWelcomeTitle => 'Welcome Back';
+
+  @override
+  String get authWelcomeSubtitle =>
+      'Login to retrieve your customized recipes and culinary logs';
+
+  @override
+  String get authRegisterTitle => 'Create Culinary Account';
+
+  @override
+  String get authRegisterSubtitle =>
+      'Join us to synchronize and manage your bespoke recipes';
+
+  @override
+  String get authNameLabel => 'Your culinary name';
+
+  @override
+  String get authNameHint => 'e.g. Chef Oliver';
+
+  @override
+  String get authEmailHint => 'chef@example.com';
+
+  @override
+  String get authPrimarySignIn => 'Access Studio';
+
+  @override
+  String get authPrimaryRegister => 'Create Account';
+
+  @override
+  String get authFirebaseNote =>
+      'Note: ensure email/password sign-in is enabled in your Firebase console.';
+
+  @override
   String get authErrorInvalid => 'Email or password isn\'t right.';
 
   @override

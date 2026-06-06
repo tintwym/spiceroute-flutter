@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../l10n/generated/app_localizations.dart';
-import '../../shared/breakpoints.dart';
 import '../../state/auth.dart';
+import 'auth_card.dart';
 import 'auth_helpers.dart';
 
 class SignInScreen extends ConsumerStatefulWidget {
@@ -22,6 +22,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   final _email = TextEditingController();
   final _password = TextEditingController();
   bool _busy = false;
+  bool _showPassword = false;
 
   @override
   void dispose() {
@@ -33,10 +34,9 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   Future<void> _signIn() async {
     if (!(_form.currentState?.validate() ?? false)) return;
     setState(() => _busy = true);
-    final result = await ref.read(authControllerProvider.notifier).signInWithEmail(
-          email: _email.text,
-          password: _password.text,
-        );
+    final result = await ref
+        .read(authControllerProvider.notifier)
+        .signInWithEmail(email: _email.text, password: _password.text);
     if (!mounted) return;
     setState(() => _busy = false);
     if (result.ok) {
@@ -83,136 +83,131 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppL10n.of(context);
-    final theme = Theme.of(context);
-    final maxW = contentMaxWidth(context).clamp(0, 440);
-    final devMode =
-        ref.watch(authControllerProvider.notifier).devMode;
+    final devMode = ref.watch(authControllerProvider.notifier).devMode;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l.authSignIn)),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: pagePadding(context),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: maxW.toDouble()),
-            child: Form(
-              key: _form,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(l.appTitle, style: theme.textTheme.headlineSmall),
-                  if (devMode) ...[
-                    const SizedBox(height: 16),
-                    _DevModeBanner(text: l.authDevModeBanner),
-                  ],
-                  const SizedBox(height: 24),
-                  TextFormField(
-                    controller: _email,
-                    keyboardType: TextInputType.emailAddress,
-                    autofillHints: const [AutofillHints.email],
-                    decoration: InputDecoration(labelText: l.authEmail),
-                    validator: validateEmail,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _password,
-                    obscureText: true,
-                    autofillHints: const [AutofillHints.password],
-                    decoration: InputDecoration(labelText: l.authPassword),
-                    validator: validatePassword,
-                    onFieldSubmitted: (_) => _signIn(),
-                  ),
-                  if (!devMode)
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: _busy ? null : _forgotPassword,
-                        child: Text(l.authForgotPassword),
-                      ),
-                    ),
-                  const SizedBox(height: 8),
-                  FilledButton(
-                    onPressed: _busy ? null : _signIn,
-                    child: _busy
-                        ? const SizedBox(
-                            height: 18,
-                            width: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Text(l.authSignIn),
-                  ),
-                  const SizedBox(height: 16),
-                  if (!devMode) ...[
-                    Row(
-                      children: [
-                        const Expanded(child: Divider()),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Text(l.authOrDivider),
-                        ),
-                        const Expanded(child: Divider()),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-                  if (!devMode)
-                    OutlinedButton.icon(
-                      onPressed: _busy ? null : _google,
-                      icon: const Icon(Icons.g_mobiledata, size: 28),
-                      label: Text(l.authContinueWithGoogle),
-                    ),
-                  const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(l.authNoAccountYet),
-                      TextButton(
-                        onPressed: _busy
-                            ? null
-                            : () => context.go(
-                                  '/register',
-                                  extra: widget.redirectTo,
-                                ),
-                        child: Text(l.authSignUpHere),
-                      ),
-                    ],
-                  ),
-                ],
+    return AuthCard(
+      title: l.authWelcomeTitle,
+      subtitle: l.authWelcomeSubtitle,
+      bottomNote: _BottomNote(text: devMode ? l.authDevModeBanner : l.authFirebaseNote),
+      body: Form(
+        key: _form,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            AuthLabel(l.authEmail),
+            AuthField(
+              controller: _email,
+              icon: Icons.mail_outline,
+              hint: l.authEmailHint,
+              keyboardType: TextInputType.emailAddress,
+              autofillHints: const [AutofillHints.email],
+              validator: validateEmail,
+              textInputAction: TextInputAction.next,
+            ),
+            const SizedBox(height: 18),
+            AuthLabel(l.authPassword),
+            AuthField(
+              controller: _password,
+              icon: Icons.lock_outline,
+              hint: '••••••',
+              obscureText: !_showPassword,
+              autofillHints: const [AutofillHints.password],
+              validator: validatePassword,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => _signIn(),
+              suffix: IconButton(
+                icon: Icon(
+                  _showPassword
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
+                  size: 20,
+                ),
+                onPressed: () =>
+                    setState(() => _showPassword = !_showPassword),
               ),
             ),
-          ),
+            if (!devMode)
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: TextButton(
+                  onPressed: _busy ? null : _forgotPassword,
+                  child: Text(l.authForgotPassword),
+                ),
+              ),
+            const SizedBox(height: 12),
+            AuthPrimaryButton(
+              label: l.authPrimarySignIn,
+              busy: _busy,
+              onPressed: _signIn,
+            ),
+            if (!devMode) ...[
+              const SizedBox(height: 22),
+              _OrDivider(label: l.authOrDivider),
+              const SizedBox(height: 18),
+              GoogleSignInButton(
+                label: l.authContinueWithGoogle,
+                onPressed: _busy ? null : _google,
+              ),
+            ],
+          ],
         ),
+      ),
+      footer: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(l.authNoAccountYet),
+          TextButton(
+            onPressed: _busy
+                ? null
+                : () => context.go('/register', extra: widget.redirectTo),
+            child: Text(l.authSignUpHere),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _DevModeBanner extends StatelessWidget {
-  const _DevModeBanner({required this.text});
+class _OrDivider extends StatelessWidget {
+  const _OrDivider({required this.label});
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = theme.colorScheme.outlineVariant;
+    return Row(
+      children: [
+        Expanded(child: Divider(color: color)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: Text(
+            label.toUpperCase(),
+            style: theme.textTheme.labelSmall?.copyWith(
+              letterSpacing: 1.5,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+            ),
+          ),
+        ),
+        Expanded(child: Divider(color: color)),
+      ],
+    );
+  }
+}
+
+class _BottomNote extends StatelessWidget {
+  const _BottomNote({required this.text});
   final String text;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.tertiaryContainer.withValues(alpha: 0.6),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.colorScheme.outlineVariant),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(Icons.info_outline, size: 18, color: theme.colorScheme.primary),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              text,
-              style: theme.textTheme.bodySmall,
-            ),
-          ),
-        ],
+    return Text(
+      text,
+      textAlign: TextAlign.center,
+      style: theme.textTheme.bodySmall?.copyWith(
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
+        height: 1.4,
       ),
     );
   }

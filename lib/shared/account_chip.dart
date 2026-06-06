@@ -27,12 +27,17 @@ class AccountChip extends ConsumerWidget {
       tooltip: l.authAccount,
       offset: const Offset(0, 40),
       onSelected: (v) async {
+        final router = GoRouter.of(context);
         switch (v) {
           case 'mine':
-            context.go('/my-recipes');
+            router.go('/my-recipes');
             break;
           case 'sign-out':
             await ref.read(authControllerProvider.notifier).signOut();
+            // Navigate to home so a user who was on a protected route
+            // (e.g. /my-recipes) doesn't get bounced to /sign-in by the
+            // router redirect.
+            router.go('/');
             break;
         }
       },

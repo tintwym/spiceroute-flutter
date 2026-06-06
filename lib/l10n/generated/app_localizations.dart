@@ -733,6 +733,66 @@ abstract class AppL10n {
   /// **'Dev mode — Firebase isn\'t configured. Any email + password creates a local test account on this device.'**
   String get authDevModeBanner;
 
+  /// No description provided for @authWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome Back'**
+  String get authWelcomeTitle;
+
+  /// No description provided for @authWelcomeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Login to retrieve your customized recipes and culinary logs'**
+  String get authWelcomeSubtitle;
+
+  /// No description provided for @authRegisterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Culinary Account'**
+  String get authRegisterTitle;
+
+  /// No description provided for @authRegisterSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Join us to synchronize and manage your bespoke recipes'**
+  String get authRegisterSubtitle;
+
+  /// No description provided for @authNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your culinary name'**
+  String get authNameLabel;
+
+  /// No description provided for @authNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Chef Oliver'**
+  String get authNameHint;
+
+  /// No description provided for @authEmailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'chef@example.com'**
+  String get authEmailHint;
+
+  /// No description provided for @authPrimarySignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Access Studio'**
+  String get authPrimarySignIn;
+
+  /// No description provided for @authPrimaryRegister.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get authPrimaryRegister;
+
+  /// No description provided for @authFirebaseNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Note: ensure email/password sign-in is enabled in your Firebase console.'**
+  String get authFirebaseNote;
+
   /// No description provided for @authErrorInvalid.
   ///
   /// In en, this message translates to:

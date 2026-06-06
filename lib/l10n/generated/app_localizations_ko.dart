@@ -333,6 +333,36 @@ class AppL10nKo extends AppL10n {
       '개발 모드 — Firebase가 설정돼 있지 않아요. 아무 이메일·비밀번호로 이 기기에 로컬 테스트 계정이 만들어져요.';
 
   @override
+  String get authWelcomeTitle => '다시 오신 걸 환영해요';
+
+  @override
+  String get authWelcomeSubtitle => '로그인하면 나만의 레시피와 요리 노트를 다시 볼 수 있어요';
+
+  @override
+  String get authRegisterTitle => '요리 계정 만들기';
+
+  @override
+  String get authRegisterSubtitle => '함께 가입해서 나만의 레시피를 동기화하고 관리해요';
+
+  @override
+  String get authNameLabel => '셰프 이름';
+
+  @override
+  String get authNameHint => '예: 셰프 올리버';
+
+  @override
+  String get authEmailHint => 'chef@example.com';
+
+  @override
+  String get authPrimarySignIn => '스튜디오 입장';
+
+  @override
+  String get authPrimaryRegister => '계정 만들기';
+
+  @override
+  String get authFirebaseNote => '참고: Firebase 콘솔에서 이메일/비밀번호 로그인을 활성화해 주세요.';
+
+  @override
   String get authErrorInvalid => '이메일 또는 비밀번호가 올바르지 않아요.';
 
   @override

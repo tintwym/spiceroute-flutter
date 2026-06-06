@@ -332,6 +332,36 @@ class AppL10nZh extends AppL10n {
       '开发模式 — 尚未配置 Firebase。任何邮箱与密码都会在本设备上创建一个本地测试账号。';
 
   @override
+  String get authWelcomeTitle => '欢迎回来';
+
+  @override
+  String get authWelcomeSubtitle => '登录后可同步你的私房食谱与烹饪笔记';
+
+  @override
+  String get authRegisterTitle => '创建美食账户';
+
+  @override
+  String get authRegisterSubtitle => '加入我们,同步并管理属于你的食谱';
+
+  @override
+  String get authNameLabel => '你的厨师名';
+
+  @override
+  String get authNameHint => '例如 Oliver 大厨';
+
+  @override
+  String get authEmailHint => 'chef@example.com';
+
+  @override
+  String get authPrimarySignIn => '进入工作室';
+
+  @override
+  String get authPrimaryRegister => '立即创建';
+
+  @override
+  String get authFirebaseNote => '提示:请确保已在 Firebase 控制台开启邮箱/密码登录。';
+
+  @override
   String get authErrorInvalid => '邮箱或密码不正确。';
 
   @override
