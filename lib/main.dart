@@ -7,6 +7,7 @@ import 'shared/firebase_options.dart';
 import 'shared/router.dart';
 import 'shared/theme.dart';
 import 'state/locale.dart';
+import 'state/theme_mode.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,11 +33,13 @@ class SavorApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final locale = ref.watch(localeProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
       onGenerateTitle: (ctx) => AppL10n.of(ctx).appTitle,
       theme: buildTheme(Brightness.light),
       darkTheme: buildTheme(Brightness.dark),
+      themeMode: themeMode,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
       locale: locale,

@@ -10,6 +10,7 @@ import '../features/explore/explore_screen.dart';
 import '../features/my_recipes/my_recipes_screen.dart';
 import '../features/recipes/recipe_detail_screen.dart';
 import '../features/saved/saved_recipes_screen.dart';
+import '../features/settings/settings_screen.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../state/auth.dart';
 import 'responsive_scaffold.dart';
@@ -55,6 +56,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/my-recipes',
             builder: (_, _) => const MyRecipesScreen(),
+          ),
+          GoRoute(
+            path: '/settings',
+            builder: (_, _) => const SettingsScreen(),
           ),
         ],
       ),

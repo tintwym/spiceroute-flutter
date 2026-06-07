@@ -101,6 +101,11 @@ class AppL10nEn extends AppL10n {
   }
 
   @override
+  String recipeKcal(int kcal) {
+    return '$kcal kcal';
+  }
+
+  @override
   String get recipePremiumBadge => 'Curated';
 
   @override
@@ -248,17 +253,54 @@ class AppL10nEn extends AppL10n {
   String get aiCompanionSuggestion4 => 'What goes well with kimchi?';
 
   @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsAppearance => 'Appearance';
+
+  @override
+  String get settingsTheme => 'Theme';
+
+  @override
+  String get settingsThemeSystem => 'System';
+
+  @override
+  String get settingsThemeLight => 'Light';
+
+  @override
+  String get settingsThemeDark => 'Dark';
+
+  @override
   String get settingsLanguage => 'Language';
 
   @override
-  String get settingsAbout => 'About Savor';
+  String get settingsAccount => 'Account';
+
+  @override
+  String settingsAccountSignedInAs(String name) {
+    return 'Signed in as $name';
+  }
+
+  @override
+  String get settingsAccountGuest => 'Not signed in';
+
+  @override
+  String get settingsAbout => 'About SpiceRoute';
 
   @override
   String get settingsAboutBody =>
-      'Savor Global Recipes brings together the foods of the world into one calm, beautiful library, plus AI tools to remix them for your kitchen.';
+      'SpiceRoute brings together the foods of the world into one calm, beautiful library, plus AI tools to remix them for your kitchen.';
+
+  @override
+  String settingsVersion(String version) {
+    return 'Version $version';
+  }
 
   @override
   String get settingsClose => 'Close';
+
+  @override
+  String get navSettings => 'Settings';
 
   @override
   String get commonClose => 'Close';

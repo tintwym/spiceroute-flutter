@@ -199,25 +199,27 @@ class _DetailBody extends ConsumerWidget {
                             style: theme.textTheme.bodyMedium?.copyWith(
                                 color: theme.colorScheme.outline)),
                       const SizedBox(height: 16),
-                      Row(
+                      Wrap(
+                        spacing: 18,
+                        runSpacing: 8,
                         children: [
-                          Icon(Icons.schedule,
-                              size: 16, color: theme.colorScheme.outline),
-                          const SizedBox(width: 6),
-                          Text(l.recipeMinutesShort(recipe.totalMinutes),
-                              style: theme.textTheme.bodyMedium),
-                          const SizedBox(width: 18),
-                          Icon(Icons.restaurant,
-                              size: 16, color: theme.colorScheme.outline),
-                          const SizedBox(width: 6),
-                          Text(l.recipeServings(recipe.servings),
-                              style: theme.textTheme.bodyMedium),
-                          const SizedBox(width: 18),
-                          Icon(Icons.local_fire_department,
-                              size: 16, color: theme.colorScheme.outline),
-                          const SizedBox(width: 6),
-                          Text(_spiceLabel(l, recipe.spiceLevel),
-                              style: theme.textTheme.bodyMedium),
+                          _MetaItem(
+                            icon: Icons.schedule,
+                            label: l.recipeMinutesShort(recipe.totalMinutes),
+                          ),
+                          _MetaItem(
+                            icon: Icons.restaurant,
+                            label: l.recipeServings(recipe.servings),
+                          ),
+                          if (recipe.caloriesPerServing != null)
+                            _MetaItem(
+                              icon: Icons.local_fire_department_outlined,
+                              label: l.recipeKcal(recipe.caloriesPerServing!),
+                            ),
+                          _MetaItem(
+                            icon: Icons.local_fire_department,
+                            label: _spiceLabel(l, recipe.spiceLevel),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 20),
@@ -279,6 +281,25 @@ class _DetailBody extends ConsumerWidget {
       default:
         return l.recipeSpiceLevel0;
     }
+  }
+}
+
+class _MetaItem extends StatelessWidget {
+  const _MetaItem({required this.icon, required this.label});
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 16, color: theme.colorScheme.outline),
+        const SizedBox(width: 6),
+        Text(label, style: theme.textTheme.bodyMedium),
+      ],
+    );
   }
 }
 

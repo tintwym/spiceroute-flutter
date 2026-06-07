@@ -199,6 +199,7 @@ class _GeneratedRecipePreview extends ConsumerWidget {
     final prep = (recipe['prep_minutes'] as int?) ?? 0;
     final cook = (recipe['cook_minutes'] as int?) ?? 0;
     final servings = (recipe['servings'] as int?) ?? 1;
+    final calories = recipe['calories_per_serving'] as int?;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -231,17 +232,23 @@ class _GeneratedRecipePreview extends ConsumerWidget {
             Text(description, style: theme.textTheme.bodyMedium),
           ],
           const SizedBox(height: 16),
-          Row(
+          Wrap(
+            spacing: 16,
+            runSpacing: 6,
             children: [
-              Icon(Icons.schedule, size: 16, color: theme.colorScheme.outline),
-              const SizedBox(width: 6),
-              Text(l.recipeMinutesShort(prep + cook),
-                  style: theme.textTheme.bodySmall),
-              const SizedBox(width: 16),
-              Icon(Icons.restaurant, size: 16, color: theme.colorScheme.outline),
-              const SizedBox(width: 6),
-              Text(l.recipeServings(servings),
-                  style: theme.textTheme.bodySmall),
+              _MetaPair(
+                icon: Icons.schedule,
+                label: l.recipeMinutesShort(prep + cook),
+              ),
+              _MetaPair(
+                icon: Icons.restaurant,
+                label: l.recipeServings(servings),
+              ),
+              if (calories != null)
+                _MetaPair(
+                  icon: Icons.local_fire_department_outlined,
+                  label: l.recipeKcal(calories),
+                ),
             ],
           ),
           const Divider(height: 32),
@@ -291,6 +298,25 @@ class _GeneratedRecipePreview extends ConsumerWidget {
           ],
         ],
       ),
+    );
+  }
+}
+
+class _MetaPair extends StatelessWidget {
+  const _MetaPair({required this.icon, required this.label});
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 16, color: theme.colorScheme.outline),
+        const SizedBox(width: 6),
+        Text(label, style: theme.textTheme.bodySmall),
+      ],
     );
   }
 }

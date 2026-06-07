@@ -94,6 +94,11 @@ class AppL10nTh extends AppL10n {
   }
 
   @override
+  String recipeKcal(int kcal) {
+    return '$kcal กิโลแคล';
+  }
+
+  @override
   String get recipePremiumBadge => 'คัดสรร';
 
   @override
@@ -239,17 +244,54 @@ class AppL10nTh extends AppL10n {
   String get aiCompanionSuggestion4 => 'อะไรกินคู่กับกิมจิอร่อย?';
 
   @override
+  String get settingsTitle => 'การตั้งค่า';
+
+  @override
+  String get settingsAppearance => 'การแสดงผล';
+
+  @override
+  String get settingsTheme => 'ธีม';
+
+  @override
+  String get settingsThemeSystem => 'ตามระบบ';
+
+  @override
+  String get settingsThemeLight => 'สว่าง';
+
+  @override
+  String get settingsThemeDark => 'มืด';
+
+  @override
   String get settingsLanguage => 'ภาษา';
 
   @override
-  String get settingsAbout => 'เกี่ยวกับ Savor';
+  String get settingsAccount => 'บัญชี';
+
+  @override
+  String settingsAccountSignedInAs(String name) {
+    return 'เข้าสู่ระบบในชื่อ $name';
+  }
+
+  @override
+  String get settingsAccountGuest => 'ยังไม่ได้เข้าสู่ระบบ';
+
+  @override
+  String get settingsAbout => 'เกี่ยวกับ SpiceRoute';
 
   @override
   String get settingsAboutBody =>
-      'Savor Global Recipes รวมอาหารจากทั่วโลกไว้ในห้องสมุดที่สงบและสวยงาม พร้อมเครื่องมือ AI ให้คุณรีมิกซ์เป็นเวอร์ชันของครัวคุณ';
+      'SpiceRoute รวมอาหารจากทั่วโลกไว้ในห้องสมุดที่สงบและสวยงาม พร้อมเครื่องมือ AI ให้คุณรีมิกซ์เป็นเวอร์ชันของครัวคุณ';
+
+  @override
+  String settingsVersion(String version) {
+    return 'เวอร์ชัน $version';
+  }
 
   @override
   String get settingsClose => 'ปิด';
+
+  @override
+  String get navSettings => 'ตั้งค่า';
 
   @override
   String get commonClose => 'ปิด';

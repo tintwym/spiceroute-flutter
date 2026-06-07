@@ -207,6 +207,16 @@ class RecipeCard extends ConsumerWidget {
                         l.recipeServings(recipe.servings),
                         style: theme.textTheme.bodySmall,
                       ),
+                      if (recipe.caloriesPerServing != null) ...[
+                        const SizedBox(width: 14),
+                        Icon(Icons.local_fire_department_outlined,
+                            size: 14, color: theme.colorScheme.outline),
+                        const SizedBox(width: 4),
+                        Text(
+                          l.recipeKcal(recipe.caloriesPerServing!),
+                          style: theme.textTheme.bodySmall,
+                        ),
+                      ],
                     ],
                   ),
                 ],

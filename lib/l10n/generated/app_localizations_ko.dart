@@ -94,6 +94,11 @@ class AppL10nKo extends AppL10n {
   }
 
   @override
+  String recipeKcal(int kcal) {
+    return '$kcal kcal';
+  }
+
+  @override
   String get recipePremiumBadge => '엄선';
 
   @override
@@ -237,17 +242,54 @@ class AppL10nKo extends AppL10n {
   String get aiCompanionSuggestion4 => '김치와 잘 어울리는 음식은?';
 
   @override
+  String get settingsTitle => '설정';
+
+  @override
+  String get settingsAppearance => '디스플레이';
+
+  @override
+  String get settingsTheme => '테마';
+
+  @override
+  String get settingsThemeSystem => '시스템 기본값';
+
+  @override
+  String get settingsThemeLight => '라이트';
+
+  @override
+  String get settingsThemeDark => '다크';
+
+  @override
   String get settingsLanguage => '언어';
 
   @override
-  String get settingsAbout => 'Savor 소개';
+  String get settingsAccount => '계정';
+
+  @override
+  String settingsAccountSignedInAs(String name) {
+    return '$name 님으로 로그인됨';
+  }
+
+  @override
+  String get settingsAccountGuest => '로그인되지 않음';
+
+  @override
+  String get settingsAbout => 'SpiceRoute 소개';
 
   @override
   String get settingsAboutBody =>
-      'Savor 글로벌 레시피는 전 세계의 요리를 차분하고 아름다운 도서관에 모으고, AI 도구로 당신의 주방에 맞게 다듬어 줍니다.';
+      'SpiceRoute는 전 세계의 요리를 차분하고 아름다운 도서관에 모으고, AI 도구로 당신의 주방에 맞게 다듬어 줍니다.';
+
+  @override
+  String settingsVersion(String version) {
+    return '버전 $version';
+  }
 
   @override
   String get settingsClose => '닫기';
+
+  @override
+  String get navSettings => '설정';
 
   @override
   String get commonClose => '닫기';

@@ -101,6 +101,7 @@ class SpiceRouteSummary {
     this.language = 'en',
     this.spiceLevel = 0,
     this.isPremium = false,
+    this.caloriesPerServing,
     this.owner,
     this.tags = const [],
   });
@@ -117,6 +118,7 @@ class SpiceRouteSummary {
   final String language;
   final int spiceLevel;
   final bool isPremium;
+  final int? caloriesPerServing;
   final SpiceRouteOwner? owner;
   final List<Tag> tags;
 
@@ -137,6 +139,7 @@ class SpiceRouteSummary {
       language: (json['language'] as String?) ?? 'en',
       spiceLevel: (json['spice_level'] as int?) ?? 0,
       isPremium: (json['is_premium'] as bool?) ?? false,
+      caloriesPerServing: json['calories_per_serving'] as int?,
       owner: json['owner'] == null
           ? null
           : SpiceRouteOwner.fromJson(json['owner'] as Map<String, dynamic>),
@@ -162,6 +165,7 @@ class SpiceRouteDetail extends SpiceRouteSummary {
     super.language,
     super.spiceLevel,
     super.isPremium,
+    super.caloriesPerServing,
     super.owner,
     super.tags,
     this.ingredients = const [],
@@ -185,6 +189,7 @@ class SpiceRouteDetail extends SpiceRouteSummary {
       language: (json['language'] as String?) ?? 'en',
       spiceLevel: (json['spice_level'] as int?) ?? 0,
       isPremium: (json['is_premium'] as bool?) ?? false,
+      caloriesPerServing: json['calories_per_serving'] as int?,
       owner: json['owner'] == null
           ? null
           : SpiceRouteOwner.fromJson(json['owner'] as Map<String, dynamic>),

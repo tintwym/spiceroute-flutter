@@ -265,6 +265,12 @@ abstract class AppL10n {
   /// **'{count, plural, =1{1 serving} other{{count} servings}}'**
   String recipeServings(int count);
 
+  /// No description provided for @recipeKcal.
+  ///
+  /// In en, this message translates to:
+  /// **'{kcal} kcal'**
+  String recipeKcal(int kcal);
+
   /// No description provided for @recipePremiumBadge.
   ///
   /// In en, this message translates to:
@@ -547,29 +553,95 @@ abstract class AppL10n {
   /// **'What goes well with kimchi?'**
   String get aiCompanionSuggestion4;
 
+  /// No description provided for @settingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsAppearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get settingsAppearance;
+
+  /// No description provided for @settingsTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get settingsTheme;
+
+  /// No description provided for @settingsThemeSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get settingsThemeSystem;
+
+  /// No description provided for @settingsThemeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get settingsThemeLight;
+
+  /// No description provided for @settingsThemeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get settingsThemeDark;
+
   /// No description provided for @settingsLanguage.
   ///
   /// In en, this message translates to:
   /// **'Language'**
   String get settingsLanguage;
 
+  /// No description provided for @settingsAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get settingsAccount;
+
+  /// No description provided for @settingsAccountSignedInAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in as {name}'**
+  String settingsAccountSignedInAs(String name);
+
+  /// No description provided for @settingsAccountGuest.
+  ///
+  /// In en, this message translates to:
+  /// **'Not signed in'**
+  String get settingsAccountGuest;
+
   /// No description provided for @settingsAbout.
   ///
   /// In en, this message translates to:
-  /// **'About Savor'**
+  /// **'About SpiceRoute'**
   String get settingsAbout;
 
   /// No description provided for @settingsAboutBody.
   ///
   /// In en, this message translates to:
-  /// **'Savor Global Recipes brings together the foods of the world into one calm, beautiful library, plus AI tools to remix them for your kitchen.'**
+  /// **'SpiceRoute brings together the foods of the world into one calm, beautiful library, plus AI tools to remix them for your kitchen.'**
   String get settingsAboutBody;
+
+  /// No description provided for @settingsVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String settingsVersion(String version);
 
   /// No description provided for @settingsClose.
   ///
   /// In en, this message translates to:
   /// **'Close'**
   String get settingsClose;
+
+  /// No description provided for @navSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get navSettings;
 
   /// No description provided for @commonClose.
   ///

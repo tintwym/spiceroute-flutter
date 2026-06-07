@@ -90,11 +90,16 @@ class AppShell extends ConsumerWidget {
     final index = _indexFor(dests);
     final dc = deviceClassOf(context);
 
-    final actions = const [
-      AccountChip(),
-      SizedBox(width: 4),
-      LanguagePickerButton(),
-      SizedBox(width: 8),
+    final actions = [
+      const AccountChip(),
+      const SizedBox(width: 4),
+      IconButton(
+        tooltip: l.settingsTitle,
+        icon: const Icon(Icons.settings_outlined),
+        onPressed: () => context.go('/settings'),
+      ),
+      const LanguagePickerButton(),
+      const SizedBox(width: 8),
     ];
 
     if (dc.isPhone) {
