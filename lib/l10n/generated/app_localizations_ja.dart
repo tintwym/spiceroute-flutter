@@ -9,7 +9,7 @@ class AppL10nJa extends AppL10n {
   AppL10nJa([String locale = 'ja']) : super(locale);
 
   @override
-  String get appTitle => 'Savor 世界のレシピ';
+  String get appTitle => 'SpiceRoute';
 
   @override
   String get navExplore => '探す';
@@ -272,6 +272,9 @@ class AppL10nJa extends AppL10n {
 
   @override
   String get commonDelete => '削除';
+
+  @override
+  String get commonHome => 'ホームに戻る';
 
   @override
   String get authSignIn => 'ログイン';

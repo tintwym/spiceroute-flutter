@@ -9,7 +9,7 @@ class AppL10nKo extends AppL10n {
   AppL10nKo([String locale = 'ko']) : super(locale);
 
   @override
-  String get appTitle => 'Savor 글로벌 레시피';
+  String get appTitle => 'SpiceRoute';
 
   @override
   String get navExplore => '탐색';
@@ -272,6 +272,9 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get commonDelete => '삭제';
+
+  @override
+  String get commonHome => '홈으로 돌아가기';
 
   @override
   String get authSignIn => '로그인';

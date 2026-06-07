@@ -58,7 +58,10 @@ class SavedRecipesController extends StateNotifier<SavedRecipesState> {
       state = state.copyWith(ids: ids);
       await _hydrate();
     } catch (e) {
-      state = state.copyWith(loading: false, error: e.toString());
+      state = state.copyWith(
+        loading: false,
+        error: e is ApiException ? e.message : 'Something went wrong.',
+      );
     }
   }
 

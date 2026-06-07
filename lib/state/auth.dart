@@ -60,16 +60,30 @@ class AuthController extends StateNotifier<AppUser?> {
     if (auth != null) {
       _sub = auth.authStateChanges().listen((u) {
         state = _toAppUser(u);
+        _initialized = true;
       });
-    } else if (devMode) {
-      // Restore the stored dev user (if any) so refreshes don't sign you out.
-      _restoreDevUser();
+    } else {
+      // No Firebase wired up — there's nothing to restore asynchronously.
+      _initialized = true;
+      if (devMode) {
+        // Restore the stored dev user (if any) so refreshes don't sign you out.
+        _restoreDevUser();
+      }
     }
   }
 
   final fb.FirebaseAuth? _auth;
   StreamSubscription<fb.User?>? _sub;
   static const _storage = FlutterSecureStorage(aOptions: _kStorageOpts);
+
+  bool _initialized = false;
+
+  /// True once we've heard at least one auth-state event from Firebase (or
+  /// determined that Firebase isn't configured). Until this flips, callers
+  /// such as the router redirect should *not* treat `state == null` as
+  /// "definitely signed out" — Firebase's persistence layer is still
+  /// rehydrating from IndexedDB / disk.
+  bool get isInitialized => _initialized;
 
   /// True when we're running the in-app dev auth stub.
   ///

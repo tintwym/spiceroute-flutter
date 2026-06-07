@@ -9,7 +9,7 @@ class AppL10nZh extends AppL10n {
   AppL10nZh([String locale = 'zh']) : super(locale);
 
   @override
-  String get appTitle => '环球美味食谱';
+  String get appTitle => 'SpiceRoute';
 
   @override
   String get navExplore => '探索';
@@ -272,6 +272,9 @@ class AppL10nZh extends AppL10n {
 
   @override
   String get commonDelete => '删除';
+
+  @override
+  String get commonHome => '返回首页';
 
   @override
   String get authSignIn => '登录';

@@ -74,9 +74,12 @@ class ExploreController extends StateNotifier<ExploreState> {
       );
       state = state.copyWith(loading: false, items: res.items);
     } catch (e) {
-      state = state.copyWith(loading: false, error: e.toString());
+      state = state.copyWith(loading: false, error: _humanError(e));
     }
   }
+
+  static String _humanError(Object e) =>
+      e is ApiException ? e.message : 'Something went wrong.';
 
   @override
   void dispose() {

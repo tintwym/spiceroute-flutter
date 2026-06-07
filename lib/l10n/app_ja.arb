@@ -1,6 +1,6 @@
 {
   "@@locale": "ja",
-  "appTitle": "Savor 世界のレシピ",
+  "appTitle": "SpiceRoute",
 
   "navExplore": "探す",
   "navAiCreator": "AI作成",
@@ -100,6 +100,7 @@
   "commonNotFound": "見つかりません",
   "commonOk": "OK",
   "commonDelete": "削除",
+  "commonHome": "ホームに戻る",
 
   "authSignIn": "ログイン",
   "authSignOut": "ログアウト",

@@ -1,6 +1,6 @@
 {
   "@@locale": "th",
-  "appTitle": "Savor สูตรอาหารทั่วโลก",
+  "appTitle": "SpiceRoute",
 
   "navExplore": "สำรวจ",
   "navAiCreator": "AI สร้างสูตร",
@@ -100,6 +100,7 @@
   "commonNotFound": "ไม่พบ",
   "commonOk": "ตกลง",
   "commonDelete": "ลบ",
+  "commonHome": "กลับสู่หน้าหลัก",
 
   "authSignIn": "เข้าสู่ระบบ",
   "authSignOut": "ออกจากระบบ",

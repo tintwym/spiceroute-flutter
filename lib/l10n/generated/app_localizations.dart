@@ -106,7 +106,7 @@ abstract class AppL10n {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Savor Global Recipes'**
+  /// **'SpiceRoute'**
   String get appTitle;
 
   /// No description provided for @navExplore.
@@ -618,6 +618,12 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Delete'**
   String get commonDelete;
+
+  /// No description provided for @commonHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to home'**
+  String get commonHome;
 
   /// No description provided for @authSignIn.
   ///

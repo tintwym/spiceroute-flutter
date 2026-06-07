@@ -9,7 +9,7 @@ class AppL10nEn extends AppL10n {
   AppL10nEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Savor Global Recipes';
+  String get appTitle => 'SpiceRoute';
 
   @override
   String get navExplore => 'Explore';
@@ -283,6 +283,9 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get commonDelete => 'Delete';
+
+  @override
+  String get commonHome => 'Back to home';
 
   @override
   String get authSignIn => 'Sign in';

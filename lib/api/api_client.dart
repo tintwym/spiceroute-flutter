@@ -277,11 +277,30 @@ class ApiClient {
   ApiException _toApiException(DioException e) {
     final statusCode = e.response?.statusCode ?? 0;
     final data = e.response?.data;
-    String detail = e.message ?? 'Network error';
+
+    // Prefer the backend-provided `detail` field — it's already a clean,
+    // user-facing message (and frequently already localized).
     if (data is Map && data['detail'] is String) {
-      detail = data['detail'] as String;
+      return ApiException(statusCode, data['detail'] as String);
     }
-    return ApiException(statusCode, detail);
+
+    // Otherwise translate Dio's library-flavored errors into short, plain
+    // copy. The raw text (e.g. "The XMLHttpRequest onError callback was
+    // called…") is useless to end-users and was leaking into the UI.
+    final message = switch (e.type) {
+      DioExceptionType.connectionTimeout ||
+      DioExceptionType.sendTimeout ||
+      DioExceptionType.receiveTimeout =>
+        'Request timed out. Check your connection and try again.',
+      DioExceptionType.connectionError ||
+      DioExceptionType.unknown =>
+        "Couldn't reach the server. Check your connection and try again.",
+      DioExceptionType.cancel => 'Request cancelled.',
+      DioExceptionType.badCertificate => 'Secure connection failed.',
+      DioExceptionType.badResponse =>
+        e.response?.statusMessage ?? 'Server error.',
+    };
+    return ApiException(statusCode, message);
   }
 }
 

@@ -1,6 +1,6 @@
 {
   "@@locale": "zh",
-  "appTitle": "环球美味食谱",
+  "appTitle": "SpiceRoute",
 
   "navExplore": "探索",
   "navAiCreator": "AI 创作",
@@ -100,6 +100,7 @@
   "commonNotFound": "未找到",
   "commonOk": "确定",
   "commonDelete": "删除",
+  "commonHome": "返回首页",
 
   "authSignIn": "登录",
   "authSignOut": "退出登录",

@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appTitle": "Savor Global Recipes",
+  "appTitle": "SpiceRoute",
 
   "navExplore": "Explore",
   "navAiCreator": "AI Creator",
@@ -100,6 +100,7 @@
   "commonNotFound": "Not found",
   "commonOk": "OK",
   "commonDelete": "Delete",
+  "commonHome": "Back to home",
 
   "authSignIn": "Sign in",
   "authSignOut": "Sign out",

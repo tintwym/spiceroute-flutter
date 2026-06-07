@@ -9,7 +9,7 @@ class AppL10nTh extends AppL10n {
   AppL10nTh([String locale = 'th']) : super(locale);
 
   @override
-  String get appTitle => 'Savor สูตรอาหารทั่วโลก';
+  String get appTitle => 'SpiceRoute';
 
   @override
   String get navExplore => 'สำรวจ';
@@ -274,6 +274,9 @@ class AppL10nTh extends AppL10n {
 
   @override
   String get commonDelete => 'ลบ';
+
+  @override
+  String get commonHome => 'กลับสู่หน้าหลัก';
 
   @override
   String get authSignIn => 'เข้าสู่ระบบ';
