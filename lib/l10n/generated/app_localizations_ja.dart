@@ -87,6 +87,78 @@ class AppL10nJa extends AppL10n {
   String get exploreErrorRetry => '再試行';
 
   @override
+  String get filterCuisineLabel => '料理ジャンルを選択';
+
+  @override
+  String get filterCourseLabel => 'コースを選択';
+
+  @override
+  String get filterDietaryLabel => '食事制限・ライフスタイル・形式';
+
+  @override
+  String get filterAllCuisines => 'すべての料理';
+
+  @override
+  String get filterAllCourses => 'すべてのコース';
+
+  @override
+  String get filterAllDietary => 'すべての条件';
+
+  @override
+  String get courseBreakfast => '朝食';
+
+  @override
+  String get courseLunch => '昼食';
+
+  @override
+  String get courseDinner => '夕食';
+
+  @override
+  String get courseAppetizer => '前菜';
+
+  @override
+  String get courseMainCourse => 'メイン';
+
+  @override
+  String get courseSideDish => '副菜';
+
+  @override
+  String get courseSoup => 'スープ';
+
+  @override
+  String get courseSalad => 'サラダ';
+
+  @override
+  String get courseSnack => 'おやつ';
+
+  @override
+  String get courseDessert => 'デザート';
+
+  @override
+  String get dietaryVegetarian => 'ベジタリアン';
+
+  @override
+  String get dietaryVegan => 'ヴィーガン';
+
+  @override
+  String get dietaryGlutenFree => 'グルテンフリー';
+
+  @override
+  String get dietaryDairyFree => '乳製品不使用';
+
+  @override
+  String get dietaryNutFree => 'ナッツ不使用';
+
+  @override
+  String get dietaryHighProtein => '高タンパク';
+
+  @override
+  String get dietaryLowCarb => '低糖質';
+
+  @override
+  String get dietaryQuick => '時短 (30分以内)';
+
+  @override
   String recipeMinutesShort(int minutes) {
     return '$minutes 分';
   }

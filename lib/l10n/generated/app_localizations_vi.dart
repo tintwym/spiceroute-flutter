@@ -87,6 +87,78 @@ class AppL10nVi extends AppL10n {
   String get exploreErrorRetry => 'Thử lại';
 
   @override
+  String get filterCuisineLabel => 'CHỌN ẨM THỰC';
+
+  @override
+  String get filterCourseLabel => 'CHỌN BỮA';
+
+  @override
+  String get filterDietaryLabel => 'CHẾ ĐỘ ĂN, LỐI SỐNG & ĐỊNH DẠNG';
+
+  @override
+  String get filterAllCuisines => 'Tất cả ẩm thực';
+
+  @override
+  String get filterAllCourses => 'Tất cả các bữa';
+
+  @override
+  String get filterAllDietary => 'Tất cả yêu cầu';
+
+  @override
+  String get courseBreakfast => 'Bữa sáng';
+
+  @override
+  String get courseLunch => 'Bữa trưa';
+
+  @override
+  String get courseDinner => 'Bữa tối';
+
+  @override
+  String get courseAppetizer => 'Khai vị';
+
+  @override
+  String get courseMainCourse => 'Món chính';
+
+  @override
+  String get courseSideDish => 'Món phụ';
+
+  @override
+  String get courseSoup => 'Súp';
+
+  @override
+  String get courseSalad => 'Salad';
+
+  @override
+  String get courseSnack => 'Ăn vặt';
+
+  @override
+  String get courseDessert => 'Tráng miệng';
+
+  @override
+  String get dietaryVegetarian => 'Ăn chay';
+
+  @override
+  String get dietaryVegan => 'Thuần chay';
+
+  @override
+  String get dietaryGlutenFree => 'Không gluten';
+
+  @override
+  String get dietaryDairyFree => 'Không sữa';
+
+  @override
+  String get dietaryNutFree => 'Không hạt';
+
+  @override
+  String get dietaryHighProtein => 'Giàu protein';
+
+  @override
+  String get dietaryLowCarb => 'Ít carb';
+
+  @override
+  String get dietaryQuick => 'Nhanh (dưới 30 phút)';
+
+  @override
   String recipeMinutesShort(int minutes) {
     return '$minutes phút';
   }

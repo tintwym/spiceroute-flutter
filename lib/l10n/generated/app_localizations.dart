@@ -261,6 +261,150 @@ abstract class AppL10n {
   /// **'Retry'**
   String get exploreErrorRetry;
 
+  /// No description provided for @filterCuisineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'SELECT CUISINE'**
+  String get filterCuisineLabel;
+
+  /// No description provided for @filterCourseLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'SELECT COURSE'**
+  String get filterCourseLabel;
+
+  /// No description provided for @filterDietaryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'DIETARY, LIFESTYLE & FORMAT RESTRICTIONS'**
+  String get filterDietaryLabel;
+
+  /// No description provided for @filterAllCuisines.
+  ///
+  /// In en, this message translates to:
+  /// **'All Cuisines'**
+  String get filterAllCuisines;
+
+  /// No description provided for @filterAllCourses.
+  ///
+  /// In en, this message translates to:
+  /// **'All Courses'**
+  String get filterAllCourses;
+
+  /// No description provided for @filterAllDietary.
+  ///
+  /// In en, this message translates to:
+  /// **'All Requests'**
+  String get filterAllDietary;
+
+  /// No description provided for @courseBreakfast.
+  ///
+  /// In en, this message translates to:
+  /// **'Breakfast'**
+  String get courseBreakfast;
+
+  /// No description provided for @courseLunch.
+  ///
+  /// In en, this message translates to:
+  /// **'Lunch'**
+  String get courseLunch;
+
+  /// No description provided for @courseDinner.
+  ///
+  /// In en, this message translates to:
+  /// **'Dinner'**
+  String get courseDinner;
+
+  /// No description provided for @courseAppetizer.
+  ///
+  /// In en, this message translates to:
+  /// **'Appetizer'**
+  String get courseAppetizer;
+
+  /// No description provided for @courseMainCourse.
+  ///
+  /// In en, this message translates to:
+  /// **'Main course'**
+  String get courseMainCourse;
+
+  /// No description provided for @courseSideDish.
+  ///
+  /// In en, this message translates to:
+  /// **'Side dish'**
+  String get courseSideDish;
+
+  /// No description provided for @courseSoup.
+  ///
+  /// In en, this message translates to:
+  /// **'Soup'**
+  String get courseSoup;
+
+  /// No description provided for @courseSalad.
+  ///
+  /// In en, this message translates to:
+  /// **'Salad'**
+  String get courseSalad;
+
+  /// No description provided for @courseSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Snack'**
+  String get courseSnack;
+
+  /// No description provided for @courseDessert.
+  ///
+  /// In en, this message translates to:
+  /// **'Dessert'**
+  String get courseDessert;
+
+  /// No description provided for @dietaryVegetarian.
+  ///
+  /// In en, this message translates to:
+  /// **'Vegetarian'**
+  String get dietaryVegetarian;
+
+  /// No description provided for @dietaryVegan.
+  ///
+  /// In en, this message translates to:
+  /// **'Vegan'**
+  String get dietaryVegan;
+
+  /// No description provided for @dietaryGlutenFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Gluten-free'**
+  String get dietaryGlutenFree;
+
+  /// No description provided for @dietaryDairyFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Dairy-free'**
+  String get dietaryDairyFree;
+
+  /// No description provided for @dietaryNutFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Nut-free'**
+  String get dietaryNutFree;
+
+  /// No description provided for @dietaryHighProtein.
+  ///
+  /// In en, this message translates to:
+  /// **'High-protein'**
+  String get dietaryHighProtein;
+
+  /// No description provided for @dietaryLowCarb.
+  ///
+  /// In en, this message translates to:
+  /// **'Low-carb'**
+  String get dietaryLowCarb;
+
+  /// No description provided for @dietaryQuick.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick (under 30 min)'**
+  String get dietaryQuick;
+
   /// No description provided for @recipeMinutesShort.
   ///
   /// In en, this message translates to:

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../shared/breakpoints.dart';
-import '../../shared/cuisine_pill_bar.dart';
+import '../../shared/filter_bar.dart';
 import '../../shared/widgets.dart';
 import '../../state/explore.dart';
 
@@ -83,15 +83,19 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             child: Center(
               child: ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: maxW),
-                child: CuisinePillBar(
-                  value: state.cuisine,
-                  onChanged: controller.setCuisine,
+                child: FilterBar(
+                  cuisine: state.cuisine,
+                  course: state.course,
+                  dietary: state.dietary,
+                  onCuisineChanged: controller.setCuisine,
+                  onCourseChanged: controller.setCourse,
+                  onDietaryChanged: controller.setDietary,
                 ),
               ),
             ),
           ),
         ),
-        const SliverToBoxAdapter(child: SizedBox(height: 12)),
+        const SliverToBoxAdapter(child: SizedBox(height: 16)),
         ..._buildResultsSlivers(
           context: context,
           state: state,
@@ -115,7 +119,11 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     required EdgeInsets pagePad,
     required double maxW,
   }) {
-    if (state.loading && state.items.isEmpty) {
+    // `visibleItems` applies the client-side course + dietary filter on
+    // top of the API-returned `items`. Cuisine and free-text search go
+    // through the API and are already reflected in `items`.
+    final visible = state.visibleItems;
+    if (state.loading && visible.isEmpty) {
       return [
         SliverPadding(
           padding: pagePad,
@@ -133,7 +141,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       ];
     }
 
-    if (state.error != null && state.items.isEmpty) {
+    if (state.error != null && visible.isEmpty) {
       return [
         SliverFillRemaining(
           hasScrollBody: false,
@@ -150,7 +158,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       ];
     }
 
-    if (state.items.isEmpty) {
+    if (visible.isEmpty) {
       return [
         SliverFillRemaining(
           hasScrollBody: false,
@@ -175,8 +183,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
             ),
-            itemCount: state.items.length,
-            itemBuilder: (_, i) => RecipeCard(recipe: state.items[i]),
+            itemCount: visible.length,
+            itemBuilder: (_, i) => RecipeCard(recipe: visible[i]),
           ),
         ),
       ),

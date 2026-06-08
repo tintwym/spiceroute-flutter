@@ -87,6 +87,78 @@ class AppL10nKo extends AppL10n {
   String get exploreErrorRetry => '다시 시도';
 
   @override
+  String get filterCuisineLabel => '요리 분야 선택';
+
+  @override
+  String get filterCourseLabel => '코스 선택';
+
+  @override
+  String get filterDietaryLabel => '식단, 라이프스타일, 형식 제한';
+
+  @override
+  String get filterAllCuisines => '모든 요리';
+
+  @override
+  String get filterAllCourses => '모든 코스';
+
+  @override
+  String get filterAllDietary => '모든 조건';
+
+  @override
+  String get courseBreakfast => '아침';
+
+  @override
+  String get courseLunch => '점심';
+
+  @override
+  String get courseDinner => '저녁';
+
+  @override
+  String get courseAppetizer => '전채';
+
+  @override
+  String get courseMainCourse => '메인';
+
+  @override
+  String get courseSideDish => '사이드';
+
+  @override
+  String get courseSoup => '수프';
+
+  @override
+  String get courseSalad => '샐러드';
+
+  @override
+  String get courseSnack => '간식';
+
+  @override
+  String get courseDessert => '디저트';
+
+  @override
+  String get dietaryVegetarian => '베지테리언';
+
+  @override
+  String get dietaryVegan => '비건';
+
+  @override
+  String get dietaryGlutenFree => '글루텐 프리';
+
+  @override
+  String get dietaryDairyFree => '유제품 무첨가';
+
+  @override
+  String get dietaryNutFree => '견과류 무첨가';
+
+  @override
+  String get dietaryHighProtein => '고단백';
+
+  @override
+  String get dietaryLowCarb => '저탄수';
+
+  @override
+  String get dietaryQuick => '간편 (30분 이내)';
+
+  @override
   String recipeMinutesShort(int minutes) {
     return '$minutes분';
   }

@@ -35,6 +35,46 @@ class Tag {
       Tag(id: json['id'] as String, name: json['name'] as String);
 }
 
+/// Meal course / role on the plate. Used as a *client-side* filter on the
+/// Explore screen — matched against each recipe's `tags` list by tag name
+/// (e.g. a recipe tagged "dessert" matches `Course.dessert`). The backend
+/// stores no first-class `course` column today; surfacing it via tags lets
+/// us ship the filter UI without a migration.
+enum Course {
+  breakfast('breakfast'),
+  lunch('lunch'),
+  dinner('dinner'),
+  appetizer('appetizer'),
+  mainCourse('main course'),
+  sideDish('side dish'),
+  soup('soup'),
+  salad('salad'),
+  snack('snack'),
+  dessert('dessert');
+
+  const Course(this.tagName);
+
+  /// The exact lowercase tag name we look for in `SpiceRouteSummary.tags`.
+  /// Compared case-insensitively to be forgiving of upstream casing drift.
+  final String tagName;
+}
+
+/// Dietary / lifestyle constraint a recipe satisfies. Same client-side
+/// filter model as [Course] — matched against `tags` by name.
+enum Dietary {
+  vegetarian('vegetarian'),
+  vegan('vegan'),
+  glutenFree('gluten-free'),
+  dairyFree('dairy-free'),
+  nutFree('nut-free'),
+  highProtein('high-protein'),
+  lowCarb('low-carb'),
+  quick('quick');
+
+  const Dietary(this.tagName);
+  final String tagName;
+}
+
 @immutable
 class SpiceRouteOwner {
   const SpiceRouteOwner({required this.id, required this.displayName});

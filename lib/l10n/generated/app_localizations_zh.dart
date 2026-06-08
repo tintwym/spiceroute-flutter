@@ -87,6 +87,78 @@ class AppL10nZh extends AppL10n {
   String get exploreErrorRetry => '重试';
 
   @override
+  String get filterCuisineLabel => '选择菜系';
+
+  @override
+  String get filterCourseLabel => '选择餐别';
+
+  @override
+  String get filterDietaryLabel => '饮食、生活方式与形式偏好';
+
+  @override
+  String get filterAllCuisines => '所有菜系';
+
+  @override
+  String get filterAllCourses => '所有餐别';
+
+  @override
+  String get filterAllDietary => '所有偏好';
+
+  @override
+  String get courseBreakfast => '早餐';
+
+  @override
+  String get courseLunch => '午餐';
+
+  @override
+  String get courseDinner => '晚餐';
+
+  @override
+  String get courseAppetizer => '开胃菜';
+
+  @override
+  String get courseMainCourse => '主菜';
+
+  @override
+  String get courseSideDish => '配菜';
+
+  @override
+  String get courseSoup => '汤品';
+
+  @override
+  String get courseSalad => '沙拉';
+
+  @override
+  String get courseSnack => '小吃';
+
+  @override
+  String get courseDessert => '甜点';
+
+  @override
+  String get dietaryVegetarian => '素食';
+
+  @override
+  String get dietaryVegan => '纯素';
+
+  @override
+  String get dietaryGlutenFree => '无麸质';
+
+  @override
+  String get dietaryDairyFree => '无乳制品';
+
+  @override
+  String get dietaryNutFree => '无坚果';
+
+  @override
+  String get dietaryHighProtein => '高蛋白';
+
+  @override
+  String get dietaryLowCarb => '低碳水';
+
+  @override
+  String get dietaryQuick => '快手 (30 分钟内)';
+
+  @override
   String recipeMinutesShort(int minutes) {
     return '$minutes 分钟';
   }

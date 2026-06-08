@@ -88,6 +88,78 @@ class AppL10nEn extends AppL10n {
   String get exploreErrorRetry => 'Retry';
 
   @override
+  String get filterCuisineLabel => 'SELECT CUISINE';
+
+  @override
+  String get filterCourseLabel => 'SELECT COURSE';
+
+  @override
+  String get filterDietaryLabel => 'DIETARY, LIFESTYLE & FORMAT RESTRICTIONS';
+
+  @override
+  String get filterAllCuisines => 'All Cuisines';
+
+  @override
+  String get filterAllCourses => 'All Courses';
+
+  @override
+  String get filterAllDietary => 'All Requests';
+
+  @override
+  String get courseBreakfast => 'Breakfast';
+
+  @override
+  String get courseLunch => 'Lunch';
+
+  @override
+  String get courseDinner => 'Dinner';
+
+  @override
+  String get courseAppetizer => 'Appetizer';
+
+  @override
+  String get courseMainCourse => 'Main course';
+
+  @override
+  String get courseSideDish => 'Side dish';
+
+  @override
+  String get courseSoup => 'Soup';
+
+  @override
+  String get courseSalad => 'Salad';
+
+  @override
+  String get courseSnack => 'Snack';
+
+  @override
+  String get courseDessert => 'Dessert';
+
+  @override
+  String get dietaryVegetarian => 'Vegetarian';
+
+  @override
+  String get dietaryVegan => 'Vegan';
+
+  @override
+  String get dietaryGlutenFree => 'Gluten-free';
+
+  @override
+  String get dietaryDairyFree => 'Dairy-free';
+
+  @override
+  String get dietaryNutFree => 'Nut-free';
+
+  @override
+  String get dietaryHighProtein => 'High-protein';
+
+  @override
+  String get dietaryLowCarb => 'Low-carb';
+
+  @override
+  String get dietaryQuick => 'Quick (under 30 min)';
+
+  @override
   String recipeMinutesShort(int minutes) {
     return '$minutes min';
   }

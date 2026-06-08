@@ -87,6 +87,78 @@ class AppL10nTh extends AppL10n {
   String get exploreErrorRetry => 'ลองใหม่';
 
   @override
+  String get filterCuisineLabel => 'เลือกประเภทอาหาร';
+
+  @override
+  String get filterCourseLabel => 'เลือกมื้อ';
+
+  @override
+  String get filterDietaryLabel => 'ข้อจำกัดด้านอาหาร ไลฟ์สไตล์ และรูปแบบ';
+
+  @override
+  String get filterAllCuisines => 'อาหารทุกประเภท';
+
+  @override
+  String get filterAllCourses => 'ทุกมื้อ';
+
+  @override
+  String get filterAllDietary => 'ทุกข้อกำหนด';
+
+  @override
+  String get courseBreakfast => 'อาหารเช้า';
+
+  @override
+  String get courseLunch => 'อาหารกลางวัน';
+
+  @override
+  String get courseDinner => 'อาหารเย็น';
+
+  @override
+  String get courseAppetizer => 'ออเดิร์ฟ';
+
+  @override
+  String get courseMainCourse => 'จานหลัก';
+
+  @override
+  String get courseSideDish => 'เครื่องเคียง';
+
+  @override
+  String get courseSoup => 'ซุป';
+
+  @override
+  String get courseSalad => 'สลัด';
+
+  @override
+  String get courseSnack => 'ของว่าง';
+
+  @override
+  String get courseDessert => 'ของหวาน';
+
+  @override
+  String get dietaryVegetarian => 'มังสวิรัติ';
+
+  @override
+  String get dietaryVegan => 'วีแกน';
+
+  @override
+  String get dietaryGlutenFree => 'ปราศจากกลูเตน';
+
+  @override
+  String get dietaryDairyFree => 'ปราศจากนม';
+
+  @override
+  String get dietaryNutFree => 'ปราศจากถั่ว';
+
+  @override
+  String get dietaryHighProtein => 'โปรตีนสูง';
+
+  @override
+  String get dietaryLowCarb => 'คาร์บต่ำ';
+
+  @override
+  String get dietaryQuick => 'ทำเร็ว (ภายใน 30 นาที)';
+
+  @override
   String recipeMinutesShort(int minutes) {
     return '$minutes นาที';
   }
