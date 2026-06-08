@@ -213,7 +213,7 @@ class AppL10nTh extends AppL10n {
       'ของแทน เทคนิค ปรับสูตรเฉพาะอาหาร เราช่วยได้';
 
   @override
-  String get aiCompanionInputHint => 'พิมพ์คำถามของคุณ…';
+  String get aiCompanionInputHint => 'พิมพ์คำถามของคุณ...';
 
   @override
   String get aiCompanionSend => 'ส่ง';
@@ -225,7 +225,7 @@ class AppL10nTh extends AppL10n {
   String get aiCompanionClear => 'ล้างบทสนทนา';
 
   @override
-  String get aiCompanionTyping => 'กำลังคิด…';
+  String get aiCompanionTyping => 'กำลังคิด...';
 
   @override
   String get aiCompanionRateLimited =>
@@ -306,7 +306,7 @@ class AppL10nTh extends AppL10n {
   String get commonError => 'เกิดข้อผิดพลาด';
 
   @override
-  String get commonLoading => 'กำลังโหลด…';
+  String get commonLoading => 'กำลังโหลด...';
 
   @override
   String get commonNotFound => 'ไม่พบ';
@@ -379,7 +379,7 @@ class AppL10nTh extends AppL10n {
 
   @override
   String get authDevModeBanner =>
-      'โหมดนักพัฒนา — ยังไม่ได้ตั้งค่า Firebase ใส่อีเมลและรหัสผ่านอะไรก็ได้ ระบบจะสร้างบัญชีทดสอบในเครื่องนี้';
+      'โหมดนักพัฒนา - ยังไม่ได้ตั้งค่า Firebase ใส่อีเมลและรหัสผ่านอะไรก็ได้ ระบบจะสร้างบัญชีทดสอบในเครื่องนี้';
 
   @override
   String get authWelcomeTitle => 'ยินดีต้อนรับกลับ';

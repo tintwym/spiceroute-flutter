@@ -43,7 +43,7 @@ class SettingsScreen extends ConsumerWidget {
             title: Text(
               user != null
                   ? l.settingsAccountSignedInAs(
-                      user.displayName ?? user.email ?? '—',
+                      user.displayName ?? user.email ?? '-',
                     )
                   : l.settingsAccountGuest,
             ),

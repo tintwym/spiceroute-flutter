@@ -496,7 +496,7 @@ abstract class AppL10n {
   /// No description provided for @aiCompanionInputHint.
   ///
   /// In en, this message translates to:
-  /// **'Type your question…'**
+  /// **'Type your question...'**
   String get aiCompanionInputHint;
 
   /// No description provided for @aiCompanionSend.
@@ -520,7 +520,7 @@ abstract class AppL10n {
   /// No description provided for @aiCompanionTyping.
   ///
   /// In en, this message translates to:
-  /// **'Thinking…'**
+  /// **'Thinking...'**
   String get aiCompanionTyping;
 
   /// No description provided for @aiCompanionRateLimited.
@@ -670,7 +670,7 @@ abstract class AppL10n {
   /// No description provided for @commonLoading.
   ///
   /// In en, this message translates to:
-  /// **'Loading…'**
+  /// **'Loading...'**
   String get commonLoading;
 
   /// No description provided for @commonNotFound.
@@ -808,7 +808,7 @@ abstract class AppL10n {
   /// No description provided for @authDevModeBanner.
   ///
   /// In en, this message translates to:
-  /// **'Dev mode — Firebase isn\'t configured. Any email + password creates a local test account on this device.'**
+  /// **'Dev mode - Firebase isn\'t configured. Any email + password creates a local test account on this device.'**
   String get authDevModeBanner;
 
   /// No description provided for @authWelcomeTitle.

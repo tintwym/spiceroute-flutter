@@ -212,7 +212,7 @@ class AppL10nZh extends AppL10n {
   String get aiCompanionEmptySubtitle => '替代食材、技法、饮食调整,都帮你想清楚。';
 
   @override
-  String get aiCompanionInputHint => '输入你的问题…';
+  String get aiCompanionInputHint => '输入你的问题...';
 
   @override
   String get aiCompanionSend => '发送';
@@ -224,7 +224,7 @@ class AppL10nZh extends AppL10n {
   String get aiCompanionClear => '清空对话';
 
   @override
-  String get aiCompanionTyping => '正在思考…';
+  String get aiCompanionTyping => '正在思考...';
 
   @override
   String get aiCompanionRateLimited => '本小时消息次数过多,请稍后再试。';
@@ -304,7 +304,7 @@ class AppL10nZh extends AppL10n {
   String get commonError => '出错了';
 
   @override
-  String get commonLoading => '加载中…';
+  String get commonLoading => '加载中...';
 
   @override
   String get commonNotFound => '未找到';
@@ -374,7 +374,7 @@ class AppL10nZh extends AppL10n {
 
   @override
   String get authDevModeBanner =>
-      '开发模式 — 尚未配置 Firebase。任何邮箱与密码都会在本设备上创建一个本地测试账号。';
+      '开发模式 - 尚未配置 Firebase。任何邮箱与密码都会在本设备上创建一个本地测试账号。';
 
   @override
   String get authWelcomeTitle => '欢迎回来';

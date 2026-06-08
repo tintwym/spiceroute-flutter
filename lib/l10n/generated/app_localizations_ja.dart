@@ -212,7 +212,7 @@ class AppL10nJa extends AppL10n {
   String get aiCompanionEmptySubtitle => '代用品・テクニック・食事制限の調整、お任せを。';
 
   @override
-  String get aiCompanionInputHint => '質問を入力…';
+  String get aiCompanionInputHint => '質問を入力...';
 
   @override
   String get aiCompanionSend => '送信';
@@ -224,7 +224,7 @@ class AppL10nJa extends AppL10n {
   String get aiCompanionClear => '会話をクリア';
 
   @override
-  String get aiCompanionTyping => '考え中…';
+  String get aiCompanionTyping => '考え中...';
 
   @override
   String get aiCompanionRateLimited => '1時間あたりの送信制限に達しました。後でもう一度どうぞ。';
@@ -304,7 +304,7 @@ class AppL10nJa extends AppL10n {
   String get commonError => 'エラーが発生しました';
 
   @override
-  String get commonLoading => '読み込み中…';
+  String get commonLoading => '読み込み中...';
 
   @override
   String get commonNotFound => '見つかりません';
@@ -375,7 +375,7 @@ class AppL10nJa extends AppL10n {
 
   @override
   String get authDevModeBanner =>
-      '開発モード — Firebase が未設定です。任意のメールとパスワードでこの端末にローカルテストアカウントが作成されます。';
+      '開発モード - Firebase が未設定です。任意のメールとパスワードでこの端末にローカルテストアカウントが作成されます。';
 
   @override
   String get authWelcomeTitle => 'おかえりなさい';

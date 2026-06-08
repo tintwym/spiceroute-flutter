@@ -222,7 +222,7 @@ class AppL10nEn extends AppL10n {
       'Substitutes, techniques, dietary swaps - I\'ve got you.';
 
   @override
-  String get aiCompanionInputHint => 'Type your question…';
+  String get aiCompanionInputHint => 'Type your question...';
 
   @override
   String get aiCompanionSend => 'Send';
@@ -234,7 +234,7 @@ class AppL10nEn extends AppL10n {
   String get aiCompanionClear => 'Clear chat';
 
   @override
-  String get aiCompanionTyping => 'Thinking…';
+  String get aiCompanionTyping => 'Thinking...';
 
   @override
   String get aiCompanionRateLimited =>
@@ -315,7 +315,7 @@ class AppL10nEn extends AppL10n {
   String get commonError => 'Something went wrong';
 
   @override
-  String get commonLoading => 'Loading…';
+  String get commonLoading => 'Loading...';
 
   @override
   String get commonNotFound => 'Not found';
@@ -388,7 +388,7 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get authDevModeBanner =>
-      'Dev mode — Firebase isn\'t configured. Any email + password creates a local test account on this device.';
+      'Dev mode - Firebase isn\'t configured. Any email + password creates a local test account on this device.';
 
   @override
   String get authWelcomeTitle => 'Welcome Back';

@@ -212,7 +212,7 @@ class AppL10nKo extends AppL10n {
   String get aiCompanionEmptySubtitle => '재료 대체, 기술, 식이 조절까지 도와드려요.';
 
   @override
-  String get aiCompanionInputHint => '질문을 입력하세요…';
+  String get aiCompanionInputHint => '질문을 입력하세요...';
 
   @override
   String get aiCompanionSend => '보내기';
@@ -224,7 +224,7 @@ class AppL10nKo extends AppL10n {
   String get aiCompanionClear => '대화 비우기';
 
   @override
-  String get aiCompanionTyping => '생각 중…';
+  String get aiCompanionTyping => '생각 중...';
 
   @override
   String get aiCompanionRateLimited => '이번 시간에 메시지가 너무 많아요. 잠시 후 다시 시도해 주세요.';
@@ -304,7 +304,7 @@ class AppL10nKo extends AppL10n {
   String get commonError => '문제가 발생했어요';
 
   @override
-  String get commonLoading => '불러오는 중…';
+  String get commonLoading => '불러오는 중...';
 
   @override
   String get commonNotFound => '찾을 수 없음';
@@ -368,14 +368,14 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get authProtectedBody =>
-      '레시피를 공개로 등록하려면 로그인해 주세요. 작성자로 표시되고 나중에 수정·삭제할 수 있어요.';
+      '레시피를 공개로 등록하려면 로그인해 주세요. 작성자로 표시되고 나중에 수정-삭제할 수 있어요.';
 
   @override
   String get authNotConfigured => '로그인 설정이 아직 안 됐어요. Firebase 설정을 추가해 주세요.';
 
   @override
   String get authDevModeBanner =>
-      '개발 모드 — Firebase가 설정돼 있지 않아요. 아무 이메일·비밀번호로 이 기기에 로컬 테스트 계정이 만들어져요.';
+      '개발 모드 - Firebase가 설정돼 있지 않아요. 아무 이메일-비밀번호로 이 기기에 로컬 테스트 계정이 만들어져요.';
 
   @override
   String get authWelcomeTitle => '다시 오신 걸 환영해요';
