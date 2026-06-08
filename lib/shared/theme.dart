@@ -182,13 +182,17 @@ ThemeData buildTheme(Brightness brightness) {
 }
 
 TextTheme _buildTextTheme(Color onSurface) {
-  // We avoid Google Fonts to keep web first paint fast and offline-friendly.
-  // The system serif handles editorial display sizes acceptably.
-  const display = 'Georgia';
-  const body = 'Helvetica';
+  // No explicit fontFamily — Flutter ships with a default font (Roboto) that
+  // is bundled with the framework and covers all the Latin Extended glyphs we
+  // actually use (em-dash, ellipsis, curly quotes). Naming "Helvetica" /
+  // "Georgia" here without registering them as assets meant CanvasKit
+  // couldn't find them and tried to lazily fetch Noto fallbacks from
+  // `fonts.gstatic.com`, which logged the
+  //   "Could not find a set of Noto fonts to display all missing characters"
+  // warning on every page that used a typographic dash, ellipsis, or curly
+  // apostrophe (i.e. every page).
   return TextTheme(
     displayLarge: TextStyle(
-      fontFamily: display,
       fontSize: 48,
       height: 1.05,
       fontWeight: FontWeight.w500,
@@ -196,64 +200,54 @@ TextTheme _buildTextTheme(Color onSurface) {
       color: onSurface,
     ),
     displayMedium: TextStyle(
-      fontFamily: display,
       fontSize: 36,
       height: 1.1,
       fontWeight: FontWeight.w500,
       color: onSurface,
     ),
     headlineLarge: TextStyle(
-      fontFamily: display,
       fontSize: 28,
       height: 1.15,
-      fontWeight: FontWeight.w500,
+      fontWeight: FontWeight.w600,
       color: onSurface,
     ),
     headlineMedium: TextStyle(
-      fontFamily: display,
       fontSize: 22,
       height: 1.2,
-      fontWeight: FontWeight.w500,
+      fontWeight: FontWeight.w600,
       color: onSurface,
     ),
     titleLarge: TextStyle(
-      fontFamily: display,
       fontSize: 20,
       fontWeight: FontWeight.w600,
       color: onSurface,
     ),
     titleMedium: TextStyle(
-      fontFamily: body,
       fontSize: 16,
       fontWeight: FontWeight.w600,
       color: onSurface,
     ),
     bodyLarge: TextStyle(
-      fontFamily: body,
       fontSize: 16,
       height: 1.5,
       color: onSurface,
     ),
     bodyMedium: TextStyle(
-      fontFamily: body,
       fontSize: 14,
       height: 1.45,
       color: onSurface,
     ),
     bodySmall: TextStyle(
-      fontFamily: body,
       fontSize: 12.5,
       height: 1.4,
       color: onSurface.withValues(alpha: 0.7),
     ),
     labelLarge: TextStyle(
-      fontFamily: body,
       fontSize: 14,
       fontWeight: FontWeight.w600,
       color: onSurface,
     ),
     labelMedium: TextStyle(
-      fontFamily: body,
       fontSize: 12.5,
       fontWeight: FontWeight.w500,
       color: onSurface,
