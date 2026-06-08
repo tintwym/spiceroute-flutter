@@ -6,6 +6,7 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../models/spice_route.dart';
 import '../../shared/breakpoints.dart';
 import '../../shared/cuisine_pill_bar.dart';
+import '../../shared/format.dart';
 import '../../shared/widgets.dart';
 import '../../state/ai_recipe.dart';
 import '../../state/auth.dart';
@@ -249,7 +250,7 @@ class _GeneratedRecipePreview extends ConsumerWidget {
             children: [
               _MetaPair(
                 icon: Icons.schedule,
-                label: l.recipeMinutesShort(prep + cook),
+                label: formatRecipeDuration(l, prep + cook),
               ),
               _MetaPair(
                 icon: Icons.restaurant,

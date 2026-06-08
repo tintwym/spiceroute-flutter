@@ -29,7 +29,13 @@ flutter --version
 flutter config --enable-web
 flutter pub get
 
-BUILD_ARGS=(--release)
+# --no-tree-shake-icons: Flutter's release builds aggressively tree-shake
+# Material Icons, keeping only glyphs the analyzer can statically prove
+# are used. Codebases that route icons through a field (e.g.
+# `ShellDestination.icon` on the top/bottom nav) defeat the analyzer
+# and end up with blank boxes in production. Disabling tree-shaking
+# adds ~50 KB to the final bundle but guarantees every icon renders.
+BUILD_ARGS=(--release --no-tree-shake-icons)
 if [ -n "${API_BASE_URL:-}" ]; then
   echo "Building with API_BASE_URL=$API_BASE_URL"
   BUILD_ARGS+=(--dart-define=API_BASE_URL="$API_BASE_URL")

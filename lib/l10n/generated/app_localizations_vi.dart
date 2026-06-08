@@ -75,6 +75,9 @@ class AppL10nVi extends AppL10n {
   String get cuisineMexican => 'Mexico';
 
   @override
+  String get cuisineFrench => 'Pháp';
+
+  @override
   String get exploreSearchHint => 'Tìm công thức, nguyên liệu, thẻ';
 
   @override
@@ -108,62 +111,63 @@ class AppL10nVi extends AppL10n {
   String get filterAllDietary => 'Tất cả yêu cầu';
 
   @override
-  String get courseBreakfast => 'Bữa sáng';
+  String get courseBreakfast => 'Bữa sáng & Bữa xế';
 
   @override
-  String get courseLunch => 'Bữa trưa';
+  String get courseLunch => 'Bữa trưa / Cơm hộp';
 
   @override
-  String get courseDinner => 'Bữa tối';
-
-  @override
-  String get courseAppetizer => 'Khai vị';
-
-  @override
-  String get courseMainCourse => 'Món chính';
+  String get courseAppetizer => 'Khai vị, Món mở đầu & Đồ ăn tay';
 
   @override
   String get courseSideDish => 'Món phụ';
 
   @override
-  String get courseSoup => 'Súp';
+  String get courseDessert => 'Tráng miệng & Đồ ngọt';
 
   @override
-  String get courseSalad => 'Salad';
+  String get courseSnack => 'Ăn vặt & Bữa khuya';
 
   @override
-  String get courseSnack => 'Ăn vặt';
-
-  @override
-  String get courseDessert => 'Tráng miệng';
-
-  @override
-  String get dietaryVegetarian => 'Ăn chay';
+  String get courseDrinks => 'Đồ uống & Cocktail';
 
   @override
   String get dietaryVegan => 'Thuần chay';
 
   @override
-  String get dietaryGlutenFree => 'Không gluten';
+  String get dietaryVegetarian => 'Ăn chay';
 
   @override
-  String get dietaryDairyFree => 'Không sữa';
+  String get dietaryMealPrep => 'Chuẩn bị sẵn';
 
   @override
-  String get dietaryNutFree => 'Không hạt';
+  String get dietaryQuickEasy => 'Nhanh & Dễ';
 
   @override
-  String get dietaryHighProtein => 'Giàu protein';
+  String get dietaryPastaSoup => 'Pasta & Súp';
 
   @override
-  String get dietaryLowCarb => 'Ít carb';
+  String get dietaryBloodSugarBalanced => 'Cân bằng đường huyết';
 
   @override
-  String get dietaryQuick => 'Nhanh (dưới 30 phút)';
+  String get dietarySwicy => '\"Swicy\" (Ngọt & Cay)';
+
+  @override
+  String get dietaryAntiInflammatory => 'Chống viêm & Trường thọ';
 
   @override
   String recipeMinutesShort(int minutes) {
     return '$minutes phút';
+  }
+
+  @override
+  String recipeHoursShort(int hours) {
+    return '$hours giờ';
+  }
+
+  @override
+  String recipeHoursMinutesShort(int hours, int minutes) {
+    return '$hours giờ $minutes phút';
   }
 
   @override

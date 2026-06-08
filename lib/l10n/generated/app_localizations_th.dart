@@ -75,6 +75,9 @@ class AppL10nTh extends AppL10n {
   String get cuisineMexican => 'เม็กซิกัน';
 
   @override
+  String get cuisineFrench => 'ฝรั่งเศส';
+
+  @override
   String get exploreSearchHint => 'ค้นหาสูตร วัตถุดิบ หรือแท็ก';
 
   @override
@@ -108,62 +111,63 @@ class AppL10nTh extends AppL10n {
   String get filterAllDietary => 'ทุกข้อกำหนด';
 
   @override
-  String get courseBreakfast => 'อาหารเช้า';
+  String get courseBreakfast => 'อาหารเช้าและบรันช์';
 
   @override
-  String get courseLunch => 'อาหารกลางวัน';
+  String get courseLunch => 'อาหารกลางวัน / ข้าวกล่อง';
 
   @override
-  String get courseDinner => 'อาหารเย็น';
-
-  @override
-  String get courseAppetizer => 'ออเดิร์ฟ';
-
-  @override
-  String get courseMainCourse => 'จานหลัก';
+  String get courseAppetizer => 'ออเดิร์ฟ ของทานเล่น และฟิงเกอร์ฟู้ด';
 
   @override
   String get courseSideDish => 'เครื่องเคียง';
 
   @override
-  String get courseSoup => 'ซุป';
+  String get courseDessert => 'ของหวานและขนม';
 
   @override
-  String get courseSalad => 'สลัด';
+  String get courseSnack => 'ของว่างและของกินดึก';
 
   @override
-  String get courseSnack => 'ของว่าง';
-
-  @override
-  String get courseDessert => 'ของหวาน';
-
-  @override
-  String get dietaryVegetarian => 'มังสวิรัติ';
+  String get courseDrinks => 'เครื่องดื่มและค็อกเทล';
 
   @override
   String get dietaryVegan => 'วีแกน';
 
   @override
-  String get dietaryGlutenFree => 'ปราศจากกลูเตน';
+  String get dietaryVegetarian => 'มังสวิรัติ';
 
   @override
-  String get dietaryDairyFree => 'ปราศจากนม';
+  String get dietaryMealPrep => 'เตรียมล่วงหน้า';
 
   @override
-  String get dietaryNutFree => 'ปราศจากถั่ว';
+  String get dietaryQuickEasy => 'ทำเร็วและง่าย';
 
   @override
-  String get dietaryHighProtein => 'โปรตีนสูง';
+  String get dietaryPastaSoup => 'พาสตาและซุป';
 
   @override
-  String get dietaryLowCarb => 'คาร์บต่ำ';
+  String get dietaryBloodSugarBalanced => 'สมดุลน้ำตาลในเลือด';
 
   @override
-  String get dietaryQuick => 'ทำเร็ว (ภายใน 30 นาที)';
+  String get dietarySwicy => '\"Swicy\" (หวานเผ็ด)';
+
+  @override
+  String get dietaryAntiInflammatory => 'ต้านการอักเสบและอายุยืน';
 
   @override
   String recipeMinutesShort(int minutes) {
     return '$minutes นาที';
+  }
+
+  @override
+  String recipeHoursShort(int hours) {
+    return '$hours ชม.';
+  }
+
+  @override
+  String recipeHoursMinutesShort(int hours, int minutes) {
+    return '$hours ชม. $minutes นาที';
   }
 
   @override

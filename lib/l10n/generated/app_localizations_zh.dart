@@ -75,6 +75,9 @@ class AppL10nZh extends AppL10n {
   String get cuisineMexican => '墨西哥菜';
 
   @override
+  String get cuisineFrench => '法国菜';
+
+  @override
   String get exploreSearchHint => '搜索食谱、食材或标签';
 
   @override
@@ -108,62 +111,63 @@ class AppL10nZh extends AppL10n {
   String get filterAllDietary => '所有偏好';
 
   @override
-  String get courseBreakfast => '早餐';
+  String get courseBreakfast => '早餐与早午餐';
 
   @override
-  String get courseLunch => '午餐';
+  String get courseLunch => '午餐 / 便当';
 
   @override
-  String get courseDinner => '晚餐';
-
-  @override
-  String get courseAppetizer => '开胃菜';
-
-  @override
-  String get courseMainCourse => '主菜';
+  String get courseAppetizer => '开胃菜、前菜与小食';
 
   @override
   String get courseSideDish => '配菜';
 
   @override
-  String get courseSoup => '汤品';
+  String get courseDessert => '甜点与糖果';
 
   @override
-  String get courseSalad => '沙拉';
+  String get courseSnack => '零食与夜宵';
 
   @override
-  String get courseSnack => '小吃';
-
-  @override
-  String get courseDessert => '甜点';
-
-  @override
-  String get dietaryVegetarian => '素食';
+  String get courseDrinks => '饮品与鸡尾酒';
 
   @override
   String get dietaryVegan => '纯素';
 
   @override
-  String get dietaryGlutenFree => '无麸质';
+  String get dietaryVegetarian => '素食';
 
   @override
-  String get dietaryDairyFree => '无乳制品';
+  String get dietaryMealPrep => '备餐';
 
   @override
-  String get dietaryNutFree => '无坚果';
+  String get dietaryQuickEasy => '快手简单';
 
   @override
-  String get dietaryHighProtein => '高蛋白';
+  String get dietaryPastaSoup => '面食与汤品';
 
   @override
-  String get dietaryLowCarb => '低碳水';
+  String get dietaryBloodSugarBalanced => '血糖平衡';
 
   @override
-  String get dietaryQuick => '快手 (30 分钟内)';
+  String get dietarySwicy => '「Swicy」 (甜辣)';
+
+  @override
+  String get dietaryAntiInflammatory => '抗炎与长寿';
 
   @override
   String recipeMinutesShort(int minutes) {
     return '$minutes 分钟';
+  }
+
+  @override
+  String recipeHoursShort(int hours) {
+    return '$hours 小时';
+  }
+
+  @override
+  String recipeHoursMinutesShort(int hours, int minutes) {
+    return '$hours 小时 $minutes 分钟';
   }
 
   @override

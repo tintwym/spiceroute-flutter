@@ -36,6 +36,8 @@ class CuisinePillBar extends StatelessWidget {
         return l.cuisineAmericanWestern;
       case Cuisine.mexican:
         return l.cuisineMexican;
+      case Cuisine.french:
+        return l.cuisineFrench;
     }
   }
 

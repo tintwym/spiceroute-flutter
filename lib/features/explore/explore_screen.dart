@@ -7,30 +7,15 @@ import '../../shared/filter_bar.dart';
 import '../../shared/widgets.dart';
 import '../../state/explore.dart';
 
-class ExploreScreen extends ConsumerStatefulWidget {
+/// Explore tab — the recipe grid. The search field that used to live at
+/// the top of this scroll view has been promoted to the nav bar (top
+/// nav on tablet+, phone AppBar on phone), so it's reachable from every
+/// screen. This page is now just filters + results.
+class ExploreScreen extends ConsumerWidget {
   const ExploreScreen({super.key});
 
   @override
-  ConsumerState<ExploreScreen> createState() => _ExploreScreenState();
-}
-
-class _ExploreScreenState extends ConsumerState<ExploreScreen> {
-  late final TextEditingController _searchCtl;
-
-  @override
-  void initState() {
-    super.initState();
-    _searchCtl = TextEditingController(text: ref.read(exploreProvider).q);
-  }
-
-  @override
-  void dispose() {
-    _searchCtl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppL10n.of(context);
     final state = ref.watch(exploreProvider);
     final controller = ref.read(exploreProvider.notifier);
@@ -49,36 +34,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       physics: const ClampingScrollPhysics(),
       slivers: [
         SliverPadding(
-          padding: pagePad.copyWith(top: 16, bottom: 12),
-          sliver: SliverToBoxAdapter(
-            child: Center(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: maxW),
-                child: TextField(
-                  controller: _searchCtl,
-                  onChanged: controller.setQuery,
-                  textInputAction: TextInputAction.search,
-                  onSubmitted: (_) => controller.refresh(),
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.search),
-                    hintText: l.exploreSearchHint,
-                    suffixIcon: state.q.isEmpty
-                        ? null
-                        : IconButton(
-                            icon: const Icon(Icons.close),
-                            onPressed: () {
-                              _searchCtl.clear();
-                              controller.setQuery('');
-                            },
-                          ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-        SliverPadding(
-          padding: pagePad,
+          padding: pagePad.copyWith(top: 20),
           sliver: SliverToBoxAdapter(
             child: Center(
               child: ConstrainedBox(
@@ -111,7 +67,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
 
   /// Shared sliver builder so the three result states (loading / error /
   /// data) all live in the same scroll view — no nested viewports.
-  List<Widget> _buildResultsSlivers({
+  static List<Widget> _buildResultsSlivers({
     required BuildContext context,
     required ExploreState state,
     required AppL10n l,

@@ -69,10 +69,13 @@ class AppL10nEn extends AppL10n {
   String get cuisineItalian => 'Italian';
 
   @override
-  String get cuisineAmericanWestern => 'American/Western';
+  String get cuisineAmericanWestern => 'American / Western';
 
   @override
   String get cuisineMexican => 'Mexican';
+
+  @override
+  String get cuisineFrench => 'French';
 
   @override
   String get exploreSearchHint => 'Search recipes, ingredients, tags';
@@ -109,62 +112,63 @@ class AppL10nEn extends AppL10n {
   String get filterAllDietary => 'All Requests';
 
   @override
-  String get courseBreakfast => 'Breakfast';
+  String get courseBreakfast => 'Breakfast & Brunch';
 
   @override
-  String get courseLunch => 'Lunch';
+  String get courseLunch => 'Lunch / Box Lunch';
 
   @override
-  String get courseDinner => 'Dinner';
+  String get courseAppetizer => 'Appetizers, Starters & Finger Foods';
 
   @override
-  String get courseAppetizer => 'Appetizer';
+  String get courseSideDish => 'Side Dishes';
 
   @override
-  String get courseMainCourse => 'Main course';
+  String get courseDessert => 'Desserts & Sweets';
 
   @override
-  String get courseSideDish => 'Side dish';
+  String get courseSnack => 'Snacks & Late-Night Bites';
 
   @override
-  String get courseSoup => 'Soup';
-
-  @override
-  String get courseSalad => 'Salad';
-
-  @override
-  String get courseSnack => 'Snack';
-
-  @override
-  String get courseDessert => 'Dessert';
-
-  @override
-  String get dietaryVegetarian => 'Vegetarian';
+  String get courseDrinks => 'Drinks & Cocktails';
 
   @override
   String get dietaryVegan => 'Vegan';
 
   @override
-  String get dietaryGlutenFree => 'Gluten-free';
+  String get dietaryVegetarian => 'Vegetarian';
 
   @override
-  String get dietaryDairyFree => 'Dairy-free';
+  String get dietaryMealPrep => 'Meal Prep';
 
   @override
-  String get dietaryNutFree => 'Nut-free';
+  String get dietaryQuickEasy => 'Quick & Easy';
 
   @override
-  String get dietaryHighProtein => 'High-protein';
+  String get dietaryPastaSoup => 'Pasta & Soup';
 
   @override
-  String get dietaryLowCarb => 'Low-carb';
+  String get dietaryBloodSugarBalanced => 'Blood Sugar Balanced';
 
   @override
-  String get dietaryQuick => 'Quick (under 30 min)';
+  String get dietarySwicy => '\"Swicy\" (Sweet & Spicy)';
+
+  @override
+  String get dietaryAntiInflammatory => 'Anti-Inflammatory & Longevity';
 
   @override
   String recipeMinutesShort(int minutes) {
     return '$minutes min';
+  }
+
+  @override
+  String recipeHoursShort(int hours) {
+    return '$hours h';
+  }
+
+  @override
+  String recipeHoursMinutesShort(int hours, int minutes) {
+    return '$hours h $minutes min';
   }
 
   @override

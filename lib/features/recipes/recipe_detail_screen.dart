@@ -8,6 +8,8 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../models/spice_route.dart';
 import '../../shared/breakpoints.dart';
 import '../../shared/cuisine_pill_bar.dart';
+import '../../shared/format.dart';
+import '../../shared/top_nav_bar.dart';
 import '../../shared/widgets.dart';
 import '../../state/providers.dart';
 import '../../state/saved.dart';
@@ -38,7 +40,14 @@ class RecipeDetailScreen extends ConsumerWidget {
             if (!popped) router.go('/');
           },
         ),
-        title: Text(l.appTitle),
+        title: Tooltip(
+          message: l.appTitle,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => context.go('/'),
+            child: const BrandLogo(size: 30),
+          ),
+        ),
         actions: async.maybeWhen(
           data: (recipe) {
             final isOwner =
@@ -132,20 +141,7 @@ class _DetailBody extends ConsumerWidget {
     return ListView(
       padding: EdgeInsets.zero,
       children: [
-        if (recipe.imageUrl != null)
-          AspectRatio(
-            aspectRatio: 16 / 9,
-            child: CachedNetworkImage(
-              imageUrl: recipe.imageUrl!,
-              fit: BoxFit.cover,
-              placeholder: (_, _) => Container(
-                  color: theme.colorScheme.surfaceContainerHighest),
-              errorWidget: (_, _, _) => Container(
-                color: theme.colorScheme.surfaceContainerHighest,
-                child: const Icon(Icons.restaurant_menu, size: 48),
-              ),
-            ),
-          ),
+        if (recipe.imageUrl != null) _HeroImage(url: recipe.imageUrl!),
         Padding(
           padding: pagePadding(context).copyWith(top: 24, bottom: 32),
           child: Center(
@@ -206,7 +202,7 @@ class _DetailBody extends ConsumerWidget {
                         children: [
                           _MetaItem(
                             icon: Icons.schedule,
-                            label: l.recipeMinutesShort(recipe.totalMinutes),
+                            label: formatRecipeDuration(l, recipe.totalMinutes),
                           ),
                           _MetaItem(
                             icon: Icons.restaurant,
@@ -282,6 +278,58 @@ class _DetailBody extends ConsumerWidget {
       default:
         return l.recipeSpiceLevel0;
     }
+  }
+}
+
+/// Capped-height hero image for the detail screen.
+///
+/// The old 16:9 [AspectRatio] derived its height from the viewport
+/// width, so on a 1440 px desktop the image was 810 px tall — eating
+/// the entire fold before the user saw the title, description, or
+/// "Save" button. Capping height by device class keeps the photo
+/// editorial (still full-bleed and prominent) without burying the
+/// content below it.
+class _HeroImage extends StatelessWidget {
+  const _HeroImage({required this.url});
+  final String url;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final dc = deviceClassOf(context);
+    // Capped pixel heights per device class. These were picked by
+    // matching the "image takes ~30% of the fold" heuristic that
+    // recipe sites like NYT Cooking, Serious Eats, and Smitten Kitchen
+    // use — enough to set the mood, not enough to bury the recipe.
+    final double cap;
+    switch (dc) {
+      case DeviceClass.phone:
+        cap = 220;
+        break;
+      case DeviceClass.tablet:
+        cap = 280;
+        break;
+      case DeviceClass.desktop:
+        cap = 320;
+        break;
+      case DeviceClass.wide:
+        cap = 360;
+        break;
+    }
+    return SizedBox(
+      width: double.infinity,
+      height: cap,
+      child: CachedNetworkImage(
+        imageUrl: url,
+        fit: BoxFit.cover,
+        placeholder: (_, _) =>
+            Container(color: theme.colorScheme.surfaceContainerHighest),
+        errorWidget: (_, _, _) => Container(
+          color: theme.colorScheme.surfaceContainerHighest,
+          child: const Icon(Icons.restaurant_menu, size: 48),
+        ),
+      ),
+    );
   }
 }
 

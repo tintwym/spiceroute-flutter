@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../models/spice_route.dart';
 import '../state/saved.dart';
+import 'format.dart';
 
 class CenterMessage extends StatelessWidget {
   const CenterMessage({
@@ -226,7 +227,7 @@ class RecipeCard extends ConsumerWidget {
                         Icon(Icons.schedule, size: 14, color: metaColor),
                         const SizedBox(width: 4),
                         Text(
-                          l.recipeMinutesShort(recipe.totalMinutes),
+                          formatRecipeDuration(l, recipe.totalMinutes),
                           style: theme.textTheme.bodySmall,
                         ),
                         const SizedBox(width: 14),

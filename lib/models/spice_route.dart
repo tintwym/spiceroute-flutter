@@ -1,18 +1,24 @@
 import 'package:flutter/foundation.dart';
 
-/// One of the 10 cuisines surfaced by Explore. Keep these strings in sync
+/// One of the 11 cuisines surfaced by Explore. Keep these strings in sync
 /// with the backend `cuisine_type` enum.
+///
+/// Order matches the v2 design reference: Vietnamese sits at the end of
+/// the list so the first 10 spots stay aligned with the original launch
+/// catalog (the page-1 muscle memory for users who were here before the
+/// Vietnamese + French additions).
 enum Cuisine {
   korean('korean'),
   japanese('japanese'),
   chinese('chinese'),
   burmese('burmese'),
   thai('thai'),
-  vietnamese('vietnamese'),
   indian('indian'),
   italian('italian'),
   americanWestern('american_western'),
-  mexican('mexican');
+  mexican('mexican'),
+  french('french'),
+  vietnamese('vietnamese');
 
   const Cuisine(this.wire);
   final String wire;
@@ -41,17 +47,19 @@ class Tag {
 /// (e.g. a recipe tagged "dessert" matches `Course.dessert`). The backend
 /// stores no first-class `course` column today; surfacing it via tags lets
 /// us ship the filter UI without a migration.
+///
+/// v2 taxonomy (mirrors the reference design): the labels users see are
+/// more descriptive ("Breakfast & Brunch", "Snacks & Late-Night Bites",
+/// "Drinks & Cocktails") but the underlying `tagName` stays the simple
+/// lowercase noun so existing seed data keeps matching.
 enum Course {
   breakfast('breakfast'),
   lunch('lunch'),
-  dinner('dinner'),
   appetizer('appetizer'),
-  mainCourse('main course'),
   sideDish('side dish'),
-  soup('soup'),
-  salad('salad'),
+  dessert('dessert'),
   snack('snack'),
-  dessert('dessert');
+  drinks('drinks');
 
   const Course(this.tagName);
 
@@ -60,17 +68,25 @@ enum Course {
   final String tagName;
 }
 
-/// Dietary / lifestyle constraint a recipe satisfies. Same client-side
-/// filter model as [Course] — matched against `tags` by name.
+/// Dietary / lifestyle / format constraint a recipe satisfies. Same
+/// client-side filter model as [Course] — matched against `tags` by name.
+///
+/// v2 taxonomy (mirrors the reference design): mixes traditional dietary
+/// restrictions (vegan, vegetarian) with practical ("Meal Prep",
+/// "Quick & Easy"), format ("Pasta & Soup"), wellness ("Blood Sugar
+/// Balanced", "Anti-Inflammatory & Longevity") and flavor profile
+/// ("Swicy"). Each value's `tagName` corresponds to a tag the backend
+/// seed script attaches to qualifying recipes (see
+/// `_EXTRA_TAGS_BY_TITLE` in `scripts/seed_curated_recipes.py`).
 enum Dietary {
-  vegetarian('vegetarian'),
   vegan('vegan'),
-  glutenFree('gluten-free'),
-  dairyFree('dairy-free'),
-  nutFree('nut-free'),
-  highProtein('high-protein'),
-  lowCarb('low-carb'),
-  quick('quick');
+  vegetarian('vegetarian'),
+  mealPrep('meal prep'),
+  quickEasy('quick'),
+  pastaSoup('pasta soup'),
+  bloodSugarBalanced('blood sugar balanced'),
+  swicy('swicy'),
+  antiInflammatory('anti-inflammatory');
 
   const Dietary(this.tagName);
   final String tagName;

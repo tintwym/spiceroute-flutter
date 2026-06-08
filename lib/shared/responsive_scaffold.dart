@@ -4,9 +4,10 @@ import 'package:go_router/go_router.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../state/auth.dart';
-import 'account_chip.dart';
+import 'account_menu.dart';
 import 'breakpoints.dart';
-import 'language_picker.dart';
+import 'nav_search_field.dart';
+import 'top_nav_bar.dart';
 
 /// One destination of the bottom navigation / side rail.
 class ShellDestination {
@@ -23,12 +24,21 @@ class ShellDestination {
   final String path;
 }
 
-/// The 4-tab shell: Explore / AI Creator / AI Companion / Saved.
+/// The 4-tab shell: Explore / AI Creator / AI Companion / Saved
+/// (+ "Mine" when signed in).
 ///
-/// On a phone (<600 px) it renders a Material 3 NavigationBar at the bottom.
-/// On tablets+ (≥600 px) it renders a NavigationRail on the leading edge.
-/// On desktops/wide screens we additionally pin a top app bar with the
-/// language picker.
+/// On a phone (<600 px) we keep the Material 3 [NavigationBar] at the
+/// bottom — best for thumb reach and the established mobile pattern.
+///
+/// On tablet+ (≥600 px) we use a sticky [TopNavBar]. Reasons specific
+/// to a content-heavy recipe app:
+///   - Horizontal real-estate is more valuable than vertical (grids of
+///     image cards prefer width).
+///   - 5 items fit comfortably in a single row down to ~600 px.
+///   - Unifies primary nav + settings + account into one bar instead of
+///     splitting them across a left rail and a top app bar.
+///   - Matches what most modern content apps (NYT Cooking, Linear,
+///     Vercel, Stripe) do at this width.
 class AppShell extends ConsumerWidget {
   const AppShell({super.key, required this.child, required this.location});
 
@@ -90,16 +100,13 @@ class AppShell extends ConsumerWidget {
     final index = _indexFor(dests);
     final dc = deviceClassOf(context);
 
-    final actions = [
-      const AccountChip(),
-      const SizedBox(width: 4),
-      IconButton(
-        tooltip: l.settingsTitle,
-        icon: const Icon(Icons.settings_outlined),
-        onPressed: () => context.go('/settings'),
-      ),
-      const LanguagePickerButton(),
-      const SizedBox(width: 8),
+    // Single dropdown trigger replaces what used to be three separate
+    // actions (AccountChip + Settings IconButton + LanguagePickerButton).
+    // Everything personal now lives behind the avatar — see
+    // [AccountMenuButton].
+    final actions = const [
+      AccountMenuButton(),
+      SizedBox(width: 8),
     ];
 
     if (dc.isPhone) {
@@ -118,39 +125,29 @@ class AppShell extends ConsumerWidget {
           ],
         ),
         appBar: AppBar(
-          title: Text(l.appTitle, style: Theme.of(context).textTheme.titleLarge),
+          // On phone the brand title would crowd out search + actions in
+          // a 360-414 px viewport, so the search pill IS the title.
+          // Users already know they're in SpiceRoute (they're using the
+          // app); the bottom nav tells them which tab they're on.
+          titleSpacing: 8,
+          title: const NavSearchField(dense: true),
           actions: actions,
         ),
       );
     }
 
+    // Tablet+: sticky top nav, no side rail. Everything lives in one bar
+    // (brand + nav items + actions) so the content area gets the full
+    // viewport width.
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l.appTitle, style: Theme.of(context).textTheme.titleLarge),
+      appBar: TopNavBar(
+        title: l.appTitle,
+        destinations: dests,
+        selectedIndex: index.clamp(0, dests.length - 1),
+        onDestinationSelected: (i) => context.go(dests[i].path),
         actions: actions,
       ),
-      body: SafeArea(
-        child: Row(
-          children: [
-            NavigationRail(
-              selectedIndex: index.clamp(0, dests.length - 1),
-              onDestinationSelected: (i) => context.go(dests[i].path),
-              extended: dc.isAtLeastDesktop,
-              minExtendedWidth: 200,
-              destinations: [
-                for (final d in dests)
-                  NavigationRailDestination(
-                    icon: Icon(d.icon),
-                    selectedIcon: Icon(d.selectedIcon),
-                    label: Text(d.label),
-                  ),
-              ],
-            ),
-            const VerticalDivider(width: 1),
-            Expanded(child: child),
-          ],
-        ),
-      ),
+      body: SafeArea(child: child),
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 import '../l10n/generated/app_localizations.dart';
@@ -7,9 +9,15 @@ import '../shared/cuisine_pill_bar.dart';
 /// Three-column filter bar shown above the Explore grid:
 ///   [ SELECT CUISINE ]   [ SELECT COURSE ]   [ DIETARY, LIFESTYLE & FORMAT ]
 ///
-/// Each column has a small uppercase label with a leading icon and a pill
-/// dropdown that surfaces the available options. On screens narrower than
-/// ~720px the columns stack vertically so each dropdown gets full width.
+/// Each option uses an emoji glyph as its icon (flag emojis for cuisines,
+/// food/lifestyle emojis for courses + dietary) to match the design
+/// reference exactly. Emojis ship for free with the OS — no asset
+/// bundling or icon-font wrangling required.
+///
+/// The dropdown menus are rendered as glassmorphic overlays (translucent
+/// frosted-glass surface, vibrant blue selected state, soft drop shadow).
+/// On screens narrower than ~720px the columns stack vertically so each
+/// dropdown gets full width.
 class FilterBar extends StatelessWidget {
   const FilterBar({
     super.key,
@@ -34,16 +42,22 @@ class FilterBar extends StatelessWidget {
 
     final cuisineCol = _FilterColumn<Cuisine?>(
       label: l.filterCuisineLabel,
-      labelIcon: Icons.layers_outlined,
+      labelIcon: Icons.public_outlined,
       value: cuisine,
-      hintIcon: Icons.layers_outlined,
+      hintEmoji: _allCuisinesEmoji,
       hintText: l.filterAllCuisines,
       items: [
-        _FilterItem(value: null, label: l.filterAllCuisines,
-            icon: Icons.layers_outlined),
+        _FilterItem(
+          value: null,
+          label: l.filterAllCuisines,
+          emoji: _allCuisinesEmoji,
+        ),
         for (final c in Cuisine.values)
-          _FilterItem(value: c, label: CuisinePillBar.labelFor(l, c),
-              icon: _cuisineIcon(c)),
+          _FilterItem(
+            value: c,
+            label: CuisinePillBar.labelFor(l, c),
+            emoji: _cuisineEmoji(c),
+          ),
       ],
       onChanged: onCuisineChanged,
     );
@@ -52,14 +66,20 @@ class FilterBar extends StatelessWidget {
       label: l.filterCourseLabel,
       labelIcon: Icons.schedule,
       value: course,
-      hintIcon: Icons.schedule,
+      hintEmoji: _allCoursesEmoji,
       hintText: l.filterAllCourses,
       items: [
-        _FilterItem(value: null, label: l.filterAllCourses,
-            icon: Icons.schedule),
+        _FilterItem(
+          value: null,
+          label: l.filterAllCourses,
+          emoji: _allCoursesEmoji,
+        ),
         for (final c in Course.values)
-          _FilterItem(value: c, label: _courseLabel(l, c),
-              icon: _courseIcon(c)),
+          _FilterItem(
+            value: c,
+            label: _courseLabel(l, c),
+            emoji: _courseEmoji(c),
+          ),
       ],
       onChanged: onCourseChanged,
     );
@@ -68,14 +88,20 @@ class FilterBar extends StatelessWidget {
       label: l.filterDietaryLabel,
       labelIcon: Icons.eco_outlined,
       value: dietary,
-      hintIcon: Icons.eco_outlined,
+      hintEmoji: _allDietaryEmoji,
       hintText: l.filterAllDietary,
       items: [
-        _FilterItem(value: null, label: l.filterAllDietary,
-            icon: Icons.eco_outlined),
+        _FilterItem(
+          value: null,
+          label: l.filterAllDietary,
+          emoji: _allDietaryEmoji,
+        ),
         for (final d in Dietary.values)
-          _FilterItem(value: d, label: _dietaryLabel(l, d),
-              icon: _dietaryIcon(d)),
+          _FilterItem(
+            value: d,
+            label: _dietaryLabel(l, d),
+            emoji: _dietaryEmoji(d),
+          ),
       ],
       onChanged: onDietaryChanged,
     );
@@ -120,7 +146,7 @@ class _FilterColumn<T> extends StatelessWidget {
     required this.label,
     required this.labelIcon,
     required this.value,
-    required this.hintIcon,
+    required this.hintEmoji,
     required this.hintText,
     required this.items,
     required this.onChanged,
@@ -129,7 +155,7 @@ class _FilterColumn<T> extends StatelessWidget {
   final String label;
   final IconData labelIcon;
   final T value;
-  final IconData hintIcon;
+  final String hintEmoji;
   final String hintText;
   final List<_FilterItem<T>> items;
   final ValueChanged<T> onChanged;
@@ -144,28 +170,42 @@ class _FilterColumn<T> extends StatelessWidget {
       children: [
         // Section header — small uppercase line with leading icon, like the
         // screenshot: "SELECT CUISINE", "SELECT COURSE", etc.
+        //
+        // The third column's label ("DIETARY, LIFESTYLE & FORMAT
+        // RESTRICTIONS") is long enough to overflow a ~300px column at
+        // 3-up width on a medium viewport. Wrapping the text in Flexible
+        // + allowing soft-wrap lets it spill onto a second line instead
+        // of throwing RenderFlex overflow exceptions.
         Padding(
           padding: const EdgeInsets.only(left: 14, bottom: 6),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(labelIcon, size: 14, color: cs.onSurfaceVariant),
+              Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: Icon(labelIcon, size: 14, color: cs.onSurfaceVariant),
+              ),
               const SizedBox(width: 6),
-              Text(
-                label,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: cs.onSurfaceVariant,
-                  letterSpacing: 1.2,
-                  fontWeight: FontWeight.w600,
+              Flexible(
+                child: Text(
+                  label,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: cs.onSurfaceVariant,
+                    letterSpacing: 1.2,
+                    fontWeight: FontWeight.w600,
+                    height: 1.25,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
           ),
         ),
         // The dropdown pill itself.
-        _DropdownPill<T>(
+        _GlassDropdown<T>(
           value: value,
-          hintIcon: hintIcon,
+          hintEmoji: hintEmoji,
           hintText: hintText,
           items: items,
           onChanged: onChanged,
@@ -176,139 +216,457 @@ class _FilterColumn<T> extends StatelessWidget {
 }
 
 /// One option in a filter dropdown. `value == null` represents "All …".
+///
+/// `emoji` is rendered as text (e.g. "🇰🇷", "🥞", "🌶️"). Using emojis
+/// instead of [IconData] lets us match the design reference exactly
+/// without bundling a custom icon font.
 class _FilterItem<T> {
   const _FilterItem({
     required this.value,
     required this.label,
-    required this.icon,
+    required this.emoji,
   });
   final T value;
   final String label;
-  final IconData icon;
+  final String emoji;
 }
 
-/// Pill-shaped dropdown trigger that, when tapped, opens a menu of options.
-/// Implemented as a [PopupMenuButton] so we can fully control the
-/// appearance (the default `DropdownButton` doesn't let us style the
-/// closed-state pill the way the design wants).
-class _DropdownPill<T> extends StatelessWidget {
-  const _DropdownPill({
+// -- Custom glass dropdown ----------------------------------------------------
+
+/// Pill-shaped trigger that, when tapped, opens a glassmorphic overlay
+/// menu of options.
+///
+/// We hand-roll this instead of using [PopupMenuButton] because the
+/// standard menu wraps its items in an opaque `Material` we can't slip
+/// a [BackdropFilter] behind — and the frosted-glass surface is the
+/// whole point of the design.
+class _GlassDropdown<T> extends StatefulWidget {
+  const _GlassDropdown({
     super.key,
     required this.value,
-    required this.hintIcon,
+    required this.hintEmoji,
     required this.hintText,
     required this.items,
     required this.onChanged,
   });
 
   final T value;
-  final IconData hintIcon;
+  final String hintEmoji;
   final String hintText;
   final List<_FilterItem<T>> items;
   final ValueChanged<T> onChanged;
+
+  @override
+  State<_GlassDropdown<T>> createState() => _GlassDropdownState<T>();
+}
+
+class _GlassDropdownState<T> extends State<_GlassDropdown<T>> {
+  final GlobalKey _triggerKey = GlobalKey();
+
+  Future<void> _open(BuildContext context) async {
+    // Resolve the trigger pill's screen position so the overlay menu can
+    // anchor flush beneath it, matching the trigger's width exactly.
+    final triggerBox =
+        _triggerKey.currentContext!.findRenderObject() as RenderBox;
+    final overlay = Navigator.of(context)
+        .overlay!
+        .context
+        .findRenderObject() as RenderBox;
+    final origin = triggerBox.localToGlobal(Offset.zero, ancestor: overlay);
+    final triggerSize = triggerBox.size;
+
+    final result = await Navigator.of(context).push<_MenuResult<T>>(
+      _GlassMenuRoute<T>(
+        origin: origin,
+        triggerSize: triggerSize,
+        viewportSize: overlay.size,
+        items: widget.items,
+        selectedValue: widget.value,
+      ),
+    );
+    if (result != null) {
+      widget.onChanged(result.value);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
 
-    // Find the currently-selected item so we render its icon + label in
-    // the closed pill state. Falls back to the hint values if the
-    // current value isn't in the option list (shouldn't happen in
-    // practice but keeps things robust).
     _FilterItem<T>? selected;
-    for (final item in items) {
-      if (item.value == value) {
+    for (final item in widget.items) {
+      if (item.value == widget.value) {
         selected = item;
         break;
       }
     }
-    final displayIcon = selected?.icon ?? hintIcon;
-    final displayText = selected?.label ?? hintText;
+    final displayEmoji = selected?.emoji ?? widget.hintEmoji;
+    final displayText = selected?.label ?? widget.hintText;
 
-    return PopupMenuButton<T>(
-      tooltip: '',
-      onSelected: onChanged,
-      offset: const Offset(0, 56),
-      position: PopupMenuPosition.under,
-      constraints: const BoxConstraints(minWidth: 220, maxHeight: 360),
-      itemBuilder: (_) => [
-        for (final item in items)
-          PopupMenuItem<T>(
-            value: item.value,
-            height: 40,
-            child: Row(
-              children: [
-                Icon(item.icon, size: 18, color: cs.onSurfaceVariant),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    item.label,
-                    style: theme.textTheme.bodyMedium,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                if (item.value == value)
-                  Icon(Icons.check, size: 16, color: cs.primary),
-              ],
-            ),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        key: _triggerKey,
+        borderRadius: BorderRadius.circular(28),
+        onTap: () => _open(context),
+        child: Container(
+          height: 48,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: cs.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(color: cs.outlineVariant, width: 1),
           ),
-      ],
-      child: Container(
-        height: 48,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(
-          color: cs.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: cs.outlineVariant, width: 1),
-        ),
-        child: Row(
-          children: [
-            Icon(displayIcon, size: 18, color: cs.onSurfaceVariant),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                displayText,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: cs.onSurface,
-                  fontWeight: FontWeight.w500,
+          child: Row(
+            children: [
+              SizedBox(
+                width: 22,
+                child: Text(
+                  displayEmoji,
+                  style: const TextStyle(fontSize: 16, height: 1.0),
+                  textAlign: TextAlign.center,
                 ),
-                overflow: TextOverflow.ellipsis,
               ),
-            ),
-            Icon(Icons.keyboard_arrow_down,
-                size: 22, color: cs.onSurfaceVariant),
-          ],
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  displayText,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: cs.onSurface,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Icon(Icons.keyboard_arrow_down,
+                  size: 22, color: cs.onSurfaceVariant),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-// --- icon + label helpers ----------------------------------------------------
+/// Pop value type for [_GlassMenuRoute]. Wrapping in a holder lets `null`
+/// (the "All" option) distinguish from "user dismissed without choosing".
+class _MenuResult<T> {
+  const _MenuResult(this.value);
+  final T value;
+}
 
-IconData _cuisineIcon(Cuisine c) {
+/// Modal route that renders the glass menu floating beneath the trigger
+/// pill. Uses a fully transparent barrier so the user can tap anywhere
+/// outside the menu to dismiss it without seeing a scrim flash.
+class _GlassMenuRoute<T> extends PopupRoute<_MenuResult<T>> {
+  _GlassMenuRoute({
+    required this.origin,
+    required this.triggerSize,
+    required this.viewportSize,
+    required this.items,
+    required this.selectedValue,
+  });
+
+  final Offset origin;
+  final Size triggerSize;
+  final Size viewportSize;
+  final List<_FilterItem<T>> items;
+
+  /// Currently-selected value. Callers always pass an already-nullable
+  /// `T` (e.g. `Cuisine?`), so the extra `?` would only confuse the
+  /// type system.
+  final T selectedValue;
+
+  @override
+  Color? get barrierColor => null;
+
+  @override
+  bool get barrierDismissible => true;
+
+  @override
+  String? get barrierLabel => 'Dismiss menu';
+
+  @override
+  Duration get transitionDuration => const Duration(milliseconds: 180);
+
+  @override
+  Widget buildPage(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+  ) {
+    // Cap the menu height so an 11-item cuisine list (or wider screen
+    // viewports) still leaves breathing room top + bottom.
+    final maxMenuHeight = viewportSize.height - origin.dy - triggerSize.height - 24;
+    return Stack(
+      children: [
+        Positioned(
+          left: origin.dx,
+          top: origin.dy + triggerSize.height + 8,
+          width: triggerSize.width,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: maxMenuHeight.clamp(160.0, 540.0),
+            ),
+            child: _GlassMenu<T>(
+              items: items,
+              selectedValue: selectedValue,
+              onSelected: (v) =>
+                  Navigator.of(context).pop(_MenuResult<T>(v)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget buildTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    // Soft fade + tiny upward slide so the menu feels like it's settling
+    // into place rather than appearing out of nothing.
+    final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+    return FadeTransition(
+      opacity: curved,
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0, -0.04),
+          end: Offset.zero,
+        ).animate(curved),
+        child: child,
+      ),
+    );
+  }
+}
+
+/// Frosted-glass menu surface with rounded corners, soft shadow, and a
+/// vertically-scrollable list of items.
+class _GlassMenu<T> extends StatelessWidget {
+  const _GlassMenu({
+    required this.items,
+    required this.selectedValue,
+    required this.onSelected,
+  });
+
+  final List<_FilterItem<T>> items;
+  final T selectedValue;
+  final ValueChanged<T> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Surface tint behind the blur. The blur picks up whatever is behind
+    // the menu (recipe images, the search bar, etc.) and a thin
+    // translucent fill on top tames the contrast so the text stays
+    // readable without losing the frosted-glass quality.
+    final glassFill = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.white.withValues(alpha: 0.62);
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.12)
+        : Colors.white.withValues(alpha: 0.6);
+
+    return Material(
+      type: MaterialType.transparency,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(22),
+          // Soft, generous shadow — sits a card-height above the page.
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.55 : 0.18),
+              blurRadius: 28,
+              spreadRadius: 0,
+              offset: const Offset(0, 14),
+            ),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.08),
+              blurRadius: 6,
+              spreadRadius: 0,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(22),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+            child: Container(
+              decoration: BoxDecoration(
+                color: glassFill,
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: borderColor, width: 1),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    for (final item in items)
+                      _GlassMenuItem<T>(
+                        item: item,
+                        selected: item.value == selectedValue,
+                        onTap: () => onSelected(item.value),
+                        textColor: cs.onSurface,
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// One row inside the glass menu.
+///
+/// Inactive rows: transparent background, emoji on the left, label in the
+/// app's normal text color.
+///
+/// Active row: vibrant blue pill background, white text, leading
+/// checkmark — emoji slides right behind the check.
+class _GlassMenuItem<T> extends StatelessWidget {
+  const _GlassMenuItem({
+    required this.item,
+    required this.selected,
+    required this.onTap,
+    required this.textColor,
+  });
+
+  final _FilterItem<T> item;
+  final bool selected;
+  final VoidCallback onTap;
+  final Color textColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    // Material 3 primary is the natural "vibrant blue" choice in our
+    // theme. Solid (not translucent) so the white text stays legible
+    // against any background showing through the glass.
+    const Color activeBg = Color(0xFF3D8BFD);
+    const Color activeFg = Colors.white;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(14),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 140),
+            curve: Curves.easeOut,
+            decoration: BoxDecoration(
+              color: selected ? activeBg : Colors.transparent,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            child: Row(
+              children: [
+                // Leading checkmark slot — always present so labels line
+                // up vertically whether selected or not. Visible only on
+                // the active row.
+                SizedBox(
+                  width: 20,
+                  child: selected
+                      ? const Icon(
+                          Icons.check,
+                          size: 18,
+                          color: activeFg,
+                        )
+                      : null,
+                ),
+                const SizedBox(width: 10),
+                // Emoji glyph.
+                SizedBox(
+                  width: 24,
+                  child: Text(
+                    item.emoji,
+                    style: const TextStyle(fontSize: 18, height: 1.0),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    item.label,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: selected ? activeFg : textColor,
+                      fontWeight:
+                          selected ? FontWeight.w700 : FontWeight.w500,
+                      height: 1.2,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// --- emoji + label helpers ----------------------------------------------------
+
+/// "All Cuisines" sentinel: a fried-egg glyph reads as the warm yellow
+/// disc shown in the reference design and pairs visually with the
+/// flag emojis below it (single-codepoint, brightly colored).
+const String _allCuisinesEmoji = '🍳';
+
+/// "All Courses" sentinel: clock matches the time-of-day framing that
+/// courses imply ("when do you eat this?"), and visually echoes the
+/// yellow circle in the reference design.
+const String _allCoursesEmoji = '🕐';
+
+/// "All Requests" sentinel for the dietary column: the dart-and-target
+/// icon from the reference design.
+const String _allDietaryEmoji = '🎯';
+
+/// Flag-emoji per cuisine. Flag emojis are regional-indicator pairs and
+/// render natively on macOS, iOS, Android, ChromeOS, Linux (Twemoji),
+/// and Chrome on most desktop OSes. Windows falls back to plain letter
+/// pairs (e.g. "KR" instead of 🇰🇷) — by design, Microsoft chose not
+/// to ship flag glyphs in Segoe UI Emoji.
+String _cuisineEmoji(Cuisine c) {
   switch (c) {
     case Cuisine.korean:
-      return Icons.ramen_dining;
+      return '🇰🇷';
     case Cuisine.japanese:
-      return Icons.rice_bowl;
+      return '🇯🇵';
     case Cuisine.chinese:
-      return Icons.dinner_dining;
+      return '🇨🇳';
     case Cuisine.burmese:
-      return Icons.soup_kitchen;
+      return '🇲🇲';
     case Cuisine.thai:
-      return Icons.local_fire_department;
+      return '🇹🇭';
     case Cuisine.vietnamese:
-      return Icons.rice_bowl;
+      return '🇻🇳';
     case Cuisine.indian:
-      return Icons.spa;
+      return '🇮🇳';
     case Cuisine.italian:
-      return Icons.local_pizza;
+      return '🇮🇹';
     case Cuisine.americanWestern:
-      return Icons.lunch_dining;
+      return '🇺🇸';
     case Cuisine.mexican:
-      return Icons.takeout_dining;
+      return '🇲🇽';
+    case Cuisine.french:
+      return '🇫🇷';
   }
 }
 
@@ -318,88 +676,76 @@ String _courseLabel(AppL10n l, Course c) {
       return l.courseBreakfast;
     case Course.lunch:
       return l.courseLunch;
-    case Course.dinner:
-      return l.courseDinner;
     case Course.appetizer:
       return l.courseAppetizer;
-    case Course.mainCourse:
-      return l.courseMainCourse;
     case Course.sideDish:
       return l.courseSideDish;
-    case Course.soup:
-      return l.courseSoup;
-    case Course.salad:
-      return l.courseSalad;
-    case Course.snack:
-      return l.courseSnack;
     case Course.dessert:
       return l.courseDessert;
+    case Course.snack:
+      return l.courseSnack;
+    case Course.drinks:
+      return l.courseDrinks;
   }
 }
 
-IconData _courseIcon(Course c) {
+String _courseEmoji(Course c) {
   switch (c) {
     case Course.breakfast:
-      return Icons.breakfast_dining;
+      return '🥞';
     case Course.lunch:
-      return Icons.lunch_dining;
-    case Course.dinner:
-      return Icons.dinner_dining;
+      return '🍱';
     case Course.appetizer:
-      return Icons.tapas;
-    case Course.mainCourse:
-      return Icons.restaurant_menu;
+      return '🥟';
     case Course.sideDish:
-      return Icons.rice_bowl;
-    case Course.soup:
-      return Icons.soup_kitchen;
-    case Course.salad:
-      return Icons.eco_outlined;
-    case Course.snack:
-      return Icons.cookie;
+      return '🥗';
     case Course.dessert:
-      return Icons.icecream;
+      return '🍰';
+    case Course.snack:
+      return '🍿';
+    case Course.drinks:
+      return '🍹';
   }
 }
 
 String _dietaryLabel(AppL10n l, Dietary d) {
   switch (d) {
-    case Dietary.vegetarian:
-      return l.dietaryVegetarian;
     case Dietary.vegan:
       return l.dietaryVegan;
-    case Dietary.glutenFree:
-      return l.dietaryGlutenFree;
-    case Dietary.dairyFree:
-      return l.dietaryDairyFree;
-    case Dietary.nutFree:
-      return l.dietaryNutFree;
-    case Dietary.highProtein:
-      return l.dietaryHighProtein;
-    case Dietary.lowCarb:
-      return l.dietaryLowCarb;
-    case Dietary.quick:
-      return l.dietaryQuick;
+    case Dietary.vegetarian:
+      return l.dietaryVegetarian;
+    case Dietary.mealPrep:
+      return l.dietaryMealPrep;
+    case Dietary.quickEasy:
+      return l.dietaryQuickEasy;
+    case Dietary.pastaSoup:
+      return l.dietaryPastaSoup;
+    case Dietary.bloodSugarBalanced:
+      return l.dietaryBloodSugarBalanced;
+    case Dietary.swicy:
+      return l.dietarySwicy;
+    case Dietary.antiInflammatory:
+      return l.dietaryAntiInflammatory;
   }
 }
 
-IconData _dietaryIcon(Dietary d) {
+String _dietaryEmoji(Dietary d) {
   switch (d) {
-    case Dietary.vegetarian:
-      return Icons.eco_outlined;
     case Dietary.vegan:
-      return Icons.energy_savings_leaf_outlined;
-    case Dietary.glutenFree:
-      return Icons.grain;
-    case Dietary.dairyFree:
-      return Icons.no_drinks;
-    case Dietary.nutFree:
-      return Icons.no_food;
-    case Dietary.highProtein:
-      return Icons.fitness_center;
-    case Dietary.lowCarb:
-      return Icons.donut_small;
-    case Dietary.quick:
-      return Icons.timer;
+      return '🌱';
+    case Dietary.vegetarian:
+      return '🥗';
+    case Dietary.mealPrep:
+      return '🍱';
+    case Dietary.quickEasy:
+      return '⚡';
+    case Dietary.pastaSoup:
+      return '🍜';
+    case Dietary.bloodSugarBalanced:
+      return '🩺';
+    case Dietary.swicy:
+      return '🌶️';
+    case Dietary.antiInflammatory:
+      return '🥦';
   }
 }
