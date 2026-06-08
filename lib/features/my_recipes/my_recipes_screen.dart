@@ -8,6 +8,7 @@ import '../../shared/breakpoints.dart';
 import '../../shared/widgets.dart';
 import '../../state/auth.dart';
 import '../../state/providers.dart';
+import '../explore/explore_screen.dart' show SliverCrossAxisConstrained;
 
 /// Lists recipes published by the current user (authenticated server-side
 /// via `?mine=true`). Shows public *and* private (draft) entries.
@@ -93,27 +94,30 @@ class _MyRecipesScreenState extends ConsumerState<MyRecipesScreen> {
               ],
             );
           }
-          return ListView(
-            padding: pagePadding(context).copyWith(top: 16, bottom: 32),
-            children: [
-              Center(
-                child: ConstrainedBox(
-                  constraints:
-                      BoxConstraints(maxWidth: contentMaxWidth(context)),
-                  child: Text(
-                    l.myRecipesTitle,
-                    style: Theme.of(context).textTheme.headlineLarge,
+          final pagePad = pagePadding(context);
+          final maxW = contentMaxWidth(context);
+          return CustomScrollView(
+            physics: const ClampingScrollPhysics(),
+            slivers: [
+              SliverPadding(
+                padding: pagePad.copyWith(top: 16, bottom: 16),
+                sliver: SliverToBoxAdapter(
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: maxW),
+                      child: Text(
+                        l.myRecipesTitle,
+                        style: Theme.of(context).textTheme.headlineLarge,
+                      ),
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
-              Center(
-                child: ConstrainedBox(
-                  constraints:
-                      BoxConstraints(maxWidth: contentMaxWidth(context)),
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
+              SliverPadding(
+                padding: pagePad,
+                sliver: SliverCrossAxisConstrained(
+                  maxCrossAxisExtent: maxW,
+                  child: SliverGrid.builder(
                     gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                       maxCrossAxisExtent: recipeCardMaxExtent(context),
                       childAspectRatio: 0.78,
@@ -125,6 +129,7 @@ class _MyRecipesScreenState extends ConsumerState<MyRecipesScreen> {
                   ),
                 ),
               ),
+              const SliverToBoxAdapter(child: SizedBox(height: 32)),
             ],
           );
         },

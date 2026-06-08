@@ -5,6 +5,7 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../shared/breakpoints.dart';
 import '../../shared/widgets.dart';
 import '../../state/saved.dart';
+import '../explore/explore_screen.dart' show SliverCrossAxisConstrained;
 
 class SavedRecipesScreen extends ConsumerWidget {
   const SavedRecipesScreen({super.key});
@@ -14,68 +15,74 @@ class SavedRecipesScreen extends ConsumerWidget {
     final l = AppL10n.of(context);
     final state = ref.watch(savedRecipesProvider);
     final controller = ref.read(savedRecipesProvider.notifier);
+    final pagePad = pagePadding(context);
+    final maxW = contentMaxWidth(context);
 
-    Widget body;
     if (state.loading && state.recipes.isEmpty) {
-      body = ListView.builder(
+      return ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 16),
+        physics: const ClampingScrollPhysics(),
         itemCount: 4,
         itemBuilder: (_, _) => const LoadingShimmer(height: 240),
       );
-    } else if (state.recipes.isEmpty) {
-      body = CenterMessage(
+    }
+
+    if (state.recipes.isEmpty) {
+      return CenterMessage(
         icon: Icons.bookmark_border,
         title: l.savedEmptyTitle,
         subtitle: l.savedEmptySubtitle,
       );
-    } else {
-      body = ListView(
-        padding: pagePadding(context).copyWith(top: 16, bottom: 32),
-        children: [
-          Center(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: contentMaxWidth(context)),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      l.savedTitle,
-                      style: Theme.of(context).textTheme.headlineLarge,
-                    ),
-                  ),
-                  TextButton.icon(
-                    icon: const Icon(Icons.delete_sweep_outlined),
-                    label: Text(l.savedClearAll),
-                    onPressed: () => _confirmClear(context, controller, l),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Center(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: contentMaxWidth(context)),
-              child: GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: recipeCardMaxExtent(context),
-                  childAspectRatio: 0.78,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                ),
-                itemCount: state.recipes.length,
-                itemBuilder: (_, i) =>
-                    RecipeCard(recipe: state.recipes[i]),
-              ),
-            ),
-          ),
-        ],
-      );
     }
 
-    return body;
+    return CustomScrollView(
+      physics: const ClampingScrollPhysics(),
+      slivers: [
+        SliverPadding(
+          padding: pagePad.copyWith(top: 16, bottom: 16),
+          sliver: SliverToBoxAdapter(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: maxW),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        l.savedTitle,
+                        style: Theme.of(context).textTheme.headlineLarge,
+                      ),
+                    ),
+                    TextButton.icon(
+                      icon: const Icon(Icons.delete_sweep_outlined),
+                      label: Text(l.savedClearAll),
+                      onPressed: () => _confirmClear(context, controller, l),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        SliverPadding(
+          padding: pagePad,
+          sliver: SliverCrossAxisConstrained(
+            maxCrossAxisExtent: maxW,
+            child: SliverGrid.builder(
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: recipeCardMaxExtent(context),
+                childAspectRatio: 0.78,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+              ),
+              itemCount: state.recipes.length,
+              itemBuilder: (_, i) =>
+                  RecipeCard(recipe: state.recipes[i]),
+            ),
+          ),
+        ),
+        const SliverToBoxAdapter(child: SizedBox(height: 32)),
+      ],
+    );
   }
 
   Future<void> _confirmClear(

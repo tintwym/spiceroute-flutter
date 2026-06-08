@@ -119,8 +119,9 @@ class _DetailBody extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppL10n.of(context);
     final theme = Theme.of(context);
-    final saved = ref.watch(savedRecipesProvider);
-    final isSaved = saved.isSaved(recipe.id);
+    final isSaved = ref.watch(
+      savedRecipesProvider.select((s) => s.ids.contains(recipe.id)),
+    );
     final myId = ref.watch(meProvider).valueOrNull;
     final ownerLabel = recipe.owner == null
         ? null
@@ -295,7 +296,10 @@ class _MetaItem extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 16, color: theme.colorScheme.outline),
+        // onSurfaceVariant is the standard M3 token for "secondary text-y"
+        // foreground — visible against both cream and dark olive surfaces,
+        // unlike `outline` which got swallowed in dark mode.
+        Icon(icon, size: 16, color: theme.colorScheme.onSurfaceVariant),
         const SizedBox(width: 6),
         Text(label, style: theme.textTheme.bodyMedium),
       ],

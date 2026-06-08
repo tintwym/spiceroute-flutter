@@ -96,10 +96,21 @@ class RecipeCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppL10n.of(context);
     final theme = Theme.of(context);
-    final saved = ref.watch(savedRecipesProvider);
-    final isSaved = saved.isSaved(recipe.id);
+    // Scope the listen to *just this card's saved bit*. The previous
+    // `ref.watch(savedRecipesProvider)` rebuilt every visible card whenever
+    // any bookmark toggled — with 24+ cards on Explore that meant 24+
+    // CachedNetworkImage / Material rebuilds per tap and a perceptible
+    // input lag.
+    final isSaved = ref.watch(
+      savedRecipesProvider.select((s) => s.ids.contains(recipe.id)),
+    );
 
-    return Card(
+    // RepaintBoundary makes each card its own layer — without it, scrolling
+    // a grid of 24 cards forces the whole viewport to repaint per frame,
+    // which is what makes Flutter web feel "syrupy". With it, only newly
+    // visible / animating cards repaint.
+    return RepaintBoundary(
+      child: Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => context.push('/recipes/${recipe.id}'),
@@ -115,6 +126,11 @@ class RecipeCard extends ConsumerWidget {
                     CachedNetworkImage(
                       imageUrl: recipe.imageUrl!,
                       fit: BoxFit.cover,
+                      // 500 ms fade-in (CachedNetworkImage default) is jarring
+                      // on a fast cache hit. 150 ms feels instant when cached
+                      // and still smooth on cold loads.
+                      fadeInDuration: const Duration(milliseconds: 150),
+                      fadeOutDuration: const Duration(milliseconds: 100),
                       placeholder: (_, _) => Container(
                         color: theme.colorScheme.surfaceContainerHighest,
                       ),
@@ -153,8 +169,13 @@ class RecipeCard extends ConsumerWidget {
                     top: 8,
                     right: 8,
                     child: Material(
-                      color: theme.colorScheme.surface.withValues(alpha: 0.9),
+                      // Solid surface (no alpha) so the icon sits on a stable
+                      // background regardless of how dark/light the photo is —
+                      // a translucent surface in dark mode was washing the
+                      // bookmark icon out almost completely.
+                      color: theme.colorScheme.surface,
                       shape: const CircleBorder(),
+                      elevation: 1,
                       child: IconButton(
                         tooltip: isSaved ? l.detailUnsave : l.detailSave,
                         onPressed: () => ref
@@ -162,7 +183,11 @@ class RecipeCard extends ConsumerWidget {
                             .toggle(recipe),
                         icon: Icon(
                           isSaved ? Icons.bookmark : Icons.bookmark_border,
-                          color: theme.colorScheme.primary,
+                          // High-contrast foreground vs. surface in both
+                          // brightnesses — primary on cream looks OK but
+                          // dropped into invisibility on the dark olive
+                          // surface.
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
                     ),
@@ -190,40 +215,49 @@ class RecipeCard extends ConsumerWidget {
                       style: theme.textTheme.bodySmall,
                     ),
                   const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Icon(Icons.schedule,
-                          size: 14, color: theme.colorScheme.outline),
-                      const SizedBox(width: 4),
-                      Text(
-                        l.recipeMinutesShort(recipe.totalMinutes),
-                        style: theme.textTheme.bodySmall,
-                      ),
-                      const SizedBox(width: 14),
-                      Icon(Icons.restaurant,
-                          size: 14, color: theme.colorScheme.outline),
-                      const SizedBox(width: 4),
-                      Text(
-                        l.recipeServings(recipe.servings),
-                        style: theme.textTheme.bodySmall,
-                      ),
-                      if (recipe.caloriesPerServing != null) ...[
-                        const SizedBox(width: 14),
-                        Icon(Icons.local_fire_department_outlined,
-                            size: 14, color: theme.colorScheme.outline),
+                  // Use onSurfaceVariant for the meta row — same hue as the
+                  // small text but at full opacity, so the schedule / fork /
+                  // flame glyphs are actually visible on dark cards instead
+                  // of fading into the background.
+                  Builder(builder: (context) {
+                    final metaColor = theme.colorScheme.onSurfaceVariant;
+                    return Row(
+                      children: [
+                        Icon(Icons.schedule, size: 14, color: metaColor),
                         const SizedBox(width: 4),
                         Text(
-                          l.recipeKcal(recipe.caloriesPerServing!),
+                          l.recipeMinutesShort(recipe.totalMinutes),
                           style: theme.textTheme.bodySmall,
                         ),
+                        const SizedBox(width: 14),
+                        Icon(Icons.restaurant, size: 14, color: metaColor),
+                        const SizedBox(width: 4),
+                        Text(
+                          l.recipeServings(recipe.servings),
+                          style: theme.textTheme.bodySmall,
+                        ),
+                        if (recipe.caloriesPerServing != null) ...[
+                          const SizedBox(width: 14),
+                          Icon(
+                            Icons.local_fire_department_outlined,
+                            size: 14,
+                            color: metaColor,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            l.recipeKcal(recipe.caloriesPerServing!),
+                            style: theme.textTheme.bodySmall,
+                          ),
+                        ],
                       ],
-                    ],
-                  ),
+                    );
+                  }),
                 ],
               ),
             ),
           ],
         ),
+      ),
       ),
     );
   }

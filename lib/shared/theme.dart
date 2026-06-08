@@ -55,6 +55,30 @@ ThemeData buildTheme(Brightness brightness) {
     scaffoldBackgroundColor: colorScheme.surface,
     visualDensity: VisualDensity.adaptivePlatformDensity,
     textTheme: textTheme,
+    // Material 3's default `InkSparkle` uses a fragment shader that is
+    // notoriously slow on Flutter web — every tap drops a frame while the
+    // shader compiles. `InkRipple` runs entirely on the existing layer
+    // pipeline, so taps feel instant. Lossless visual change for our use
+    // case (we're not relying on the sparkle particle effect).
+    splashFactory: InkRipple.splashFactory,
+    // Same idea for hover/focus highlights on web.
+    hoverColor: colorScheme.primary.withValues(alpha: 0.06),
+    splashColor: colorScheme.primary.withValues(alpha: 0.12),
+    highlightColor: Colors.transparent,
+    // The default `ZoomPageTransitionsBuilder` (used on non-Android)
+    // animates a scale + fade per route push and feels stuttery on web,
+    // particularly for hover-triggered nav. `FadeUpwardsPageTransitionsBuilder`
+    // is much cheaper and matches the editorial vibe.
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+        TargetPlatform.iOS: FadeUpwardsPageTransitionsBuilder(),
+        TargetPlatform.macOS: FadeUpwardsPageTransitionsBuilder(),
+        TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
+        TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
+        TargetPlatform.fuchsia: FadeUpwardsPageTransitionsBuilder(),
+      },
+    ),
     appBarTheme: AppBarTheme(
       backgroundColor: colorScheme.surface,
       foregroundColor: colorScheme.onSurface,

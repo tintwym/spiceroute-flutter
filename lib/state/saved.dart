@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -92,7 +93,11 @@ class SavedRecipesController extends StateNotifier<SavedRecipesState> {
     );
   }
 
-  Future<void> toggle(SpiceRouteSummary recipe) async {
+  void toggle(SpiceRouteSummary recipe) {
+    // Optimistic update: flip state synchronously so the bookmark icon
+    // animates immediately, then persist to secure storage in the background.
+    // Awaiting `_persist` first added a perceptible 50–200 ms lag on web
+    // (secure_storage uses IndexedDB) and made the button feel sluggish.
     final current = Set<String>.from(state.ids);
     final wasSaved = current.contains(recipe.id);
     if (wasSaved) {
@@ -100,17 +105,17 @@ class SavedRecipesController extends StateNotifier<SavedRecipesState> {
     } else {
       current.add(recipe.id);
     }
-    await _persist(current);
-
     final updatedRecipes = wasSaved
         ? state.recipes.where((r) => r.id != recipe.id).toList()
         : [recipe, ...state.recipes];
     state = state.copyWith(ids: current, recipes: updatedRecipes);
+
+    unawaited(_persist(current));
   }
 
-  Future<void> clearAll() async {
-    await _persist(const {});
+  void clearAll() {
     state = state.copyWith(ids: const {}, recipes: const []);
+    unawaited(_persist(const {}));
   }
 
   Future<void> _persist(Set<String> ids) async {

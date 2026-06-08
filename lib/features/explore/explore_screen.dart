@@ -35,118 +35,182 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     final state = ref.watch(exploreProvider);
     final controller = ref.read(exploreProvider.notifier);
 
-    return ListView(
-      padding: EdgeInsets.zero,
-      children: [
-        Padding(
-          padding: pagePadding(context).copyWith(top: 16, bottom: 12),
-          child: Center(
-            child: ConstrainedBox(
-              constraints:
-                  BoxConstraints(maxWidth: contentMaxWidth(context)),
-              child: TextField(
-                controller: _searchCtl,
-                onChanged: controller.setQuery,
-                textInputAction: TextInputAction.search,
-                onSubmitted: (_) => controller.refresh(),
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.search),
-                  hintText: l.exploreSearchHint,
-                  suffixIcon: state.q.isEmpty
-                      ? null
-                      : IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () {
-                            _searchCtl.clear();
-                            controller.setQuery('');
-                          },
-                        ),
+    final maxW = contentMaxWidth(context);
+    final pagePad = pagePadding(context);
+
+    // Sliver-based scroll view so the recipe grid is *actually* lazy. The
+    // previous ListView+shrinkWrap-GridView combo mounted every card up
+    // front (60+ CachedNetworkImage widgets at once on Explore), which made
+    // every interaction feel sticky while images decoded.
+    return CustomScrollView(
+      // ClampingScrollPhysics on web avoids the iOS-style elastic overscroll
+      // that triggers extra repaint passes Chrome already gives us a smooth
+      // momentum scroll for free.
+      physics: const ClampingScrollPhysics(),
+      slivers: [
+        SliverPadding(
+          padding: pagePad.copyWith(top: 16, bottom: 12),
+          sliver: SliverToBoxAdapter(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: maxW),
+                child: TextField(
+                  controller: _searchCtl,
+                  onChanged: controller.setQuery,
+                  textInputAction: TextInputAction.search,
+                  onSubmitted: (_) => controller.refresh(),
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.search),
+                    hintText: l.exploreSearchHint,
+                    suffixIcon: state.q.isEmpty
+                        ? null
+                        : IconButton(
+                            icon: const Icon(Icons.close),
+                            onPressed: () {
+                              _searchCtl.clear();
+                              controller.setQuery('');
+                            },
+                          ),
+                  ),
                 ),
               ),
             ),
           ),
         ),
-        CuisinePillBar(
-          value: state.cuisine,
-          onChanged: controller.setCuisine,
-        ),
-        const SizedBox(height: 12),
-        Padding(
-          padding: pagePadding(context),
-          child: Center(
-            child: ConstrainedBox(
-              constraints:
-                  BoxConstraints(maxWidth: contentMaxWidth(context)),
-              child: _ResultsArea(state: state, l: l, onRetry: controller.refresh),
+        SliverPadding(
+          padding: pagePad,
+          sliver: SliverToBoxAdapter(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: maxW),
+                child: CuisinePillBar(
+                  value: state.cuisine,
+                  onChanged: controller.setCuisine,
+                ),
+              ),
             ),
           ),
         ),
-        const SizedBox(height: 32),
+        const SliverToBoxAdapter(child: SizedBox(height: 12)),
+        ..._buildResultsSlivers(
+          context: context,
+          state: state,
+          l: l,
+          onRetry: controller.refresh,
+          pagePad: pagePad,
+          maxW: maxW,
+        ),
+        const SliverToBoxAdapter(child: SizedBox(height: 32)),
       ],
     );
   }
-}
 
-class _ResultsArea extends StatelessWidget {
-  const _ResultsArea({
-    required this.state,
-    required this.l,
-    required this.onRetry,
-  });
-
-  final ExploreState state;
-  final AppL10n l;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
+  /// Shared sliver builder so the three result states (loading / error /
+  /// data) all live in the same scroll view — no nested viewports.
+  List<Widget> _buildResultsSlivers({
+    required BuildContext context,
+    required ExploreState state,
+    required AppL10n l,
+    required VoidCallback onRetry,
+    required EdgeInsets pagePad,
+    required double maxW,
+  }) {
     if (state.loading && state.items.isEmpty) {
-      return SizedBox(
-        height: 320,
-        child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: recipeCardMaxExtent(context),
-            childAspectRatio: 0.78,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
+      return [
+        SliverPadding(
+          padding: pagePad,
+          sliver: SliverGrid.builder(
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: recipeCardMaxExtent(context),
+              childAspectRatio: 0.78,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+            ),
+            itemCount: 6,
+            itemBuilder: (_, _) => const LoadingShimmer(height: 240),
           ),
-          itemCount: 6,
-          itemBuilder: (_, _) => const LoadingShimmer(height: 240),
         ),
-      );
+      ];
     }
 
     if (state.error != null && state.items.isEmpty) {
-      return CenterMessage(
-        icon: Icons.cloud_off,
-        title: l.exploreErrorTitle,
-        subtitle: state.error,
-        action: FilledButton(
-          onPressed: onRetry,
-          child: Text(l.exploreErrorRetry),
+      return [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: CenterMessage(
+            icon: Icons.cloud_off,
+            title: l.exploreErrorTitle,
+            subtitle: state.error,
+            action: FilledButton(
+              onPressed: onRetry,
+              child: Text(l.exploreErrorRetry),
+            ),
+          ),
         ),
-      );
+      ];
     }
 
     if (state.items.isEmpty) {
-      return CenterMessage(
-        icon: Icons.search_off,
-        title: l.exploreEmptyTitle,
-        subtitle: l.exploreEmptySubtitle,
-      );
+      return [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: CenterMessage(
+            icon: Icons.search_off,
+            title: l.exploreEmptyTitle,
+            subtitle: l.exploreEmptySubtitle,
+          ),
+        ),
+      ];
     }
 
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: recipeCardMaxExtent(context),
-        childAspectRatio: 0.78,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
+    return [
+      SliverPadding(
+        padding: pagePad,
+        sliver: SliverCrossAxisConstrained(
+          maxCrossAxisExtent: maxW,
+          child: SliverGrid.builder(
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: recipeCardMaxExtent(context),
+              childAspectRatio: 0.78,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+            ),
+            itemCount: state.items.length,
+            itemBuilder: (_, i) => RecipeCard(recipe: state.items[i]),
+          ),
+        ),
       ),
-      itemCount: state.items.length,
-      itemBuilder: (_, i) => RecipeCard(recipe: state.items[i]),
+    ];
+  }
+}
+
+/// Wraps a sliver with a centered, max-width constraint so the cards don't
+/// stretch across a 4k viewport. Achieves what `ConstrainedBox(maxWidth)`
+/// inside a box layout does, but in sliver-space.
+class SliverCrossAxisConstrained extends StatelessWidget {
+  const SliverCrossAxisConstrained({
+    super.key,
+    required this.maxCrossAxisExtent,
+    required this.child,
+  });
+
+  final double maxCrossAxisExtent;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverLayoutBuilder(
+      builder: (context, constraints) {
+        final viewport = constraints.crossAxisExtent;
+        if (!maxCrossAxisExtent.isFinite || viewport <= maxCrossAxisExtent) {
+          return child;
+        }
+        final padding = (viewport - maxCrossAxisExtent) / 2;
+        return SliverPadding(
+          padding: EdgeInsets.symmetric(horizontal: padding),
+          sliver: child,
+        );
+      },
     );
   }
 }
