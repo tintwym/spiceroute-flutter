@@ -9,6 +9,7 @@ const supportedLocales = <Locale>[
   Locale('th'),
   Locale('ja'),
   Locale('ko'),
+  Locale('vi'),
 ];
 
 const _localeKey = 'savor_locale';

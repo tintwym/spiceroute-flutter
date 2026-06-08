@@ -158,6 +158,7 @@ class _LanguageTile extends ConsumerWidget {
       (const Locale('th'), l.languageThai),
       (const Locale('ja'), l.languageJapanese),
       (const Locale('ko'), l.languageKorean),
+      (const Locale('vi'), l.languageVietnamese),
     ];
 
     return Padding(

@@ -37,6 +37,7 @@ class LanguagePickerButton extends ConsumerWidget {
           item(const Locale('th'), l.languageThai),
           item(const Locale('ja'), l.languageJapanese),
           item(const Locale('ko'), l.languageKorean),
+          item(const Locale('vi'), l.languageVietnamese),
         ];
       },
     );

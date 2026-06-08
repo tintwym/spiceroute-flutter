@@ -9,6 +9,7 @@ import 'app_localizations_en.dart';
 import 'app_localizations_ja.dart';
 import 'app_localizations_ko.dart';
 import 'app_localizations_th.dart';
+import 'app_localizations_vi.dart';
 import 'app_localizations_zh.dart';
 
 // ignore_for_file: type=lint
@@ -100,6 +101,7 @@ abstract class AppL10n {
     Locale('ja'),
     Locale('ko'),
     Locale('th'),
+    Locale('vi'),
     Locale('zh'),
   ];
 
@@ -162,6 +164,12 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Korean'**
   String get languageKorean;
+
+  /// No description provided for @languageVietnamese.
+  ///
+  /// In en, this message translates to:
+  /// **'Vietnamese'**
+  String get languageVietnamese;
 
   /// No description provided for @cuisineAll.
   ///
@@ -977,8 +985,14 @@ class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en', 'ja', 'ko', 'th', 'zh'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>[
+    'en',
+    'ja',
+    'ko',
+    'th',
+    'vi',
+    'zh',
+  ].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppL10nDelegate old) => false;
@@ -995,6 +1009,8 @@ AppL10n lookupAppL10n(Locale locale) {
       return AppL10nKo();
     case 'th':
       return AppL10nTh();
+    case 'vi':
+      return AppL10nVi();
     case 'zh':
       return AppL10nZh();
   }

@@ -39,6 +39,9 @@ class AppL10nZh extends AppL10n {
   String get languageKorean => '韩语';
 
   @override
+  String get languageVietnamese => '越南语';
+
+  @override
   String get cuisineAll => '全部';
 
   @override

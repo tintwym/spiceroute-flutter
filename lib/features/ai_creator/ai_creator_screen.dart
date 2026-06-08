@@ -58,11 +58,22 @@ class _AiCreatorScreenState extends ConsumerState<AiCreatorScreen> {
                 const SizedBox(height: 8),
                 TextField(
                   controller: _ideaCtl,
-                  minLines: 2,
-                  maxLines: 4,
-                  textInputAction: TextInputAction.newline,
+                  // Grow-on-demand: starts as a normal single-line pill (so
+                  // the hint isn't stranded at the top of a tall empty box
+                  // like before) but expands up to 3 lines if the user
+                  // really wants to type a longer idea.
+                  minLines: 1,
+                  maxLines: 3,
+                  textInputAction: TextInputAction.send,
                   onChanged: controller.setIdea,
-                  decoration: InputDecoration(hintText: l.aiCreatorIdeaHint),
+                  onSubmitted: (_) {
+                    if (state.idea.trim().isEmpty || state.loading) return;
+                    controller.generate(language: locale.languageCode);
+                  },
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.auto_awesome),
+                    hintText: l.aiCreatorIdeaHint,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 Text(l.aiCreatorCuisineLabel,

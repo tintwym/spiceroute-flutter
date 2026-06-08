@@ -39,6 +39,9 @@ class AppL10nKo extends AppL10n {
   String get languageKorean => '한국어';
 
   @override
+  String get languageVietnamese => '베트남어';
+
+  @override
   String get cuisineAll => '전체';
 
   @override
