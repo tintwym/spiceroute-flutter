@@ -207,6 +207,12 @@ abstract class AppL10n {
   /// **'Thai'**
   String get cuisineThai;
 
+  /// No description provided for @cuisineVietnamese.
+  ///
+  /// In en, this message translates to:
+  /// **'Vietnamese'**
+  String get cuisineVietnamese;
+
   /// No description provided for @cuisineIndian.
   ///
   /// In en, this message translates to:

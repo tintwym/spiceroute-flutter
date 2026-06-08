@@ -299,6 +299,8 @@ IconData _cuisineIcon(Cuisine c) {
       return Icons.soup_kitchen;
     case Cuisine.thai:
       return Icons.local_fire_department;
+    case Cuisine.vietnamese:
+      return Icons.rice_bowl;
     case Cuisine.indian:
       return Icons.spa;
     case Cuisine.italian:

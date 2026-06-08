@@ -60,6 +60,9 @@ class AppL10nJa extends AppL10n {
   String get cuisineThai => 'タイ料理';
 
   @override
+  String get cuisineVietnamese => 'ベトナム料理';
+
+  @override
   String get cuisineIndian => 'インド料理';
 
   @override

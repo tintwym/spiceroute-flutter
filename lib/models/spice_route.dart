@@ -1,13 +1,14 @@
 import 'package:flutter/foundation.dart';
 
-/// One of the 9 cuisines surfaced by Explore. Keep these strings in sync with
-/// the backend `cuisine_type` enum.
+/// One of the 10 cuisines surfaced by Explore. Keep these strings in sync
+/// with the backend `cuisine_type` enum.
 enum Cuisine {
   korean('korean'),
   japanese('japanese'),
   chinese('chinese'),
   burmese('burmese'),
   thai('thai'),
+  vietnamese('vietnamese'),
   indian('indian'),
   italian('italian'),
   americanWestern('american_western'),

@@ -60,6 +60,9 @@ class AppL10nKo extends AppL10n {
   String get cuisineThai => '태국식';
 
   @override
+  String get cuisineVietnamese => '베트남식';
+
+  @override
   String get cuisineIndian => '인도식';
 
   @override
