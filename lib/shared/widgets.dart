@@ -30,39 +30,60 @@ class CenterMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Center(
+
+    final content = ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 400),
       child: Padding(
         padding: const EdgeInsets.all(32),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 400),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 56, color: theme.colorScheme.outline),
-              const SizedBox(height: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 56, color: theme.colorScheme.outline),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.headlineMedium,
+            ),
+            if (subtitle != null) ...[
+              const SizedBox(height: 8),
               Text(
-                title,
+                subtitle!,
                 textAlign: TextAlign.center,
-                style: theme.textTheme.headlineMedium,
-              ),
-              if (subtitle != null) ...[
-                const SizedBox(height: 8),
-                Text(
-                  subtitle!,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.outline,
-                  ),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.outline,
                 ),
-              ],
-              if (action != null) ...[
-                const SizedBox(height: 20),
-                action!,
-              ],
+              ),
             ],
-          ),
+            if (action != null) ...[
+              const SizedBox(height: 20),
+              action!,
+            ],
+          ],
         ),
       ),
+    );
+
+    // "Fits when it can, scrolls when it can't." Under
+    // SliverFillRemaining(hasScrollBody: false) the child gets a
+    // fixed viewport-height box, so on tight viewports a pure Column
+    // overflows (the 5 px BOTTOM OVERFLOW warning). Wrapping in a
+    // SingleChildScrollView whose child has minHeight = viewport
+    // height preserves vertical centering for the common case
+    // (content < viewport) and falls back to scrolling when it
+    // doesn't fit.
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (!constraints.maxHeight.isFinite) {
+          return Center(child: content);
+        }
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Center(child: content),
+          ),
+        );
+      },
     );
   }
 }
