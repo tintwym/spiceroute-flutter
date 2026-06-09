@@ -8,7 +8,7 @@ import 'package:intl/intl.dart' as intl;
 import 'app_localizations_en.dart';
 import 'app_localizations_ja.dart';
 import 'app_localizations_ko.dart';
-import 'app_localizations_th.dart';
+import 'app_localizations_my.dart';
 import 'app_localizations_vi.dart';
 import 'app_localizations_zh.dart';
 
@@ -100,7 +100,7 @@ abstract class AppL10n {
     Locale('en'),
     Locale('ja'),
     Locale('ko'),
-    Locale('th'),
+    Locale('my'),
     Locale('vi'),
     Locale('zh'),
   ];
@@ -132,7 +132,7 @@ abstract class AppL10n {
   /// No description provided for @navSaved.
   ///
   /// In en, this message translates to:
-  /// **'Saved'**
+  /// **'My Saved Recipes'**
   String get navSaved;
 
   /// No description provided for @languageEnglish.
@@ -147,11 +147,11 @@ abstract class AppL10n {
   /// **'Chinese'**
   String get languageChinese;
 
-  /// No description provided for @languageThai.
+  /// No description provided for @languageBurmese.
   ///
   /// In en, this message translates to:
-  /// **'Thai'**
-  String get languageThai;
+  /// **'Burmese'**
+  String get languageBurmese;
 
   /// No description provided for @languageJapanese.
   ///
@@ -248,6 +248,252 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Search recipes, ingredients, tags'**
   String get exploreSearchHint;
+
+  /// No description provided for @exploreSearchHintLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Search recipes, ingredients, or cuisines...'**
+  String get exploreSearchHintLong;
+
+  /// No description provided for @heroBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'CULINARY STUDIO'**
+  String get heroBadge;
+
+  /// No description provided for @heroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'SpiceRoute'**
+  String get heroTitle;
+
+  /// No description provided for @heroSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Embark on a culinary journey across {cuisines} distinct cultures. Filter authentic recipes, talk to our AI Chef, or generate custom translations.'**
+  String heroSubtitle(int cuisines);
+
+  /// No description provided for @brandTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'{cuisines} cuisines · {languages} languages'**
+  String brandTagline(int cuisines, int languages);
+
+  /// No description provided for @exploreResultCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No recipes in {scope}} =1{Showing 1 recipe in {scope}} other{Showing {count} recipes in {scope}}}'**
+  String exploreResultCount(int count, String scope);
+
+  /// No description provided for @communityBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'REAL-TIME SYNC'**
+  String get communityBadge;
+
+  /// No description provided for @communityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Community Culinary Board'**
+  String get communityTitle;
+
+  /// No description provided for @communitySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'See what other food lovers are cooking, or upload your own creations for any international cuisine!'**
+  String get communitySubtitle;
+
+  /// No description provided for @communityShowcaseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'SHOWCASE YOUR DISH'**
+  String get communityShowcaseTitle;
+
+  /// No description provided for @communityUploadCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Click to upload culinary creation'**
+  String get communityUploadCta;
+
+  /// No description provided for @communityUploadHint.
+  ///
+  /// In en, this message translates to:
+  /// **'JPEG / PNG (automatically compressed)'**
+  String get communityUploadHint;
+
+  /// No description provided for @communityChefLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'CHEF / COOK NAME'**
+  String get communityChefLabel;
+
+  /// No description provided for @communityChefHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Nonna Sophia, Alex'**
+  String get communityChefHint;
+
+  /// No description provided for @communityCaptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'CAPTION / STORY'**
+  String get communityCaptionLabel;
+
+  /// No description provided for @communityCaptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Made this for Sunday dinner! Replaced with fresh herbs.'**
+  String get communityCaptionHint;
+
+  /// No description provided for @communityShareBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'SHARE TO LIVE BOARD'**
+  String get communityShareBtn;
+
+  /// No description provided for @communityFeedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'LIVE FEED ({count} PHOTOS)'**
+  String communityFeedTitle(int count);
+
+  /// No description provided for @communityEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No community photos yet'**
+  String get communityEmptyTitle;
+
+  /// No description provided for @communityEmptySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Be the first to upload a photo of your cooked masterwork here for this cuisine!'**
+  String get communityEmptySubtitle;
+
+  /// No description provided for @communitySharedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared to the live board!'**
+  String get communitySharedToast;
+
+  /// No description provided for @communityByLine.
+  ///
+  /// In en, this message translates to:
+  /// **'by {name}'**
+  String communityByLine(String name);
+
+  /// No description provided for @communityRemovePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'REMOVE PHOTO'**
+  String get communityRemovePhoto;
+
+  /// No description provided for @communityUploading.
+  ///
+  /// In en, this message translates to:
+  /// **'Compressing & sharing…'**
+  String get communityUploading;
+
+  /// No description provided for @communityUploaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Successfully published to live community feed'**
+  String get communityUploaded;
+
+  /// No description provided for @communityFilteredTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Filtered: {cuisine}'**
+  String communityFilteredTo(String cuisine);
+
+  /// No description provided for @storiesHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'{cuisine} Culinary Heritage & Connections'**
+  String storiesHeading(String cuisine);
+
+  /// No description provided for @storiesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore traditional course approaches and heritage stories — tap a card to filter the recipes.'**
+  String get storiesSubtitle;
+
+  /// No description provided for @storiesActiveBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'ACTIVE'**
+  String get storiesActiveBadge;
+
+  /// No description provided for @footerBlurb.
+  ///
+  /// In en, this message translates to:
+  /// **'An elegant culinary gateway offering curated recipes across many distinct culinary traditions. Elevate your home cooking with international flavors and real-time AI assistance.'**
+  String get footerBlurb;
+
+  /// No description provided for @footerQuickNav.
+  ///
+  /// In en, this message translates to:
+  /// **'QUICK NAVIGATION'**
+  String get footerQuickNav;
+
+  /// No description provided for @footerLinkExplore.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore Recipes'**
+  String get footerLinkExplore;
+
+  /// No description provided for @footerLinkCreator.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Recipe Creator'**
+  String get footerLinkCreator;
+
+  /// No description provided for @footerLinkCompanion.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Chef Companion'**
+  String get footerLinkCompanion;
+
+  /// No description provided for @footerLinkSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'My Saved Cookbook'**
+  String get footerLinkSaved;
+
+  /// No description provided for @footerConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'CONNECT WITH US'**
+  String get footerConnect;
+
+  /// No description provided for @footerEmailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your email address'**
+  String get footerEmailHint;
+
+  /// No description provided for @footerJoin.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Hub'**
+  String get footerJoin;
+
+  /// No description provided for @footerJoinedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for joining the hub!'**
+  String get footerJoinedToast;
+
+  /// No description provided for @footerCopyright.
+  ///
+  /// In en, this message translates to:
+  /// **'© {year} {brand}. All rights reserved.'**
+  String footerCopyright(int year, String brand);
+
+  /// No description provided for @footerLicense.
+  ///
+  /// In en, this message translates to:
+  /// **'Released under the MIT License.'**
+  String get footerLicense;
 
   /// No description provided for @exploreEmptyTitle.
   ///
@@ -471,6 +717,54 @@ abstract class AppL10n {
   /// **'Ingredients'**
   String get detailIngredients;
 
+  /// No description provided for @detailCookingInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Cooking Instructions'**
+  String get detailCookingInstructions;
+
+  /// No description provided for @detailPrepTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Prep Time'**
+  String get detailPrepTime;
+
+  /// No description provided for @detailCookTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Cook Time'**
+  String get detailCookTime;
+
+  /// No description provided for @detailServingsShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Servings'**
+  String get detailServingsShort;
+
+  /// No description provided for @detailDifficultyEasy.
+  ///
+  /// In en, this message translates to:
+  /// **'Easy'**
+  String get detailDifficultyEasy;
+
+  /// No description provided for @detailDifficultyMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get detailDifficultyMedium;
+
+  /// No description provided for @detailDifficultyHard.
+  ///
+  /// In en, this message translates to:
+  /// **'Hard'**
+  String get detailDifficultyHard;
+
+  /// No description provided for @detailClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get detailClose;
+
   /// No description provided for @detailSteps.
   ///
   /// In en, this message translates to:
@@ -525,6 +819,18 @@ abstract class AppL10n {
   /// **'My Saved Recipes'**
   String get savedTitle;
 
+  /// No description provided for @savedHeroSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your personal cookbook. Bookmark dishes from any cuisine and they\'ll land here so you can revisit them anytime.'**
+  String get savedHeroSubtitle;
+
+  /// No description provided for @savedCountHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'My Saved Recipes ({count})'**
+  String savedCountHeading(int count);
+
   /// No description provided for @savedEmptyTitle.
   ///
   /// In en, this message translates to:
@@ -534,8 +840,20 @@ abstract class AppL10n {
   /// No description provided for @savedEmptySubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Tap the heart on any recipe to keep it here.'**
+  /// **'You haven\'t saved any recipes yet. Tap the bookmark icon on any recipe card to start building your personal cookbook!'**
   String get savedEmptySubtitle;
+
+  /// No description provided for @savedEmptyCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore Recipes now'**
+  String get savedEmptyCta;
+
+  /// No description provided for @savedCloudSyncedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'CLOUD SYNCED'**
+  String get savedCloudSyncedBadge;
 
   /// No description provided for @savedClearAll.
   ///
@@ -566,6 +884,36 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'AI Recipe Creator'**
   String get aiCreatorTitle;
+
+  /// No description provided for @aiCreatorCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate Custom AI Recipe'**
+  String get aiCreatorCardTitle;
+
+  /// No description provided for @aiCreatorCardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter ingredients you have or a craving, and watch our AI Chef instantly cook up a custom step-by-step culinary masterpiece in your preferred language.'**
+  String get aiCreatorCardSubtitle;
+
+  /// No description provided for @aiCreatorIngredientsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Ingredients / Food Idea'**
+  String get aiCreatorIngredientsLabel;
+
+  /// No description provided for @aiCreatorIdeaHintLong.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Tomato, eggs, scallions or \'A light healthy tofu dinner\''**
+  String get aiCreatorIdeaHintLong;
+
+  /// No description provided for @aiCreatorCreateBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get aiCreatorCreateBtn;
 
   /// No description provided for @aiCreatorIdeaLabel.
   ///
@@ -639,6 +987,24 @@ abstract class AppL10n {
   /// **'AI Kitchen Companion'**
   String get aiCompanionTitle;
 
+  /// No description provided for @aiCompanionActiveFocus.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Focus: Global'**
+  String get aiCompanionActiveFocus;
+
+  /// No description provided for @aiCompanionGreeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi! I am your Global Gastronomy AI Chef. Ask me anything about ingredient substitutes, cooking tricks, or request a completely new custom recipe!'**
+  String get aiCompanionGreeting;
+
+  /// No description provided for @aiCompanionSuggestionsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Gourmet Suggestions'**
+  String get aiCompanionSuggestionsLabel;
+
   /// No description provided for @aiCompanionEmptyTitle.
   ///
   /// In en, this message translates to:
@@ -654,7 +1020,7 @@ abstract class AppL10n {
   /// No description provided for @aiCompanionInputHint.
   ///
   /// In en, this message translates to:
-  /// **'Type your question...'**
+  /// **'Ask AI how to make a dish, ask for keto/vegan options...'**
   String get aiCompanionInputHint;
 
   /// No description provided for @aiCompanionSend.
@@ -690,25 +1056,25 @@ abstract class AppL10n {
   /// No description provided for @aiCompanionSuggestion1.
   ///
   /// In en, this message translates to:
-  /// **'Vegan substitute for fish sauce?'**
+  /// **'What is a good vegetarian substitute for fish sauce?'**
   String get aiCompanionSuggestion1;
 
   /// No description provided for @aiCompanionSuggestion2.
   ///
   /// In en, this message translates to:
-  /// **'Quick gluten-free dinner ideas?'**
+  /// **'Suggest an authentic side dish for Korean Kimchi Jjigae.'**
   String get aiCompanionSuggestion2;
 
   /// No description provided for @aiCompanionSuggestion3.
   ///
   /// In en, this message translates to:
-  /// **'How do I temper Indian spices?'**
+  /// **'Can you explain Szechuan peppercorn numbing effect?'**
   String get aiCompanionSuggestion3;
 
   /// No description provided for @aiCompanionSuggestion4.
   ///
   /// In en, this message translates to:
-  /// **'What goes well with kimchi?'**
+  /// **'How do I control the heat level in Burmese Mohinga?'**
   String get aiCompanionSuggestion4;
 
   /// No description provided for @settingsTitle.
@@ -882,7 +1248,7 @@ abstract class AppL10n {
   /// No description provided for @authEmail.
   ///
   /// In en, this message translates to:
-  /// **'Email'**
+  /// **'Email address'**
   String get authEmail;
 
   /// No description provided for @authPassword.
@@ -942,7 +1308,7 @@ abstract class AppL10n {
   /// No description provided for @authSignInHere.
   ///
   /// In en, this message translates to:
-  /// **'Sign in'**
+  /// **'Log in'**
   String get authSignInHere;
 
   /// No description provided for @authProtectedTitle.
@@ -1026,7 +1392,7 @@ abstract class AppL10n {
   /// No description provided for @authFirebaseNote.
   ///
   /// In en, this message translates to:
-  /// **'Note: ensure email/password sign-in is enabled in your Firebase console.'**
+  /// **'Note: If registering with traditional credentials, ensure standard email/password authentication is enabled inside your Google Firebase console setup.'**
   String get authFirebaseNote;
 
   /// No description provided for @authErrorInvalid.
@@ -1139,7 +1505,7 @@ class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {
     'en',
     'ja',
     'ko',
-    'th',
+    'my',
     'vi',
     'zh',
   ].contains(locale.languageCode);
@@ -1157,8 +1523,8 @@ AppL10n lookupAppL10n(Locale locale) {
       return AppL10nJa();
     case 'ko':
       return AppL10nKo();
-    case 'th':
-      return AppL10nTh();
+    case 'my':
+      return AppL10nMy();
     case 'vi':
       return AppL10nVi();
     case 'zh':

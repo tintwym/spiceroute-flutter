@@ -136,17 +136,11 @@ class AppShell extends ConsumerWidget {
       );
     }
 
-    // Tablet+: sticky top nav, no side rail. Everything lives in one bar
-    // (brand + nav items + actions) so the content area gets the full
-    // viewport width.
+    // Tablet+: sticky top nav, no side rail. The header is a single row
+    // (brand + language pills + account dropdown); the page-level tab row
+    // lives below each page's hero — see [PageTabs].
     return Scaffold(
-      appBar: TopNavBar(
-        title: l.appTitle,
-        destinations: dests,
-        selectedIndex: index.clamp(0, dests.length - 1),
-        onDestinationSelected: (i) => context.go(dests[i].path),
-        actions: actions,
-      ),
+      appBar: TopNavBar(actions: actions),
       body: SafeArea(child: child),
     );
   }

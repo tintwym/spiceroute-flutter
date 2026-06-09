@@ -6,7 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 const supportedLocales = <Locale>[
   Locale('en'),
   Locale('zh'),
-  Locale('th'),
+  Locale('my'),
   Locale('ja'),
   Locale('ko'),
   Locale('vi'),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Color tokens for Savor Global Recipes — calm, editorial, warm.
+/// Color tokens for SpiceRoute — calm, editorial, warm.
 ///
 /// Aligned with the AI-Studio reference prototype:
 ///   primary olive   #5A5A40
@@ -182,44 +182,54 @@ ThemeData buildTheme(Brightness brightness) {
 }
 
 TextTheme _buildTextTheme(Color onSurface) {
-  // No explicit fontFamily — Flutter ships with a default font (Roboto) that
-  // is bundled with the framework and covers all the Latin Extended glyphs we
-  // actually use (em-dash, ellipsis, curly quotes). Naming "Helvetica" /
-  // "Georgia" here without registering them as assets meant CanvasKit
-  // couldn't find them and tried to lazily fetch Noto fallbacks from
-  // `fonts.gstatic.com`, which logged the
-  //   "Could not find a set of Noto fonts to display all missing characters"
-  // warning on every page that used a typographic dash, ellipsis, or curly
-  // apostrophe (i.e. every page).
+  // Editorial pairing matching the reference design:
+  //   - Display + headline + title  -> Playfair Display (high-contrast serif)
+  //     for the magazine-y "SpiceRoute" headline, section titles,
+  //     and recipe card names.
+  //   - Body + label                -> default sans (Roboto, framework-bundled)
+  //     for legibility at small sizes and full glyph coverage of the
+  //     typographic punctuation we use (em-dash, ellipsis, curly quotes).
+  //
+  // The serif is bundled as a local asset (see pubspec.yaml `fonts:`)
+  // so it works offline and never fires the runtime "Failed to load
+  // font" exception the google_fonts package logs when fonts.gstatic.com
+  // is unreachable.
+  const serif = 'PlayfairDisplay';
+
   return TextTheme(
     displayLarge: TextStyle(
+      fontFamily: serif,
       fontSize: 48,
       height: 1.05,
-      fontWeight: FontWeight.w500,
+      fontWeight: FontWeight.w700,
       letterSpacing: -0.5,
       color: onSurface,
     ),
     displayMedium: TextStyle(
+      fontFamily: serif,
       fontSize: 36,
       height: 1.1,
-      fontWeight: FontWeight.w500,
+      fontWeight: FontWeight.w700,
       color: onSurface,
     ),
     headlineLarge: TextStyle(
+      fontFamily: serif,
       fontSize: 28,
       height: 1.15,
-      fontWeight: FontWeight.w600,
+      fontWeight: FontWeight.w700,
       color: onSurface,
     ),
     headlineMedium: TextStyle(
+      fontFamily: serif,
       fontSize: 22,
       height: 1.2,
-      fontWeight: FontWeight.w600,
+      fontWeight: FontWeight.w700,
       color: onSurface,
     ),
     titleLarge: TextStyle(
+      fontFamily: serif,
       fontSize: 20,
-      fontWeight: FontWeight.w600,
+      fontWeight: FontWeight.w700,
       color: onSurface,
     ),
     titleMedium: TextStyle(

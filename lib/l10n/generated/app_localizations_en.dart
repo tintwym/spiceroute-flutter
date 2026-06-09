@@ -21,7 +21,7 @@ class AppL10nEn extends AppL10n {
   String get navAiCompanion => 'AI Companion';
 
   @override
-  String get navSaved => 'Saved';
+  String get navSaved => 'My Saved Recipes';
 
   @override
   String get languageEnglish => 'English';
@@ -30,7 +30,7 @@ class AppL10nEn extends AppL10n {
   String get languageChinese => 'Chinese';
 
   @override
-  String get languageThai => 'Thai';
+  String get languageBurmese => 'Burmese';
 
   @override
   String get languageJapanese => 'Japanese';
@@ -79,6 +79,159 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get exploreSearchHint => 'Search recipes, ingredients, tags';
+
+  @override
+  String get exploreSearchHintLong =>
+      'Search recipes, ingredients, or cuisines...';
+
+  @override
+  String get heroBadge => 'CULINARY STUDIO';
+
+  @override
+  String get heroTitle => 'SpiceRoute';
+
+  @override
+  String heroSubtitle(int cuisines) {
+    return 'Embark on a culinary journey across $cuisines distinct cultures. Filter authentic recipes, talk to our AI Chef, or generate custom translations.';
+  }
+
+  @override
+  String brandTagline(int cuisines, int languages) {
+    return '$cuisines cuisines · $languages languages';
+  }
+
+  @override
+  String exploreResultCount(int count, String scope) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Showing $count recipes in $scope',
+      one: 'Showing 1 recipe in $scope',
+      zero: 'No recipes in $scope',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get communityBadge => 'REAL-TIME SYNC';
+
+  @override
+  String get communityTitle => 'Community Culinary Board';
+
+  @override
+  String get communitySubtitle =>
+      'See what other food lovers are cooking, or upload your own creations for any international cuisine!';
+
+  @override
+  String get communityShowcaseTitle => 'SHOWCASE YOUR DISH';
+
+  @override
+  String get communityUploadCta => 'Click to upload culinary creation';
+
+  @override
+  String get communityUploadHint => 'JPEG / PNG (automatically compressed)';
+
+  @override
+  String get communityChefLabel => 'CHEF / COOK NAME';
+
+  @override
+  String get communityChefHint => 'e.g. Nonna Sophia, Alex';
+
+  @override
+  String get communityCaptionLabel => 'CAPTION / STORY';
+
+  @override
+  String get communityCaptionHint =>
+      'Made this for Sunday dinner! Replaced with fresh herbs.';
+
+  @override
+  String get communityShareBtn => 'SHARE TO LIVE BOARD';
+
+  @override
+  String communityFeedTitle(int count) {
+    return 'LIVE FEED ($count PHOTOS)';
+  }
+
+  @override
+  String get communityEmptyTitle => 'No community photos yet';
+
+  @override
+  String get communityEmptySubtitle =>
+      'Be the first to upload a photo of your cooked masterwork here for this cuisine!';
+
+  @override
+  String get communitySharedToast => 'Shared to the live board!';
+
+  @override
+  String communityByLine(String name) {
+    return 'by $name';
+  }
+
+  @override
+  String get communityRemovePhoto => 'REMOVE PHOTO';
+
+  @override
+  String get communityUploading => 'Compressing & sharing…';
+
+  @override
+  String get communityUploaded =>
+      'Successfully published to live community feed';
+
+  @override
+  String communityFilteredTo(String cuisine) {
+    return 'Filtered: $cuisine';
+  }
+
+  @override
+  String storiesHeading(String cuisine) {
+    return '$cuisine Culinary Heritage & Connections';
+  }
+
+  @override
+  String get storiesSubtitle =>
+      'Explore traditional course approaches and heritage stories — tap a card to filter the recipes.';
+
+  @override
+  String get storiesActiveBadge => 'ACTIVE';
+
+  @override
+  String get footerBlurb =>
+      'An elegant culinary gateway offering curated recipes across many distinct culinary traditions. Elevate your home cooking with international flavors and real-time AI assistance.';
+
+  @override
+  String get footerQuickNav => 'QUICK NAVIGATION';
+
+  @override
+  String get footerLinkExplore => 'Explore Recipes';
+
+  @override
+  String get footerLinkCreator => 'AI Recipe Creator';
+
+  @override
+  String get footerLinkCompanion => 'AI Chef Companion';
+
+  @override
+  String get footerLinkSaved => 'My Saved Cookbook';
+
+  @override
+  String get footerConnect => 'CONNECT WITH US';
+
+  @override
+  String get footerEmailHint => 'Your email address';
+
+  @override
+  String get footerJoin => 'Join Hub';
+
+  @override
+  String get footerJoinedToast => 'Thanks for joining the hub!';
+
+  @override
+  String footerCopyright(int year, String brand) {
+    return '© $year $brand. All rights reserved.';
+  }
+
+  @override
+  String get footerLicense => 'Released under the MIT License.';
 
   @override
   String get exploreEmptyTitle => 'No recipes match yet';
@@ -209,6 +362,30 @@ class AppL10nEn extends AppL10n {
   String get detailIngredients => 'Ingredients';
 
   @override
+  String get detailCookingInstructions => 'Cooking Instructions';
+
+  @override
+  String get detailPrepTime => 'Prep Time';
+
+  @override
+  String get detailCookTime => 'Cook Time';
+
+  @override
+  String get detailServingsShort => 'Servings';
+
+  @override
+  String get detailDifficultyEasy => 'Easy';
+
+  @override
+  String get detailDifficultyMedium => 'Medium';
+
+  @override
+  String get detailDifficultyHard => 'Hard';
+
+  @override
+  String get detailClose => 'Close';
+
+  @override
   String get detailSteps => 'Steps';
 
   @override
@@ -238,11 +415,26 @@ class AppL10nEn extends AppL10n {
   String get savedTitle => 'My Saved Recipes';
 
   @override
+  String get savedHeroSubtitle =>
+      'Your personal cookbook. Bookmark dishes from any cuisine and they\'ll land here so you can revisit them anytime.';
+
+  @override
+  String savedCountHeading(int count) {
+    return 'My Saved Recipes ($count)';
+  }
+
+  @override
   String get savedEmptyTitle => 'Nothing saved yet';
 
   @override
   String get savedEmptySubtitle =>
-      'Tap the heart on any recipe to keep it here.';
+      'You haven\'t saved any recipes yet. Tap the bookmark icon on any recipe card to start building your personal cookbook!';
+
+  @override
+  String get savedEmptyCta => 'Explore Recipes now';
+
+  @override
+  String get savedCloudSyncedBadge => 'CLOUD SYNCED';
 
   @override
   String get savedClearAll => 'Clear all';
@@ -258,6 +450,23 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get aiCreatorTitle => 'AI Recipe Creator';
+
+  @override
+  String get aiCreatorCardTitle => 'Generate Custom AI Recipe';
+
+  @override
+  String get aiCreatorCardSubtitle =>
+      'Enter ingredients you have or a craving, and watch our AI Chef instantly cook up a custom step-by-step culinary masterpiece in your preferred language.';
+
+  @override
+  String get aiCreatorIngredientsLabel => 'Ingredients / Food Idea';
+
+  @override
+  String get aiCreatorIdeaHintLong =>
+      'e.g. Tomato, eggs, scallions or \'A light healthy tofu dinner\'';
+
+  @override
+  String get aiCreatorCreateBtn => 'Create';
 
   @override
   String get aiCreatorIdeaLabel => 'What do you feel like cooking?';
@@ -297,6 +506,16 @@ class AppL10nEn extends AppL10n {
   String get aiCompanionTitle => 'AI Kitchen Companion';
 
   @override
+  String get aiCompanionActiveFocus => 'Active Focus: Global';
+
+  @override
+  String get aiCompanionGreeting =>
+      'Hi! I am your Global Gastronomy AI Chef. Ask me anything about ingredient substitutes, cooking tricks, or request a completely new custom recipe!';
+
+  @override
+  String get aiCompanionSuggestionsLabel => 'Gourmet Suggestions';
+
+  @override
   String get aiCompanionEmptyTitle => 'Ask me anything about cooking';
 
   @override
@@ -304,7 +523,8 @@ class AppL10nEn extends AppL10n {
       'Substitutes, techniques, dietary swaps - I\'ve got you.';
 
   @override
-  String get aiCompanionInputHint => 'Type your question...';
+  String get aiCompanionInputHint =>
+      'Ask AI how to make a dish, ask for keto/vegan options...';
 
   @override
   String get aiCompanionSend => 'Send';
@@ -323,16 +543,20 @@ class AppL10nEn extends AppL10n {
       'Too many messages this hour. Try again later.';
 
   @override
-  String get aiCompanionSuggestion1 => 'Vegan substitute for fish sauce?';
+  String get aiCompanionSuggestion1 =>
+      'What is a good vegetarian substitute for fish sauce?';
 
   @override
-  String get aiCompanionSuggestion2 => 'Quick gluten-free dinner ideas?';
+  String get aiCompanionSuggestion2 =>
+      'Suggest an authentic side dish for Korean Kimchi Jjigae.';
 
   @override
-  String get aiCompanionSuggestion3 => 'How do I temper Indian spices?';
+  String get aiCompanionSuggestion3 =>
+      'Can you explain Szechuan peppercorn numbing effect?';
 
   @override
-  String get aiCompanionSuggestion4 => 'What goes well with kimchi?';
+  String get aiCompanionSuggestion4 =>
+      'How do I control the heat level in Burmese Mohinga?';
 
   @override
   String get settingsTitle => 'Settings';
@@ -424,7 +648,7 @@ class AppL10nEn extends AppL10n {
   String get authAccount => 'Account';
 
   @override
-  String get authEmail => 'Email';
+  String get authEmail => 'Email address';
 
   @override
   String get authPassword => 'Password';
@@ -455,7 +679,7 @@ class AppL10nEn extends AppL10n {
   String get authSignUpHere => 'Create one';
 
   @override
-  String get authSignInHere => 'Sign in';
+  String get authSignInHere => 'Log in';
 
   @override
   String get authProtectedTitle => 'Sign in required';
@@ -503,7 +727,7 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get authFirebaseNote =>
-      'Note: ensure email/password sign-in is enabled in your Firebase console.';
+      'Note: If registering with traditional credentials, ensure standard email/password authentication is enabled inside your Google Firebase console setup.';
 
   @override
   String get authErrorInvalid => 'Email or password isn\'t right.';

@@ -30,7 +30,7 @@ class AppL10nJa extends AppL10n {
   String get languageChinese => '中国語';
 
   @override
-  String get languageThai => 'タイ語';
+  String get languageBurmese => 'ミャンマー語';
 
   @override
   String get languageJapanese => '日本語';
@@ -79,6 +79,154 @@ class AppL10nJa extends AppL10n {
 
   @override
   String get exploreSearchHint => 'レシピ・食材・タグを検索';
+
+  @override
+  String get exploreSearchHintLong => 'レシピ、食材、料理ジャンルで検索...';
+
+  @override
+  String get heroBadge => 'CULINARY STUDIO';
+
+  @override
+  String get heroTitle => 'SpiceRoute';
+
+  @override
+  String heroSubtitle(int cuisines) {
+    return '$cuisines の異なる食文化を巡る料理の旅へ。本格レシピを絞り込み、AI シェフと会話し、好きな言語でカスタム翻訳を作成できます。';
+  }
+
+  @override
+  String brandTagline(int cuisines, int languages) {
+    return '料理 $cuisines 種 ・ 言語 $languages 種';
+  }
+
+  @override
+  String exploreResultCount(int count, String scope) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$scopeのレシピを $count 件表示中',
+      one: '$scopeのレシピを 1 件表示中',
+      zero: '$scopeにレシピがありません',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get communityBadge => 'リアルタイム同期';
+
+  @override
+  String get communityTitle => 'コミュニティ・カリナリーボード';
+
+  @override
+  String get communitySubtitle =>
+      'ほかのフード好きが今日作っている料理を見たり、世界中のどんな料理ジャンルでもあなたの一皿をシェアできます!';
+
+  @override
+  String get communityShowcaseTitle => 'あなたの一皿を披露';
+
+  @override
+  String get communityUploadCta => 'クリックして料理写真をアップロード';
+
+  @override
+  String get communityUploadHint => 'JPEG / PNG(自動圧縮)';
+
+  @override
+  String get communityChefLabel => 'シェフ名';
+
+  @override
+  String get communityChefHint => '例: ノンナ・ソフィア、アレックス';
+
+  @override
+  String get communityCaptionLabel => 'キャプション / エピソード';
+
+  @override
+  String get communityCaptionHint => '日曜日の夕食に。フレッシュハーブで代用しました!';
+
+  @override
+  String get communityShareBtn => 'ライブボードに共有';
+
+  @override
+  String communityFeedTitle(int count) {
+    return 'ライブフィード ($count 枚)';
+  }
+
+  @override
+  String get communityEmptyTitle => 'まだコミュニティ写真はありません';
+
+  @override
+  String get communityEmptySubtitle => 'この料理ジャンルの一枚を、いちばん最初にシェアしましょう!';
+
+  @override
+  String get communitySharedToast => 'ライブボードに共有しました!';
+
+  @override
+  String communityByLine(String name) {
+    return 'by $name';
+  }
+
+  @override
+  String get communityRemovePhoto => '写真を削除';
+
+  @override
+  String get communityUploading => '圧縮中・共有中…';
+
+  @override
+  String get communityUploaded => 'ライブフィードに公開しました';
+
+  @override
+  String communityFilteredTo(String cuisine) {
+    return '絞り込み：$cuisine';
+  }
+
+  @override
+  String storiesHeading(String cuisine) {
+    return '$cuisineの食文化遺産と世界との繋がり';
+  }
+
+  @override
+  String get storiesSubtitle => '朝食から夜食まで、伝統料理と歴史的な背景を探索（カードをタップでフィルター）';
+
+  @override
+  String get storiesActiveBadge => 'ACTIVE';
+
+  @override
+  String get footerBlurb =>
+      '世界各地の料理伝統から厳選したレシピを揃えた、上品な料理ゲートウェイ。リアルタイム AI と共に、家庭料理を国際的な味へと格上げします。';
+
+  @override
+  String get footerQuickNav => 'クイックナビ';
+
+  @override
+  String get footerLinkExplore => 'レシピを探す';
+
+  @override
+  String get footerLinkCreator => 'AI レシピ作成';
+
+  @override
+  String get footerLinkCompanion => 'AI シェフアシスタント';
+
+  @override
+  String get footerLinkSaved => '保存したクックブック';
+
+  @override
+  String get footerConnect => 'つながる';
+
+  @override
+  String get footerEmailHint => 'メールアドレス';
+
+  @override
+  String get footerJoin => '参加する';
+
+  @override
+  String get footerJoinedToast => 'ご参加ありがとうございます!';
+
+  @override
+  String footerCopyright(int year, String brand) {
+    return '© $year $brand. All rights reserved.';
+  }
+
+  @override
+  String get footerLicense => 'MIT ライセンスで公開。';
 
   @override
   String get exploreEmptyTitle => '該当するレシピがありません';
@@ -202,6 +350,30 @@ class AppL10nJa extends AppL10n {
   String get detailIngredients => '材料';
 
   @override
+  String get detailCookingInstructions => '調理手順';
+
+  @override
+  String get detailPrepTime => '下準備';
+
+  @override
+  String get detailCookTime => '調理時間';
+
+  @override
+  String get detailServingsShort => '人数';
+
+  @override
+  String get detailDifficultyEasy => '簡単';
+
+  @override
+  String get detailDifficultyMedium => 'ふつう';
+
+  @override
+  String get detailDifficultyHard => '難しい';
+
+  @override
+  String get detailClose => '閉じる';
+
+  @override
   String get detailSteps => '作り方';
 
   @override
@@ -231,10 +403,25 @@ class AppL10nJa extends AppL10n {
   String get savedTitle => '保存したレシピ';
 
   @override
+  String get savedHeroSubtitle =>
+      'あなただけのクックブック。気に入った料理をブックマークすれば、いつでもここで見返せます。';
+
+  @override
+  String savedCountHeading(int count) {
+    return '保存したレシピ ($count)';
+  }
+
+  @override
   String get savedEmptyTitle => 'まだ保存はありません';
 
   @override
   String get savedEmptySubtitle => '気になるレシピのハートをタップで保存できます。';
+
+  @override
+  String get savedEmptyCta => 'レシピを探す';
+
+  @override
+  String get savedCloudSyncedBadge => 'クラウド同期中';
 
   @override
   String get savedClearAll => 'すべて削除';
@@ -250,6 +437,22 @@ class AppL10nJa extends AppL10n {
 
   @override
   String get aiCreatorTitle => 'AI レシピ作成';
+
+  @override
+  String get aiCreatorCardTitle => 'カスタム AI レシピを生成';
+
+  @override
+  String get aiCreatorCardSubtitle =>
+      '手持ちの食材や食べたい気分を入力すると、AI シェフがあなたの好きな言語でステップ・バイ・ステップのオリジナル料理を即興で作ります。';
+
+  @override
+  String get aiCreatorIngredientsLabel => '食材 / アイデア';
+
+  @override
+  String get aiCreatorIdeaHintLong => '例: トマト、卵、ねぎ、または「軽くてヘルシーな豆腐ディナー」';
+
+  @override
+  String get aiCreatorCreateBtn => '作成';
 
   @override
   String get aiCreatorIdeaLabel => '今日はどんなものを作りますか?';
@@ -286,6 +489,16 @@ class AppL10nJa extends AppL10n {
 
   @override
   String get aiCompanionTitle => 'AI キッチンアシスタント';
+
+  @override
+  String get aiCompanionActiveFocus => 'アクティブフォーカス: グローバル';
+
+  @override
+  String get aiCompanionGreeting =>
+      'こんにちは!グローバル美食 AI シェフです。食材の代用、調理のコツ、全く新しいオリジナルレシピのリクエストまで、何でも聞いてください!';
+
+  @override
+  String get aiCompanionSuggestionsLabel => 'おすすめ';
 
   @override
   String get aiCompanionEmptyTitle => '料理について何でも聞いてください';

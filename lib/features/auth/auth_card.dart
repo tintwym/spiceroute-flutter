@@ -4,16 +4,19 @@ import 'package:go_router/go_router.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 
-/// The white card-on-cream layout shared by Sign In and Register.
+/// The auth modal box used by Sign In and Register.
 ///
-/// Renders:
-///   * dimmed cream backdrop
-///   * close (×) button top-right that pops or routes to home
-///   * centered, max-width card with sparkle hero, title, subtitle
-///   * the caller-supplied form body
-///   * the caller-supplied footer (link to flip between sign-in / register)
+/// Renders as a floating card over a transparent [Scaffold] so the route
+/// driving it can be configured as a `CustomTransitionPage(opaque: false)`
+/// — the underlying page (Explore / Settings / wherever the user opened
+/// auth from) stays visible behind a dimmed scrim that the router
+/// supplies.
 ///
-/// The whole thing is wrapped in a Scrollable so it works on phone height.
+/// Composition:
+///   * tap-anywhere-outside the card → dismiss
+///   * close (×) button pinned inside the card → dismiss
+///   * sparkle hero, title, subtitle, caller-supplied body + footer
+///   * scrollable inner column so the card works on short phones
 class AuthCard extends StatelessWidget {
   const AuthCard({
     super.key,
@@ -30,90 +33,113 @@ class AuthCard extends StatelessWidget {
   final Widget footer;
   final Widget? bottomNote;
 
+  void _close(BuildContext context) {
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+    } else {
+      GoRouter.of(context).go('/');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppL10n.of(context);
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 32,
-                ),
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 460),
-                    child: Card(
-                      elevation: 6,
-                      shadowColor: Colors.black.withValues(alpha: 0.08),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(28),
-                      ),
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          // Tap-catcher behind the card — taps that miss the modal
+          // dismiss it (the router barrier handles the same thing, but
+          // adding it inside the Scaffold means the gesture still works
+          // even if the outer barrier was overridden).
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => _close(context),
+              child: const SizedBox.expand(),
+            ),
+          ),
+          // Centered card. Wrapped in SafeArea so it doesn't slip under
+          // notches; padding gives the dimmed scrim some room to breathe.
+          SafeArea(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 460),
+                  // Inner GestureDetector swallows taps so the form
+                  // doesn't propagate up and trigger the outer dismiss.
+                  child: GestureDetector(
+                    onTap: () {},
+                    child: Material(
                       color: theme.colorScheme.surface,
-                      margin: EdgeInsets.zero,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(28, 36, 28, 28),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const _SparkleHero(),
-                            const SizedBox(height: 20),
-                            Text(
-                              title,
-                              textAlign: TextAlign.center,
-                              style: theme.textTheme.displaySmall?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                height: 1.1,
-                              ),
+                      elevation: 18,
+                      shadowColor: Colors.black.withValues(alpha: 0.30),
+                      borderRadius: BorderRadius.circular(28),
+                      clipBehavior: Clip.antiAlias,
+                      child: Stack(
+                        children: [
+                          SingleChildScrollView(
+                            padding: const EdgeInsets.fromLTRB(28, 36, 28, 28),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                const _SparkleHero(),
+                                const SizedBox(height: 20),
+                                Text(
+                                  title,
+                                  textAlign: TextAlign.center,
+                                  style:
+                                      theme.textTheme.displaySmall?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    height: 1.1,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  subtitle,
+                                  textAlign: TextAlign.center,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.onSurface
+                                        .withValues(alpha: 0.7),
+                                    // Subtle italic gives the subtitle the
+                                    // editorial-magazine voice that pairs
+                                    // with the serif title above.
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                                const SizedBox(height: 28),
+                                body,
+                                const SizedBox(height: 24),
+                                footer,
+                                if (bottomNote != null) ...[
+                                  const SizedBox(height: 16),
+                                  bottomNote!,
+                                ],
+                              ],
                             ),
-                            const SizedBox(height: 8),
-                            Text(
-                              subtitle,
-                              textAlign: TextAlign.center,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: theme.colorScheme.onSurface
-                                    .withValues(alpha: 0.7),
-                              ),
+                          ),
+                          Positioned(
+                            top: 6,
+                            right: 6,
+                            child: IconButton(
+                              tooltip: l.commonClose,
+                              icon: const Icon(Icons.close),
+                              onPressed: () => _close(context),
                             ),
-                            const SizedBox(height: 28),
-                            body,
-                            const SizedBox(height: 24),
-                            footer,
-                            if (bottomNote != null) ...[
-                              const SizedBox(height: 16),
-                              bottomNote!,
-                            ],
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ),
               ),
             ),
-            Positioned(
-              top: 8,
-              right: 8,
-              child: IconButton(
-                tooltip: AppL10n.of(context).commonClose,
-                icon: const Icon(Icons.close),
-                onPressed: () {
-                  final navigator = Navigator.of(context);
-                  if (navigator.canPop()) {
-                    navigator.pop();
-                  } else {
-                    GoRouter.of(context).go('/');
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

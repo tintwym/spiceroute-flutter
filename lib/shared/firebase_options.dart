@@ -18,6 +18,16 @@ bool get firebaseConfigured =>
 
 const _placeholderApiKey = 'REPLACE_ME_API_KEY';
 
+/// Firestore database ID. The AI-Studio-provisioned project this app
+/// shares with the original React build uses a **named** database rather
+/// than the conventional `(default)` one — passing this to
+/// `FirebaseFirestore.instanceFor(databaseId: …)` is the only way to land
+/// reads/writes in the same DB as the React app, otherwise our docs go
+/// somewhere only we can see. Leave as an empty string to fall back to
+/// the default DB when wiring up your own Firebase project.
+const String firestoreDatabaseId =
+    'ai-studio-ff9edb73-3c2a-4a69-ba12-75ce74365135';
+
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) return web;

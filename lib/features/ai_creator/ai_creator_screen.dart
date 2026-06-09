@@ -4,9 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../models/spice_route.dart';
-import '../../shared/breakpoints.dart';
 import '../../shared/cuisine_pill_bar.dart';
 import '../../shared/format.dart';
+import '../../shared/studio_page.dart';
 import '../../shared/widgets.dart';
 import '../../state/ai_recipe.dart';
 import '../../state/auth.dart';
@@ -32,7 +32,6 @@ class _AiCreatorScreenState extends ConsumerState<AiCreatorScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppL10n.of(context);
-    final theme = Theme.of(context);
     final state = ref.watch(aiRecipeProvider);
     final controller = ref.read(aiRecipeProvider.notifier);
     final locale = ref.watch(localeProvider);
@@ -43,114 +42,201 @@ class _AiCreatorScreenState extends ConsumerState<AiCreatorScreen> {
       }
     });
 
-    return ListView(
-      padding: pagePadding(context).copyWith(top: 16, bottom: 32),
-      children: [
-        Center(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: contentMaxWidth(context)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(l.aiCreatorTitle, style: theme.textTheme.headlineLarge),
-                const SizedBox(height: 24),
-                Text(l.aiCreatorIdeaLabel,
-                    style: theme.textTheme.titleMedium),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: _ideaCtl,
-                  // Grow-on-demand: starts as a normal single-line pill (so
-                  // the hint isn't stranded at the top of a tall empty box
-                  // like before) but expands up to 3 lines if the user
-                  // really wants to type a longer idea.
-                  minLines: 1,
-                  maxLines: 3,
-                  textInputAction: TextInputAction.send,
-                  onChanged: controller.setIdea,
-                  onSubmitted: (_) {
-                    if (state.idea.trim().isEmpty || state.loading) return;
-                    controller.generate(language: locale.languageCode);
-                  },
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.auto_awesome),
-                    hintText: l.aiCreatorIdeaHint,
-                  ),
+    return StudioPage(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _CreatorCard(
+            ideaController: _ideaCtl,
+            state: state,
+            onIdeaChanged: controller.setIdea,
+            onCuisineChanged: controller.setCuisine,
+            onGenerate: () => controller.generate(language: locale.languageCode),
+            onSave: () async {
+              final user = ref.read(authControllerProvider);
+              if (user == null) {
+                await showSignInPrompt(context, nextPath: '/ai/creator');
+                return;
+              }
+              controller.generate(language: locale.languageCode, save: true);
+            },
+          ),
+          const SizedBox(height: 20),
+          if (state.error != null) _ErrorBanner(state: state, l: l),
+          if (state.hasRecipe) _GeneratedRecipePreview(recipe: state.recipe!),
+          if (state.saved != null) ...[
+            const SizedBox(height: 20),
+            Center(
+              child: TextButton.icon(
+                icon: const Icon(Icons.open_in_new),
+                label: Text(state.saved!.title),
+                onPressed: () => context.push('/recipes/${state.saved!.id}'),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// The "Generate Custom AI Recipe" card — chef header, ingredients/idea
+/// input with an inline Create button, cuisine pills, and Save.
+class _CreatorCard extends StatelessWidget {
+  const _CreatorCard({
+    required this.ideaController,
+    required this.state,
+    required this.onIdeaChanged,
+    required this.onCuisineChanged,
+    required this.onGenerate,
+    required this.onSave,
+  });
+
+  final TextEditingController ideaController;
+  final AiRecipeState state;
+  final ValueChanged<String> onIdeaChanged;
+  final ValueChanged<Cuisine?> onCuisineChanged;
+  final VoidCallback onGenerate;
+  final VoidCallback onSave;
+
+  bool get _canGenerate => state.idea.trim().isNotEmpty && !state.loading;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
+    final field = TextField(
+      controller: ideaController,
+      minLines: 1,
+      maxLines: 3,
+      textInputAction: TextInputAction.send,
+      onChanged: onIdeaChanged,
+      onSubmitted: (_) {
+        if (_canGenerate) onGenerate();
+      },
+      decoration: InputDecoration(
+        prefixIcon: const Icon(Icons.auto_awesome, size: 20),
+        hintText: l.aiCreatorIdeaHintLong,
+      ),
+    );
+
+    final createButton = FilledButton.icon(
+      onPressed: _canGenerate ? onGenerate : null,
+      icon: state.loading
+          ? const SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+            )
+          : const Icon(Icons.auto_awesome, size: 18),
+      label: Text(state.hasRecipe ? l.aiCreatorRegenerate : l.aiCreatorCreateBtn),
+    );
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: cs.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: cs.outlineVariant),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: cs.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                const SizedBox(height: 20),
-                Text(l.aiCreatorCuisineLabel,
-                    style: theme.textTheme.titleMedium),
-                const SizedBox(height: 8),
-                CuisinePillBar(
-                  value: state.cuisine,
-                  onChanged: controller.setCuisine,
-                ),
-                const SizedBox(height: 20),
-                Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
+                child: Icon(Icons.soup_kitchen_outlined,
+                    size: 22, color: cs.onSurface),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    FilledButton.icon(
-                      onPressed: state.idea.trim().isEmpty || state.loading
-                          ? null
-                          : () => controller.generate(
-                                language: locale.languageCode,
-                              ),
-                      icon: state.loading
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: Colors.white),
-                            )
-                          : const Icon(Icons.auto_awesome),
-                      label: Text(state.hasRecipe
-                          ? l.aiCreatorRegenerate
-                          : l.aiCreatorGenerate),
-                    ),
-                    if (state.hasRecipe && state.saved == null)
-                      OutlinedButton.icon(
-                        onPressed: state.loading
-                            ? null
-                            : () async {
-                                final user = ref.read(authControllerProvider);
-                                if (user == null) {
-                                  final go = await showSignInPrompt(
-                                    context,
-                                    nextPath: '/ai/creator',
-                                  );
-                                  if (!go) return;
-                                  return;
-                                }
-                                controller.generate(
-                                  language: locale.languageCode,
-                                  save: true,
-                                );
-                              },
-                        icon: const Icon(Icons.bookmark_add_outlined),
-                        label: Text(l.aiCreatorSaveBtn),
+                    Text(l.aiCreatorCardTitle,
+                        style: theme.textTheme.headlineMedium),
+                    const SizedBox(height: 4),
+                    Text(
+                      l.aiCreatorCardSubtitle,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: cs.onSurfaceVariant,
+                        height: 1.45,
                       ),
+                    ),
                   ],
                 ),
-                const SizedBox(height: 24),
-                if (state.error != null) _ErrorBanner(state: state, l: l),
-                if (state.hasRecipe)
-                  _GeneratedRecipePreview(recipe: state.recipe!),
-                if (state.saved != null) ...[
-                  const SizedBox(height: 24),
-                  Center(
-                    child: TextButton.icon(
-                      icon: const Icon(Icons.open_in_new),
-                      label: Text(state.saved!.title),
-                      onPressed: () =>
-                          context.push('/recipes/${state.saved!.id}'),
-                    ),
-                  ),
-                ],
-              ],
-            ),
+              ),
+            ],
           ),
-        ),
-      ],
+          const SizedBox(height: 22),
+          _Label(l.aiCreatorIngredientsLabel),
+          const SizedBox(height: 8),
+          LayoutBuilder(builder: (context, constraints) {
+            // Inline button when there's room; stacked on tight widths.
+            if (constraints.maxWidth < 460) {
+              return Column(
+                children: [
+                  field,
+                  const SizedBox(height: 12),
+                  SizedBox(width: double.infinity, child: createButton),
+                ],
+              );
+            }
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: field),
+                const SizedBox(width: 12),
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: createButton,
+                ),
+              ],
+            );
+          }),
+          const SizedBox(height: 20),
+          _Label(l.aiCreatorCuisineLabel),
+          const SizedBox(height: 10),
+          CuisinePillBar(value: state.cuisine, onChanged: onCuisineChanged),
+          if (state.hasRecipe && state.saved == null) ...[
+            const SizedBox(height: 18),
+            OutlinedButton.icon(
+              onPressed: state.loading ? null : onSave,
+              icon: const Icon(Icons.bookmark_add_outlined),
+              label: Text(l.aiCreatorSaveBtn),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Small uppercase field label used inside the creator card.
+class _Label extends StatelessWidget {
+  const _Label(this.text);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Text(
+      text.toUpperCase(),
+      style: theme.textTheme.labelSmall?.copyWith(
+        color: theme.colorScheme.onSurfaceVariant,
+        letterSpacing: 1.1,
+        fontWeight: FontWeight.w700,
+      ),
     );
   }
 }

@@ -17,3 +17,13 @@ String formatRecipeDuration(AppL10n l, int minutes) {
   if (remainder == 0) return l.recipeHoursShort(hours);
   return l.recipeHoursMinutesShort(hours, remainder);
 }
+
+/// Approximate a recipe's difficulty from total time + step count. The
+/// model has no explicit difficulty field, so we derive a stable label
+/// (used by both the card footer and the detail modal so they agree).
+String recipeDifficultyLabel(AppL10n l, {required int totalMinutes, int steps = 0}) {
+  final score = totalMinutes + steps * 5;
+  if (score < 45) return l.detailDifficultyEasy;
+  if (score < 90) return l.detailDifficultyMedium;
+  return l.detailDifficultyHard;
+}

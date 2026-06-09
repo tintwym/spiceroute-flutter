@@ -44,7 +44,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (!mounted) return;
     setState(() => _busy = false);
     if (result.ok) {
-      context.go(widget.redirectTo ?? '/');
+      _goNext();
     } else {
       showSnack(context, localizeAuthError(AppL10n.of(context), result.error));
     }
@@ -57,9 +57,26 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (!mounted) return;
     setState(() => _busy = false);
     if (result.ok) {
-      context.go(widget.redirectTo ?? '/');
+      _goNext();
     } else if (result.error != 'cancelled') {
       showSnack(context, localizeAuthError(AppL10n.of(context), result.error));
+    }
+  }
+
+  /// Same modal-aware navigation as [SignInScreen]: honour an explicit
+  /// `redirectTo` (the protected-route flow), otherwise dismiss the modal
+  /// and return to whatever page opened it.
+  void _goNext() {
+    final dest = widget.redirectTo;
+    if (dest != null) {
+      context.go(dest);
+      return;
+    }
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+    } else {
+      context.go('/');
     }
   }
 
@@ -145,7 +162,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           TextButton(
             onPressed: _busy
                 ? null
-                : () => context.go('/sign-in', extra: widget.redirectTo),
+                // pushReplacement keeps both auth modes inside a single
+                // modal layer — flipping back to sign-in doesn't stack a
+                // second card on top of the first.
+                : () => context.pushReplacement(
+                      '/sign-in',
+                      extra: widget.redirectTo,
+                    ),
             child: Text(l.authSignInHere),
           ),
         ],
@@ -194,6 +217,7 @@ class _BottomNote extends StatelessWidget {
       style: theme.textTheme.bodySmall?.copyWith(
         color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
         height: 1.4,
+        fontStyle: FontStyle.italic,
       ),
     );
   }

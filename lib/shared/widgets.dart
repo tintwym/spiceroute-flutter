@@ -6,7 +6,12 @@ import 'package:go_router/go_router.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../models/spice_route.dart';
 import '../state/saved.dart';
+import 'cuisine_pill_bar.dart';
 import 'format.dart';
+
+/// Muted orange/brown used for the cuisine eyebrow on cards and the
+/// difficulty pill text — reads on both the cream and dark-olive surfaces.
+const Color _cuisineTagColor = Color(0xFFB5703C);
 
 class CenterMessage extends StatelessWidget {
   const CenterMessage({
@@ -110,185 +115,258 @@ class RecipeCard extends ConsumerWidget {
     // a grid of 24 cards forces the whole viewport to repaint per frame,
     // which is what makes Flutter web feel "syrupy". With it, only newly
     // visible / animating cards repaint.
+    final cs = theme.colorScheme;
+
     return RepaintBoundary(
       child: Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () => context.push('/recipes/${recipe.id}'),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            AspectRatio(
-              aspectRatio: 4 / 3,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  if (recipe.imageUrl != null)
-                    CachedNetworkImage(
-                      imageUrl: recipe.imageUrl!,
-                      fit: BoxFit.cover,
-                      // 500 ms fade-in (CachedNetworkImage default) is jarring
-                      // on a fast cache hit. 150 ms feels instant when cached
-                      // and still smooth on cold loads.
-                      fadeInDuration: const Duration(milliseconds: 150),
-                      fadeOutDuration: const Duration(milliseconds: 100),
-                      placeholder: (_, _) => Container(
-                        color: theme.colorScheme.surfaceContainerHighest,
-                      ),
-                      errorWidget: (_, _, _) => Container(
-                        color: theme.colorScheme.surfaceContainerHighest,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () => context.push('/recipes/${recipe.id}'),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              AspectRatio(
+                aspectRatio: 4 / 3,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    if (recipe.imageUrl != null)
+                      CachedNetworkImage(
+                        imageUrl: recipe.imageUrl!,
+                        fit: BoxFit.cover,
+                        fadeInDuration: const Duration(milliseconds: 150),
+                        fadeOutDuration: const Duration(milliseconds: 100),
+                        placeholder: (_, _) =>
+                            Container(color: cs.surfaceContainerHighest),
+                        errorWidget: (_, _, _) => Container(
+                          color: cs.surfaceContainerHighest,
+                          child: const Icon(Icons.restaurant_menu, size: 36),
+                        ),
+                      )
+                    else
+                      Container(
+                        color: cs.surfaceContainerHighest,
                         child: const Icon(Icons.restaurant_menu, size: 36),
                       ),
-                    )
-                  else
-                    Container(
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      child: const Icon(Icons.restaurant_menu, size: 36),
-                    ),
-                  Positioned(
-                    top: 12,
-                    left: 12,
-                    child: Wrap(
-                      spacing: 6,
-                      children: [
-                        if (recipe.isPremium)
-                          _Chip.filled(
-                            text: l.recipePremiumBadge,
-                            color: theme.colorScheme.primary,
-                            onColor: theme.colorScheme.onPrimary,
+                    // Top-left "what kind of dish" badge — a food emoji
+                    // (sushi for Japanese, taco for Mexican, etc.) on a
+                    // creamy circular chip. Keeps the photo content the
+                    // hero and gives a glanceable dish-type cue without
+                    // duplicating the country flag (the flag stays inside
+                    // the filter dropdown).
+                    if (recipe.cuisine != null)
+                      Positioned(
+                        top: 10,
+                        left: 10,
+                        child: Container(
+                          width: 34,
+                          height: 34,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: cs.surface,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.18),
+                                blurRadius: 6,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
                           ),
-                        if (recipe.isAiAuthored)
-                          _Chip.filled(
-                            text: l.recipeAiBadge,
-                            color: theme.colorScheme.secondary,
-                            onColor: theme.colorScheme.onPrimary,
+                          child: Text(
+                            CuisinePillBar.foodEmojiFor(recipe.cuisine!),
+                            style: const TextStyle(fontSize: 17, height: 1),
                           ),
-                      ],
-                    ),
-                  ),
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: Material(
-                      // Solid surface (no alpha) so the icon sits on a stable
-                      // background regardless of how dark/light the photo is —
-                      // a translucent surface in dark mode was washing the
-                      // bookmark icon out almost completely.
-                      color: theme.colorScheme.surface,
-                      shape: const CircleBorder(),
-                      elevation: 1,
-                      child: IconButton(
-                        tooltip: isSaved ? l.detailUnsave : l.detailSave,
-                        onPressed: () => ref
-                            .read(savedRecipesProvider.notifier)
-                            .toggle(recipe),
-                        icon: Icon(
-                          isSaved ? Icons.bookmark : Icons.bookmark_border,
-                          // High-contrast foreground vs. surface in both
-                          // brightnesses — primary on cream looks OK but
-                          // dropped into invisibility on the dark olive
-                          // surface.
-                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                    // Top-right bookmark (solid bg for contrast on any photo).
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Material(
+                        color: cs.surface,
+                        shape: const CircleBorder(),
+                        elevation: 1,
+                        child: IconButton(
+                          tooltip: isSaved ? l.detailUnsave : l.detailSave,
+                          visualDensity: VisualDensity.compact,
+                          onPressed: () => ref
+                              .read(savedRecipesProvider.notifier)
+                              .toggle(recipe),
+                          icon: Icon(
+                            isSaved ? Icons.bookmark : Icons.bookmark_border,
+                            color: cs.onSurface,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    recipe.title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 4),
-                  if (recipe.description != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (recipe.cuisine != null) ...[
+                      Text(
+                        CuisinePillBar.labelFor(l, recipe.cuisine!)
+                            .toUpperCase(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: _cuisineTagColor,
+                          fontSize: 11,
+                          letterSpacing: 0.8,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                    ],
                     Text(
-                      recipe.description!,
+                      recipe.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodySmall,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontSize: 16.5,
+                        height: 1.15,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                  const SizedBox(height: 10),
-                  // Use onSurfaceVariant for the meta row — same hue as the
-                  // small text but at full opacity, so the schedule / fork /
-                  // flame glyphs are actually visible on dark cards instead
-                  // of fading into the background.
-                  Builder(builder: (context) {
-                    final metaColor = theme.colorScheme.onSurfaceVariant;
-                    return Row(
-                      children: [
-                        Icon(Icons.schedule, size: 14, color: metaColor),
-                        const SizedBox(width: 4),
-                        Text(
-                          formatRecipeDuration(l, recipe.totalMinutes),
-                          style: theme.textTheme.bodySmall,
-                        ),
-                        const SizedBox(width: 14),
-                        Icon(Icons.restaurant, size: 14, color: metaColor),
-                        const SizedBox(width: 4),
-                        Text(
-                          l.recipeServings(recipe.servings),
-                          style: theme.textTheme.bodySmall,
-                        ),
-                        if (recipe.caloriesPerServing != null) ...[
-                          const SizedBox(width: 14),
-                          Icon(
-                            Icons.local_fire_department_outlined,
-                            size: 14,
-                            color: metaColor,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            l.recipeKcal(recipe.caloriesPerServing!),
-                            style: theme.textTheme.bodySmall,
-                          ),
-                        ],
-                      ],
-                    );
-                  }),
-                ],
+                    if (recipe.description != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        recipe.description!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall,
+                      ),
+                    ],
+                    const SizedBox(height: 10),
+                    Divider(height: 1, color: cs.outlineVariant),
+                    const SizedBox(height: 10),
+                    _CardFooter(recipe: recipe),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
 }
 
-class _Chip extends StatelessWidget {
-  const _Chip.filled({
-    required this.text,
-    required this.color,
-    required this.onColor,
-  });
-
-  final String text;
-  final Color color;
-  final Color onColor;
+/// Clean footer row: time · servings · calories on the left, a soft
+/// difficulty pill pinned to the far right.
+///
+/// Cards are very narrow at 4-up (~190-210 px usable width), so this
+/// uses a [LayoutBuilder] to drop the kcal unit (and, if needed, the
+/// kcal item entirely) before any [Row] children overflow.
+class _CardFooter extends StatelessWidget {
+  const _CardFooter({required this.recipe});
+  final SpiceRouteSummary recipe;
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    final difficulty =
+        recipeDifficultyLabel(l, totalMinutes: recipe.totalMinutes);
+
+    return LayoutBuilder(builder: (context, c) {
+      final w = c.maxWidth;
+      final compactKcal = w < 240; // strip the " kcal" suffix
+      final hideKcal = w < 175; // not enough room at all
+
+      final kcal = recipe.caloriesPerServing;
+      final kcalText = kcal == null
+          ? null
+          : (compactKcal ? '$kcal' : l.recipeKcal(kcal));
+
+      return Row(
+        children: [
+          Flexible(
+            child: _MetaItem(
+              icon: Icons.schedule,
+              text: formatRecipeDuration(l, recipe.totalMinutes),
+            ),
+          ),
+          const SizedBox(width: 8),
+          _MetaItem(icon: Icons.person_outline, text: '${recipe.servings}'),
+          if (kcalText != null && !hideKcal) ...[
+            const SizedBox(width: 8),
+            Flexible(
+              child: _MetaItem(
+                icon: Icons.local_fire_department_outlined,
+                text: kcalText,
+              ),
+            ),
+          ],
+          const Spacer(),
+          _DifficultyPill(label: difficulty),
+        ],
+      );
+    });
+  }
+}
+
+class _MetaItem extends StatelessWidget {
+  const _MetaItem({required this.icon, required this.text});
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = theme.colorScheme.onSurfaceVariant;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 12, color: color),
+        const SizedBox(width: 3),
+        Flexible(
+          child: Text(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            softWrap: false,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: color,
+              fontSize: 11,
+              height: 1.1,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Soft light-orange pill on the far right of the card footer.
+class _DifficultyPill extends StatelessWidget {
+  const _DifficultyPill({required this.label});
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
       decoration: BoxDecoration(
-        color: color,
+        color: theme.colorScheme.secondary.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(40),
       ),
       child: Text(
-        text,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: onColor,
-              fontWeight: FontWeight.w600,
-            ),
+        label.toUpperCase(),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        softWrap: false,
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: _cuisineTagColor,
+          fontSize: 9.5,
+          letterSpacing: 0.5,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }

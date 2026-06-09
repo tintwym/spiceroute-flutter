@@ -30,7 +30,7 @@ class AppL10nZh extends AppL10n {
   String get languageChinese => '中文';
 
   @override
-  String get languageThai => '泰语';
+  String get languageBurmese => '缅甸语';
 
   @override
   String get languageJapanese => '日语';
@@ -79,6 +79,153 @@ class AppL10nZh extends AppL10n {
 
   @override
   String get exploreSearchHint => '搜索食谱、食材或标签';
+
+  @override
+  String get exploreSearchHintLong => '搜索菜谱、食材或菜系...';
+
+  @override
+  String get heroBadge => 'CULINARY STUDIO';
+
+  @override
+  String get heroTitle => 'SpiceRoute';
+
+  @override
+  String heroSubtitle(int cuisines) {
+    return '开启横跨 $cuisines 种不同文化的美食之旅。筛选地道食谱、与 AI 大厨对话,或生成自定义翻译。';
+  }
+
+  @override
+  String brandTagline(int cuisines, int languages) {
+    return '$cuisines 种菜系 · $languages 种语言';
+  }
+
+  @override
+  String exploreResultCount(int count, String scope) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '在 $scope 中显示 $count 道食谱',
+      one: '在 $scope 中显示 1 道食谱',
+      zero: '$scope没有食谱',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get communityBadge => '实时同步';
+
+  @override
+  String get communityTitle => '美食社区分享墙';
+
+  @override
+  String get communitySubtitle => '看看其他美食爱好者正在烹饪什么,或为任何国际菜系上传你自己的作品!';
+
+  @override
+  String get communityShowcaseTitle => '展示你的拿手菜';
+
+  @override
+  String get communityUploadCta => '点击上传美食作品';
+
+  @override
+  String get communityUploadHint => 'JPEG / PNG(自动压缩)';
+
+  @override
+  String get communityChefLabel => '厨师 / 主厨名字';
+
+  @override
+  String get communityChefHint => '如:Nonna Sophia、Alex';
+
+  @override
+  String get communityCaptionLabel => '标题 / 故事';
+
+  @override
+  String get communityCaptionHint => '做给周日晚餐!换成了新鲜香草。';
+
+  @override
+  String get communityShareBtn => '分享到实时墙';
+
+  @override
+  String communityFeedTitle(int count) {
+    return '实时动态($count 张)';
+  }
+
+  @override
+  String get communityEmptyTitle => '暂时没有社区照片';
+
+  @override
+  String get communityEmptySubtitle => '成为第一个为这道菜系上传作品照片的人!';
+
+  @override
+  String get communitySharedToast => '已分享到实时墙!';
+
+  @override
+  String communityByLine(String name) {
+    return 'by $name';
+  }
+
+  @override
+  String get communityRemovePhoto => '重置照片';
+
+  @override
+  String get communityUploading => '正在压缩与分享…';
+
+  @override
+  String get communityUploaded => '已成功发布到实时美食社区';
+
+  @override
+  String communityFilteredTo(String cuisine) {
+    return '筛选中：$cuisine';
+  }
+
+  @override
+  String storiesHeading(String cuisine) {
+    return '$cuisine饮食文化与世际交融';
+  }
+
+  @override
+  String get storiesSubtitle => '探索各餐期经典膳食与源远流长的历史背景，点击卡片可筛选食谱。';
+
+  @override
+  String get storiesActiveBadge => '进行中';
+
+  @override
+  String get footerBlurb =>
+      '一座优雅的美食之门,精选来自多种饮食传统的食谱。借助国际风味与实时 AI 助手,让你的家常菜更上一层楼。';
+
+  @override
+  String get footerQuickNav => '快速导航';
+
+  @override
+  String get footerLinkExplore => '浏览食谱';
+
+  @override
+  String get footerLinkCreator => 'AI 食谱创作';
+
+  @override
+  String get footerLinkCompanion => 'AI 厨房助手';
+
+  @override
+  String get footerLinkSaved => '我的菜谱本';
+
+  @override
+  String get footerConnect => '联系我们';
+
+  @override
+  String get footerEmailHint => '你的邮箱';
+
+  @override
+  String get footerJoin => '加入';
+
+  @override
+  String get footerJoinedToast => '感谢加入!';
+
+  @override
+  String footerCopyright(int year, String brand) {
+    return '© $year $brand. 保留所有权利。';
+  }
+
+  @override
+  String get footerLicense => '基于 MIT 许可发布。';
 
   @override
   String get exploreEmptyTitle => '暂时没有匹配的食谱';
@@ -202,6 +349,30 @@ class AppL10nZh extends AppL10n {
   String get detailIngredients => '食材';
 
   @override
+  String get detailCookingInstructions => '烹饪步骤';
+
+  @override
+  String get detailPrepTime => '准备时间';
+
+  @override
+  String get detailCookTime => '烹饪时间';
+
+  @override
+  String get detailServingsShort => '份量';
+
+  @override
+  String get detailDifficultyEasy => '简单';
+
+  @override
+  String get detailDifficultyMedium => '适中';
+
+  @override
+  String get detailDifficultyHard => '困难';
+
+  @override
+  String get detailClose => '关闭';
+
+  @override
   String get detailSteps => '做法';
 
   @override
@@ -231,10 +402,24 @@ class AppL10nZh extends AppL10n {
   String get savedTitle => '我的收藏';
 
   @override
+  String get savedHeroSubtitle => '你的私人菜谱本。收藏任意菜系的菜品,它们都会出现在这里,方便随时回顾。';
+
+  @override
+  String savedCountHeading(int count) {
+    return '我的收藏菜谱 ($count)';
+  }
+
+  @override
   String get savedEmptyTitle => '还没有收藏的食谱';
 
   @override
   String get savedEmptySubtitle => '在任意食谱上点心形,即可收藏在此。';
+
+  @override
+  String get savedEmptyCta => '立即浏览食谱';
+
+  @override
+  String get savedCloudSyncedBadge => '云端同步';
 
   @override
   String get savedClearAll => '全部清除';
@@ -250,6 +435,22 @@ class AppL10nZh extends AppL10n {
 
   @override
   String get aiCreatorTitle => 'AI 食谱创作';
+
+  @override
+  String get aiCreatorCardTitle => '生成自定义 AI 食谱';
+
+  @override
+  String get aiCreatorCardSubtitle =>
+      '输入手边的食材或想吃的口味,AI 大厨即刻为你用偏好的语言生成一份分步烹饪杰作。';
+
+  @override
+  String get aiCreatorIngredientsLabel => '食材 / 美食灵感';
+
+  @override
+  String get aiCreatorIdeaHintLong => '如:番茄、鸡蛋、葱花,或「清淡健康的豆腐晚餐」';
+
+  @override
+  String get aiCreatorCreateBtn => '生成';
 
   @override
   String get aiCreatorIdeaLabel => '今天想做点什么?';
@@ -286,6 +487,16 @@ class AppL10nZh extends AppL10n {
 
   @override
   String get aiCompanionTitle => 'AI 厨房帮手';
+
+  @override
+  String get aiCompanionActiveFocus => '当前焦点:全球';
+
+  @override
+  String get aiCompanionGreeting =>
+      '你好!我是全球美食 AI 大厨。可以问我食材替代、烹饪技巧,或直接让我为你创作一份全新的定制食谱!';
+
+  @override
+  String get aiCompanionSuggestionsLabel => '美食灵感';
 
   @override
   String get aiCompanionEmptyTitle => '做饭遇到问题随时问我';

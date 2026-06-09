@@ -76,8 +76,20 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   }
 
   void _goNext() {
-    final dest = widget.redirectTo ?? '/';
-    context.go(dest);
+    // Modal flow: if a caller passed a redirect (e.g. /sign-in?next=/my-recipes)
+    // honour it, otherwise just pop the modal so the user lands back on
+    // the page that opened auth.
+    final dest = widget.redirectTo;
+    if (dest != null) {
+      context.go(dest);
+      return;
+    }
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+    } else {
+      context.go('/');
+    }
   }
 
   @override
@@ -159,7 +171,13 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
           TextButton(
             onPressed: _busy
                 ? null
-                : () => context.go('/register', extra: widget.redirectTo),
+                // Replace the current modal route with /register so
+                // flipping between sign-in / register stays inside the
+                // same modal layer (one Back / one close).
+                : () => context.pushReplacement(
+                      '/register',
+                      extra: widget.redirectTo,
+                    ),
             child: Text(l.authSignUpHere),
           ),
         ],
@@ -208,6 +226,9 @@ class _BottomNote extends StatelessWidget {
       style: theme.textTheme.bodySmall?.copyWith(
         color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
         height: 1.4,
+        // Italic "fine-print" voice — matches the editorial subtitle
+        // above and tells the reader this is supporting info, not action.
+        fontStyle: FontStyle.italic,
       ),
     );
   }

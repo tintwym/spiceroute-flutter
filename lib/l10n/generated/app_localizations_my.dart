@@ -1,0 +1,785 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Burmese (`my`).
+class AppL10nMy extends AppL10n {
+  AppL10nMy([String locale = 'my']) : super(locale);
+
+  @override
+  String get appTitle => 'SpiceRoute';
+
+  @override
+  String get navExplore => 'ရှာဖွေပါ';
+
+  @override
+  String get navAiCreator => 'AI ဖန်တီးသူ';
+
+  @override
+  String get navAiCompanion => 'AI လက်ထောက်';
+
+  @override
+  String get navSaved => 'သိမ်းထားသော ချက်ပြုတ်နည်းများ';
+
+  @override
+  String get languageEnglish => 'အင်္ဂလိပ်';
+
+  @override
+  String get languageChinese => 'တရုတ်';
+
+  @override
+  String get languageBurmese => 'မြန်မာ';
+
+  @override
+  String get languageJapanese => 'ဂျပန်';
+
+  @override
+  String get languageKorean => 'ကိုရီးယား';
+
+  @override
+  String get languageVietnamese => 'ဗီယက်နမ်';
+
+  @override
+  String get cuisineAll => 'အားလုံး';
+
+  @override
+  String get cuisineKorean => 'ကိုရီးယားအစားအစာ';
+
+  @override
+  String get cuisineJapanese => 'ဂျပန်အစားအစာ';
+
+  @override
+  String get cuisineChinese => 'တရုတ်အစားအစာ';
+
+  @override
+  String get cuisineBurmese => 'မြန်မာအစားအစာ';
+
+  @override
+  String get cuisineThai => 'ထိုင်းအစားအစာ';
+
+  @override
+  String get cuisineVietnamese => 'ဗီယက်နမ်အစားအစာ';
+
+  @override
+  String get cuisineIndian => 'အိန္ဒိယအစားအစာ';
+
+  @override
+  String get cuisineItalian => 'အီတလီအစားအစာ';
+
+  @override
+  String get cuisineAmericanWestern => 'အမေရိကန် / အနောက်တိုင်း';
+
+  @override
+  String get cuisineMexican => 'မက္ကဆီကို';
+
+  @override
+  String get cuisineFrench => 'ပြင်သစ်';
+
+  @override
+  String get exploreSearchHint =>
+      'ချက်ပြုတ်နည်း၊ ပါဝင်ပစ္စည်း သို့မဟုတ် တဂ်များကို ရှာပါ';
+
+  @override
+  String get exploreSearchHintLong =>
+      'ချက်ပြုတ်နည်း၊ ပါဝင်ပစ္စည်း သို့မဟုတ် အစားအစာအမျိုးအစားများကို ရှာပါ...';
+
+  @override
+  String get heroBadge => 'CULINARY STUDIO';
+
+  @override
+  String get heroTitle => 'SpiceRoute';
+
+  @override
+  String heroSubtitle(int cuisines) {
+    return 'ယဉ်ကျေးမှု $cuisines မျိုးကို ဖြတ်ကျော်သော အစားအစာခရီးကို စတင်လိုက်ပါ။ စစ်မှန်သော ချက်ပြုတ်နည်းများကို စစ်ထုတ်ပါ၊ AI ချက်ပြုတ်ဆရာနှင့် စကားပြောပါ၊ သို့မဟုတ် စိတ်ကြိုက် ဘာသာပြန်များ ဖန်တီးပါ။';
+  }
+
+  @override
+  String brandTagline(int cuisines, int languages) {
+    return 'အစားအစာ $cuisines မျိုး · ဘာသာစကား $languages မျိုး';
+  }
+
+  @override
+  String exploreResultCount(int count, String scope) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$scope တွင် ချက်ပြုတ်နည်း $count ခု ပြသနေသည်',
+      one: '$scope တွင် ချက်ပြုတ်နည်း ၁ ခု ပြသနေသည်',
+      zero: '$scope တွင် ချက်ပြုတ်နည်း မရှိပါ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get communityBadge => 'REAL-TIME SYNC';
+
+  @override
+  String get communityTitle => 'ရပ်ရွာ ချက်ပြုတ်ဘုတ်';
+
+  @override
+  String get communitySubtitle =>
+      'အခြားအစားအသောက်ချစ်သူများ ဘာချက်နေသလဲကြည့်ပါ၊ သို့မဟုတ် မည်သည့်နိုင်ငံတကာအစားအစာအတွက်မဆို သင်ဖန်တီးထားသော အစားအစာများကို တင်ပါ!';
+
+  @override
+  String get communityShowcaseTitle => 'သင်၏ ပန်းကန်ကို ပြသပါ';
+
+  @override
+  String get communityUploadCta => 'ချက်ပြုတ်ထားသော ပုံကို တင်ရန် နှိပ်ပါ';
+
+  @override
+  String get communityUploadHint => 'JPEG / PNG (အလိုအလျောက် ဖိသိမ်းမည်)';
+
+  @override
+  String get communityChefLabel => 'ချက်ပြုတ်သူ၏ အမည်';
+
+  @override
+  String get communityChefHint => 'ဥပမာ - နွန်နာ ဆိုဖီးယား၊ အလက်စ်';
+
+  @override
+  String get communityCaptionLabel => 'ခေါင်းစဉ် / ပုံပြင်';
+
+  @override
+  String get communityCaptionHint =>
+      'တနင်္ဂနွေညစာအတွက် လုပ်ထားပါတယ်! လတ်ဆတ်တဲ့ ဆေးဖက်ဝင်ပင်များဖြင့် အစားထိုးထားပါတယ်။';
+
+  @override
+  String get communityShareBtn => 'တိုက်ရိုက်ဘုတ်တွင် မျှဝေပါ';
+
+  @override
+  String communityFeedTitle(int count) {
+    return 'တိုက်ရိုက်ဖိဒ် ($count ပုံ)';
+  }
+
+  @override
+  String get communityEmptyTitle => 'ရပ်ရွာပုံများ မရှိသေးပါ';
+
+  @override
+  String get communityEmptySubtitle =>
+      'ဤအစားအစာအတွက် သင်ဖန်တီးထားသော ပန်းကန်ပုံကို ပထမဆုံးတင်သူ ဖြစ်လိုက်ပါ!';
+
+  @override
+  String get communitySharedToast => 'တိုက်ရိုက်ဘုတ်တွင် မျှဝေပြီးပါပြီ!';
+
+  @override
+  String communityByLine(String name) {
+    return '$name ၏';
+  }
+
+  @override
+  String get communityRemovePhoto => 'ပုံကို ဖျက်ပါ';
+
+  @override
+  String get communityUploading => 'ချုံ့ပြီး မျှဝေနေသည်…';
+
+  @override
+  String get communityUploaded =>
+      'အသိုင်းအဝိုင်းသို့ အောင်မြင်စွာ တင်ပြီးပါပြီ';
+
+  @override
+  String communityFilteredTo(String cuisine) {
+    return 'စစ်ထုတ်ထား: $cuisine';
+  }
+
+  @override
+  String storiesHeading(String cuisine) {
+    return '$cuisine အစားအသောက် အမွေအနှစ်နှင့် ဆက်နွယ်မှု';
+  }
+
+  @override
+  String get storiesSubtitle =>
+      'ရိုးရာ စားသုံးပုံစံများနှင့် သမိုင်းကြောင်းကို လေ့လာပါ — ဟင်းလျာအမျိုးအစားအလိုက် စစ်ထုတ်ရန် ကတ်ကို နှိပ်ပါ။';
+
+  @override
+  String get storiesActiveBadge => 'ACTIVE';
+
+  @override
+  String get footerBlurb =>
+      'ထူးခြားသော ချက်ပြုတ်အစဉ်အလာများမှ ရွေးချယ်ထားသော ချက်ပြုတ်နည်းများကို ပေးအပ်သည့် ဂုဏ်ယူဖွယ်ကောင်းသော ချက်ပြုတ်တံခါး။ နိုင်ငံတကာ အရသာများနှင့် တိုက်ရိုက် AI အကူအညီဖြင့် သင်၏အိမ်တွင်း ချက်ပြုတ်မှုကို မြှင့်တင်ပါ။';
+
+  @override
+  String get footerQuickNav => 'လမ်းညွှန် အမြန်';
+
+  @override
+  String get footerLinkExplore => 'ချက်ပြုတ်နည်းများ ရှာဖွေပါ';
+
+  @override
+  String get footerLinkCreator => 'AI ချက်ပြုတ်နည်း ဖန်တီးသူ';
+
+  @override
+  String get footerLinkCompanion => 'AI ချက်ပြုတ်ဆရာ လက်ထောက်';
+
+  @override
+  String get footerLinkSaved => 'ကျွန်ုပ်၏ သိမ်းထားသော ချက်ပြုတ်စာအုပ်';
+
+  @override
+  String get footerConnect => 'ကျွန်ုပ်တို့နှင့် ဆက်သွယ်ပါ';
+
+  @override
+  String get footerEmailHint => 'သင်၏ အီးမေးလ်';
+
+  @override
+  String get footerJoin => 'ပါဝင်ပါ';
+
+  @override
+  String get footerJoinedToast => 'ပါဝင်ပေးတဲ့အတွက် ကျေးဇူးတင်ပါတယ်!';
+
+  @override
+  String footerCopyright(int year, String brand) {
+    return '© $year $brand. မူပိုင်ခွင့်အားလုံး ကြိုတင်ထားသည်။';
+  }
+
+  @override
+  String get footerLicense => 'MIT လိုင်စင်အောက်တွင် ထုတ်ပြန်ထားသည်။';
+
+  @override
+  String get exploreEmptyTitle => 'ကိုက်ညီသော ချက်ပြုတ်နည်း မရှိသေးပါ';
+
+  @override
+  String get exploreEmptySubtitle =>
+      'မတူသော အစားအစာအမျိုးအစား စမ်းသုံးပါ သို့မဟုတ် ရှာဖွေမှုကို ရှင်းပစ်ပါ။';
+
+  @override
+  String get exploreErrorTitle => 'ချက်ပြုတ်နည်းများ ဖွင့်၍ မရပါ';
+
+  @override
+  String get exploreErrorRetry => 'ပြန်ကြိုးစားပါ';
+
+  @override
+  String get filterCuisineLabel => 'အစားအစာ ရွေးပါ';
+
+  @override
+  String get filterCourseLabel => 'မီနူး ရွေးပါ';
+
+  @override
+  String get filterDietaryLabel =>
+      'အစားအသောက်၊ ဘဝနေထိုင်မှု နှင့် ပုံစံ ကန့်သတ်ချက်များ';
+
+  @override
+  String get filterAllCuisines => 'အစားအစာအားလုံး';
+
+  @override
+  String get filterAllCourses => 'မီနူးအားလုံး';
+
+  @override
+  String get filterAllDietary => 'တောင်းဆိုမှုအားလုံး';
+
+  @override
+  String get courseBreakfast => 'မနက်စာ နှင့် နံနက်စာ';
+
+  @override
+  String get courseLunch => 'နေ့လည်စာ / ထမင်းဘူး';
+
+  @override
+  String get courseAppetizer =>
+      'ဟင်းပွဲ၊ နှုတ်ဆက်ပွဲ နှင့် လက်ဖြင့်စားသော အစားအစာများ';
+
+  @override
+  String get courseSideDish => 'ဟင်းခွဲများ';
+
+  @override
+  String get courseDessert => 'အချိုပွဲ နှင့် အချို';
+
+  @override
+  String get courseSnack => 'သရေစာ နှင့် ညညဥ့်စာ';
+
+  @override
+  String get courseDrinks => 'သောက်စရာ နှင့် ကော့ထယ်';
+
+  @override
+  String get dietaryVegan => 'ဗီဂန်';
+
+  @override
+  String get dietaryVegetarian => 'သက်သတ်လွတ်';
+
+  @override
+  String get dietaryMealPrep => 'ကြိုပြင်ဆင်ထား';
+
+  @override
+  String get dietaryQuickEasy => 'လွယ်ကူ နှင့် မြန်ဆန်';
+
+  @override
+  String get dietaryPastaSoup => 'ပါစတာ နှင့် ဟင်းချို';
+
+  @override
+  String get dietaryBloodSugarBalanced => 'သွေးတွင်းသကြားဓာတ် မျှတမှု';
+
+  @override
+  String get dietarySwicy => '\"Swicy\" (ချို နှင့် စပ်)';
+
+  @override
+  String get dietaryAntiInflammatory => 'ရောင်ရမ်းမှု ဆန့်ကျင် နှင့် အသက်ရှည်';
+
+  @override
+  String recipeMinutesShort(int minutes) {
+    return '$minutes မိနစ်';
+  }
+
+  @override
+  String recipeHoursShort(int hours) {
+    return '$hours နာရီ';
+  }
+
+  @override
+  String recipeHoursMinutesShort(int hours, int minutes) {
+    return '$hours နာရီ $minutes မိနစ်';
+  }
+
+  @override
+  String recipeServings(int count) {
+    return '$count ပန်းကန်';
+  }
+
+  @override
+  String recipeKcal(int kcal) {
+    return '$kcal kcal';
+  }
+
+  @override
+  String get recipePremiumBadge => 'ရွေးချယ်ထား';
+
+  @override
+  String get recipeAiBadge => 'AI ဖန်တီး';
+
+  @override
+  String get recipeSpiceLevel0 => 'မစပ်';
+
+  @override
+  String get recipeSpiceLevel1 => 'အနည်းငယ်စပ်';
+
+  @override
+  String get recipeSpiceLevel2 => 'စပ်';
+
+  @override
+  String get recipeSpiceLevel3 => 'အလွန်စပ်';
+
+  @override
+  String get detailIngredients => 'ပါဝင်ပစ္စည်းများ';
+
+  @override
+  String get detailCookingInstructions => 'ချက်ပြုတ်နည်း';
+
+  @override
+  String get detailPrepTime => 'ပြင်ဆင်ချိန်';
+
+  @override
+  String get detailCookTime => 'ချက်ပြုတ်ချိန်';
+
+  @override
+  String get detailServingsShort => 'လူဦးရေ';
+
+  @override
+  String get detailDifficultyEasy => 'လွယ်';
+
+  @override
+  String get detailDifficultyMedium => 'အလယ်အလတ်';
+
+  @override
+  String get detailDifficultyHard => 'ခက်';
+
+  @override
+  String get detailClose => 'ပိတ်';
+
+  @override
+  String get detailSteps => 'အဆင့်များ';
+
+  @override
+  String detailStepNumber(int number) {
+    return 'အဆင့် $number';
+  }
+
+  @override
+  String get detailNoDescription => 'ဖော်ပြချက် မရှိပါ။';
+
+  @override
+  String get detailSave => 'သိမ်း';
+
+  @override
+  String get detailSaved => 'သိမ်းပြီး';
+
+  @override
+  String get detailUnsave => 'သိမ်းမှု ဖျက်';
+
+  @override
+  String get detailShare => 'မျှဝေ';
+
+  @override
+  String get detailBack => 'ပြန်';
+
+  @override
+  String get savedTitle => 'ကျွန်ုပ်၏ သိမ်းထားသော ချက်ပြုတ်နည်းများ';
+
+  @override
+  String get savedHeroSubtitle =>
+      'သင်၏ ပုဂ္ဂိုလ်ရေး ချက်ပြုတ်စာအုပ်။ မည်သည့်အစားအစာအမျိုးအစားမှမဆို သင်ကြိုက်နှစ်သက်သော အစားအစာများကို ဘွတ်ခ်မှတ်ထားနိုင်ပြီး ၎င်းတို့သည် ဤနေရာတွင် ပေါ်ပါမည်။';
+
+  @override
+  String savedCountHeading(int count) {
+    return 'ကျွန်ုပ်၏ သိမ်းထားသော ချက်ပြုတ်နည်းများ ($count)';
+  }
+
+  @override
+  String get savedEmptyTitle => 'မည်သည့်အရာမှ မသိမ်းရသေးပါ';
+
+  @override
+  String get savedEmptySubtitle =>
+      'သင်သည် ချက်ပြုတ်နည်းတစ်ခုကိုမှ မသိမ်းရသေးပါ။ မည်သည့်ချက်ပြုတ်နည်းကတ်ပေါ်ရှိ ဘွတ်ခ်မှတ်ပုံကို နှိပ်၍ သင်၏ပုဂ္ဂိုလ်ရေး ချက်ပြုတ်စာအုပ်ကို စတင်တည်ဆောက်ပါ!';
+
+  @override
+  String get savedEmptyCta => 'ချက်ပြုတ်နည်းများ ရှာဖွေပါ';
+
+  @override
+  String get savedCloudSyncedBadge => 'Cloud Sync';
+
+  @override
+  String get savedClearAll => 'အားလုံး ရှင်း';
+
+  @override
+  String get savedClearConfirm =>
+      'သိမ်းထားသော ချက်ပြုတ်နည်းအားလုံးကို ရှင်းမည်လား?';
+
+  @override
+  String get savedClearConfirmYes => 'ရှင်း';
+
+  @override
+  String get savedClearConfirmNo => 'ပယ်ဖျက်';
+
+  @override
+  String get aiCreatorTitle => 'AI ချက်ပြုတ်နည်း ဖန်တီးသူ';
+
+  @override
+  String get aiCreatorCardTitle => 'စိတ်ကြိုက် AI ချက်ပြုတ်နည်း ဖန်တီးပါ';
+
+  @override
+  String get aiCreatorCardSubtitle =>
+      'သင့်တွင်ရှိသော ပါဝင်ပစ္စည်းများ သို့မဟုတ် စားချင်သောအရာများကို ထည့်လိုက်ပါ၊ AI ချက်ပြုတ်ဆရာသည် သင်ကြိုက်နှစ်သက်ရာ ဘာသာစကားဖြင့် အဆင့်ဆင့်ပြထားသော စိတ်ကြိုက် ချက်ပြုတ်နည်းကို ချက်ချင်း ဖန်တီးပေးပါမည်။';
+
+  @override
+  String get aiCreatorIngredientsLabel => 'ပါဝင်ပစ္စည်း / အစားအစာ စိတ်ကူး';
+
+  @override
+  String get aiCreatorIdeaHintLong =>
+      'ဥပမာ - ခရမ်းချဉ်သီး၊ ဥ၊ ကြက်သွန်မြိတ် သို့မဟုတ် \'ပေါ့ပါးကျန်းမာသော တို့ဟူး ညစာ\'';
+
+  @override
+  String get aiCreatorCreateBtn => 'ဖန်တီး';
+
+  @override
+  String get aiCreatorIdeaLabel => 'ဘာချက်ချင်ပါသလဲ?';
+
+  @override
+  String get aiCreatorIdeaHint => 'ဥပမာ - ကျန်ဝိုင်ဖြင့် နွေးထွေးသော မှိုပါစတာ';
+
+  @override
+  String get aiCreatorCuisineLabel => 'အစားအစာအမျိုးအစား';
+
+  @override
+  String get aiCreatorCuisineAuto => 'AI ကို ရွေးခိုင်းပါ';
+
+  @override
+  String get aiCreatorLanguageLabel => 'ချက်ပြုတ်နည်း ဘာသာစကား';
+
+  @override
+  String get aiCreatorGenerate => 'ချက်ပြုတ်နည်း ဖန်တီး';
+
+  @override
+  String get aiCreatorRegenerate => 'ပြန်စမ်းကြည့်';
+
+  @override
+  String get aiCreatorSaveBtn => 'ကျွန်ုပ်၏ ချက်ပြုတ်နည်းများထဲ သိမ်း';
+
+  @override
+  String get aiCreatorSavedToast =>
+      'သိမ်းပြီးပါပြီ! \'သိမ်းထား\' တွင် ပြန်ရှာနိုင်ပါသည်။';
+
+  @override
+  String get aiCreatorErrorTitle => 'ထို ချက်ပြုတ်နည်းကို ဖန်တီး၍ မရပါ';
+
+  @override
+  String get aiCreatorRateLimited =>
+      'ယနေ့ အခမဲ့ ဖန်တီးနိုင်သော ကန့်သတ်ချက်သို့ ရောက်ပြီပါပြီ။ မနက်ဖြန် ပြန်စမ်းပါ။';
+
+  @override
+  String get aiCompanionTitle => 'AI မီးဖိုချောင် လက်ထောက်';
+
+  @override
+  String get aiCompanionActiveFocus => 'လက်ရှိ အာရုံစိုက်မှု: ကမ္ဘာလုံးဆိုင်ရာ';
+
+  @override
+  String get aiCompanionGreeting =>
+      'မင်္ဂလာပါ! ကျွန်တော်က ကမ္ဘာလုံးဆိုင်ရာ အစားအသောက် AI ချက်ပြုတ်ဆရာ ဖြစ်ပါတယ်။ ပါဝင်ပစ္စည်း အစားထိုးခြင်း၊ ချက်ပြုတ်နည်း လှည့်ကွက်များ သို့မဟုတ် လုံးဝအသစ်သော စိတ်ကြိုက် ချက်ပြုတ်နည်း တောင်းခြင်း ဘာမဆို မေးနိုင်ပါတယ်!';
+
+  @override
+  String get aiCompanionSuggestionsLabel => 'အရသာရှိ အကြံပြုချက်များ';
+
+  @override
+  String get aiCompanionEmptyTitle => 'ချက်ပြုတ်ခြင်းအကြောင်း ဘာမဆို မေးပါ';
+
+  @override
+  String get aiCompanionEmptySubtitle =>
+      'အစားထိုးမှု၊ နည်းပညာ၊ အစားအသောက် လဲလှယ်မှု - ကျွန်တော် ဖြေပေးနိုင်ပါတယ်။';
+
+  @override
+  String get aiCompanionInputHint =>
+      'AI ကို အစားအစာချက်ပြုတ်နည်း မေးပါ၊ keto/ဗီဂန် ရွေးချယ်စရာများ တောင်းပါ...';
+
+  @override
+  String get aiCompanionSend => 'ပို့';
+
+  @override
+  String get aiCompanionStop => 'ရပ်';
+
+  @override
+  String get aiCompanionClear => 'ရှင်း';
+
+  @override
+  String get aiCompanionTyping => 'စဉ်းစားနေသည်...';
+
+  @override
+  String get aiCompanionRateLimited =>
+      'ဤနာရီအတွင်း မက်ဆေ့ချ်များ များလွန်းနေပါသည်။ နောက်မှ ပြန်ကြိုးစားပါ။';
+
+  @override
+  String get aiCompanionSuggestion1 =>
+      'ငါးငံပြာရည်အတွက် သက်သတ်လွတ် အစားထိုးကောင်းကောင်းက ဘာလဲ?';
+
+  @override
+  String get aiCompanionSuggestion2 =>
+      'ကိုရီးယား ကင်ချီဂျိုဂို အတွက် စစ်မှန်တဲ့ ဟင်းခွဲတစ်ခု အကြံပြုပါ။';
+
+  @override
+  String get aiCompanionSuggestion3 =>
+      'Szechuan ငရုတ်ကောင်း ထုံကျင်စေတဲ့ အကျိုးကို ရှင်းပြနိုင်လား?';
+
+  @override
+  String get aiCompanionSuggestion4 =>
+      'မြန်မာ မုန့်ဟင်းခါးထဲက အစပ်အပိုင်းကို ဘယ်လို ထိန်းနိုင်မလဲ?';
+
+  @override
+  String get settingsTitle => 'ဆက်တင်များ';
+
+  @override
+  String get settingsAppearance => 'အသွင်အပြင်';
+
+  @override
+  String get settingsTheme => 'အပြင်အဆင်';
+
+  @override
+  String get settingsThemeSystem => 'စနစ်အလိုက်';
+
+  @override
+  String get settingsThemeLight => 'အလင်း';
+
+  @override
+  String get settingsThemeDark => 'အမှောင်';
+
+  @override
+  String get settingsLanguage => 'ဘာသာစကား';
+
+  @override
+  String get settingsAccount => 'အကောင့်';
+
+  @override
+  String settingsAccountSignedInAs(String name) {
+    return '$name အဖြစ် ဝင်ထားသည်';
+  }
+
+  @override
+  String get settingsAccountGuest => 'ဝင်ထားခြင်း မရှိပါ';
+
+  @override
+  String get settingsAbout => 'SpiceRoute အကြောင်း';
+
+  @override
+  String get settingsAboutBody =>
+      'SpiceRoute သည် ကမ္ဘာ့အစားအစာများကို တည်ငြိမ်လှပသော စာကြည့်တိုက်တစ်ခုထဲ စုစည်းပေးပြီး၊ သင်၏မီးဖိုချောင်အတွက် ပြန်လည်ဖန်တီးနိုင်သော AI ကိရိယာများကို ပေးပါသည်။';
+
+  @override
+  String settingsVersion(String version) {
+    return 'ဗားရှင်း $version';
+  }
+
+  @override
+  String get settingsClose => 'ပိတ်';
+
+  @override
+  String get navSettings => 'ဆက်တင်များ';
+
+  @override
+  String get commonClose => 'ပိတ်';
+
+  @override
+  String get commonCancel => 'ပယ်ဖျက်';
+
+  @override
+  String get commonRetry => 'ပြန်ကြိုးစား';
+
+  @override
+  String get commonError => 'တစ်စုံတစ်ရာ မှားယွင်းသွားသည်';
+
+  @override
+  String get commonLoading => 'ဖွင့်နေသည်...';
+
+  @override
+  String get commonNotFound => 'ရှာမတွေ့ပါ';
+
+  @override
+  String get commonOk => 'OK';
+
+  @override
+  String get commonDelete => 'ဖျက်';
+
+  @override
+  String get commonHome => 'ပင်မစာမျက်နှာသို့ ပြန်';
+
+  @override
+  String get authSignIn => 'ဝင်ရောက်';
+
+  @override
+  String get authSignOut => 'ထွက်';
+
+  @override
+  String get authRegister => 'အကောင့်ဖန်တီး';
+
+  @override
+  String get authAccount => 'အကောင့်';
+
+  @override
+  String get authEmail => 'အီးမေးလ်';
+
+  @override
+  String get authPassword => 'စကားဝှက်';
+
+  @override
+  String get authDisplayName => 'ပြသမည့်အမည်';
+
+  @override
+  String get authContinueWithGoogle => 'Google ဖြင့် ဆက်လုပ်';
+
+  @override
+  String get authOrDivider => 'သို့မဟုတ်';
+
+  @override
+  String get authForgotPassword => 'စကားဝှက် မေ့သွားသလား?';
+
+  @override
+  String get authResetSent =>
+      'ထို အီးမေးလ်ကို မှတ်ပုံတင်ထားပါက ပြန်လည်သတ်မှတ်ရန် လင့်ခ်ကို ပို့ထားပါသည်။';
+
+  @override
+  String get authNoAccountYet => 'အကောင့်မရှိသေးဘူးလား?';
+
+  @override
+  String get authHasAccount => 'အကောင့်ရှိပြီးသား ဖြစ်နေပါသလား?';
+
+  @override
+  String get authSignUpHere => 'ဖန်တီးပါ';
+
+  @override
+  String get authSignInHere => 'ဝင်ရောက်ပါ';
+
+  @override
+  String get authProtectedTitle => 'ဝင်ရောက်မှု လိုအပ်သည်';
+
+  @override
+  String get authProtectedBody =>
+      'သင်၏ ချက်ပြုတ်နည်းကို ထုတ်ဖော်ရန် ဝင်ရောက်ပါ။ သင်၏ နာမည်ဖြင့် ဆက်လက်ဖော်ပြထားမည်ဖြစ်ပြီး နောက်ပိုင်းတွင် တည်းဖြတ်ဖျက်ပစ်နိုင်ပါသည်။';
+
+  @override
+  String get authNotConfigured =>
+      'ဝင်ရောက်မှု မပြင်ဆင်ရသေးပါ။ ဖွင့်ရန် Firebase ပြင်ဆင်ချက်ကို ထည့်ပါ။';
+
+  @override
+  String get authDevModeBanner =>
+      'Dev mode - Firebase မပြင်ဆင်ရသေးပါ။ မည်သည့် အီးမေးလ်နှင့် စကားဝှက်မဆို ဤစက်ပစ္စည်းပေါ်တွင် စမ်းသပ်အကောင့်တစ်ခု ဖန်တီးပါမည်။';
+
+  @override
+  String get authWelcomeTitle => 'ပြန်လည်ကြိုဆိုပါသည်';
+
+  @override
+  String get authWelcomeSubtitle =>
+      'သင်၏ စိတ်ကြိုက်ချက်ပြုတ်နည်းများနှင့် ချက်ပြုတ်မှတ်တမ်းများကို ပြန်ရယူရန် ဝင်ရောက်ပါ';
+
+  @override
+  String get authRegisterTitle => 'ချက်ပြုတ်ရေး အကောင့်ဖန်တီး';
+
+  @override
+  String get authRegisterSubtitle =>
+      'သင်၏ စိတ်ကြိုက်ချက်ပြုတ်နည်းများကို တစ်ပြိုင်တည်း ထိန်းသိမ်းရန် ပါဝင်ပါ';
+
+  @override
+  String get authNameLabel => 'သင်၏ ချက်ပြုတ်ရေး အမည်';
+
+  @override
+  String get authNameHint => 'ဥပမာ - ချက်ပြုတ်ဆရာ Oliver';
+
+  @override
+  String get authEmailHint => 'chef@example.com';
+
+  @override
+  String get authPrimarySignIn => 'Studio သို့';
+
+  @override
+  String get authPrimaryRegister => 'အကောင့်ဖန်တီး';
+
+  @override
+  String get authFirebaseNote =>
+      'မှတ်ချက် - ရိုးရိုး အီးမေးလ်/စကားဝှက်ဖြင့် မှတ်ပုံတင်လိုပါက သင်၏ Google Firebase console တွင် စံ အီးမေးလ်/စကားဝှက် authentication ကို ဖွင့်ထားကြောင်း သေချာပါစေ။';
+
+  @override
+  String get authErrorInvalid => 'အီးမေးလ် သို့မဟုတ် စကားဝှက် မှားနေပါသည်။';
+
+  @override
+  String get authErrorEmailInUse =>
+      'ထို အီးမေးလ်ကို မှတ်ပုံတင်ပြီးသား ဖြစ်နေပါသည်။';
+
+  @override
+  String get authErrorWeakPassword =>
+      'ပိုခိုင်မာသော စကားဝှက်ကို ရွေးပါ (အနည်းဆုံး ၆ လုံး)။';
+
+  @override
+  String get authErrorNetwork => 'ကွန်ရက် အမှား။ ပြန်ကြိုးစားပါ။';
+
+  @override
+  String get authErrorGeneric =>
+      'ဝင်ရောက်မှုတွင် တစ်စုံတစ်ရာ မှားယွင်းသွားသည်။';
+
+  @override
+  String get recipeOwnerYou => 'သင်က';
+
+  @override
+  String recipeOwnerBy(String name) {
+    return '$name က';
+  }
+
+  @override
+  String get myRecipesTitle => 'ကျွန်ုပ်၏ ချက်ပြုတ်နည်းများ';
+
+  @override
+  String get myRecipesEmptyTitle => 'ဤနေရာတွင် ဘာမှ မရှိသေးပါ';
+
+  @override
+  String get myRecipesEmptySubtitle =>
+      'သင်ထုတ်ဖော်သော သို့မဟုတ် AI Creator ဖြင့် သိမ်းသော ချက်ပြုတ်နည်းများ ဤနေရာတွင် ပေါ်ပါမည်။';
+
+  @override
+  String get navMyRecipes => 'ကျွန်ုပ်၏';
+
+  @override
+  String get detailEdit => 'တည်းဖြတ်';
+
+  @override
+  String get detailDelete => 'ဖျက်';
+
+  @override
+  String get detailDeleteConfirm =>
+      'ဤချက်ပြုတ်နည်းကို ဖျက်မှာ သေချာလား? ပြန်ပြောင်း၍ မရတော့ပါ။';
+
+  @override
+  String get detailDeleteOk => 'ဖျက်';
+
+  @override
+  String get detailDeletedToast => 'ချက်ပြုတ်နည်း ဖျက်ပြီးပါပြီ။';
+}

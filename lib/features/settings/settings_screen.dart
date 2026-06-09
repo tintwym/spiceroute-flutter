@@ -50,7 +50,9 @@ class SettingsScreen extends ConsumerWidget {
             subtitle: user?.email != null ? Text(user!.email!) : null,
             trailing: user == null
                 ? FilledButton.tonal(
-                    onPressed: () => context.go('/sign-in'),
+                    // Modal flow — push so dismissing returns to Settings
+                    // instead of routing away.
+                    onPressed: () => context.push('/sign-in'),
                     child: Text(l.authSignIn),
                   )
                 : TextButton(
@@ -155,7 +157,7 @@ class _LanguageTile extends ConsumerWidget {
     final entries = <(Locale, String)>[
       (const Locale('en'), l.languageEnglish),
       (const Locale('zh'), l.languageChinese),
-      (const Locale('th'), l.languageThai),
+      (const Locale('my'), l.languageBurmese),
       (const Locale('ja'), l.languageJapanese),
       (const Locale('ko'), l.languageKorean),
       (const Locale('vi'), l.languageVietnamese),

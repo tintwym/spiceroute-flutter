@@ -14,6 +14,67 @@ class CuisinePillBar extends StatelessWidget {
   final Cuisine? value;
   final ValueChanged<Cuisine?> onChanged;
 
+  /// Flag emoji per cuisine — used by the filter dropdown so each option
+  /// has a country flag (and also exposed for any "what country" surface
+  /// that still wants the flag affordance).
+  static String emojiFor(Cuisine c) {
+    switch (c) {
+      case Cuisine.korean:
+        return '🇰🇷';
+      case Cuisine.japanese:
+        return '🇯🇵';
+      case Cuisine.chinese:
+        return '🇨🇳';
+      case Cuisine.burmese:
+        return '🇲🇲';
+      case Cuisine.thai:
+        return '🇹🇭';
+      case Cuisine.vietnamese:
+        return '🇻🇳';
+      case Cuisine.indian:
+        return '🇮🇳';
+      case Cuisine.italian:
+        return '🇮🇹';
+      case Cuisine.americanWestern:
+        return '🇺🇸';
+      case Cuisine.mexican:
+        return '🇲🇽';
+      case Cuisine.french:
+        return '🇫🇷';
+    }
+  }
+
+  /// Food-themed emoji per cuisine — picks the most iconic dish so a
+  /// glance at the top-left card badge tells you "this is sushi" or
+  /// "this is a taco" without reading the title. Used for the small
+  /// circular badge on recipe cards.
+  static String foodEmojiFor(Cuisine c) {
+    switch (c) {
+      case Cuisine.korean:
+        return '🍜';
+      case Cuisine.japanese:
+        return '🍣';
+      case Cuisine.chinese:
+        return '🥟';
+      case Cuisine.burmese:
+        return '🍛';
+      case Cuisine.thai:
+        return '🌶️';
+      case Cuisine.vietnamese:
+        return '🍲';
+      case Cuisine.indian:
+        return '🍛';
+      case Cuisine.italian:
+        return '🍝';
+      case Cuisine.americanWestern:
+        return '🍔';
+      case Cuisine.mexican:
+        return '🌮';
+      case Cuisine.french:
+        return '🥐';
+    }
+  }
+
   static String labelFor(AppL10n l, Cuisine c) {
     switch (c) {
       case Cuisine.korean:

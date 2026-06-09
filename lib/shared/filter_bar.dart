@@ -311,8 +311,8 @@ class _GlassDropdownState<T> extends State<_GlassDropdown<T>> {
         borderRadius: BorderRadius.circular(28),
         onTap: () => _open(context),
         child: Container(
-          height: 48,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          constraints: const BoxConstraints(minHeight: 48),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
             color: cs.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(28),
