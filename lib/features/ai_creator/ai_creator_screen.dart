@@ -380,6 +380,24 @@ class _ErrorBanner extends StatelessWidget {
   }
 }
 
+/// Tolerant numeric coercion for fields the Gemini model is *supposed*
+/// to return as integers per our JSON schema, but occasionally emits as
+/// floats (e.g. `35.0` instead of `35`). A naked `value as int?` cast
+/// would throw `TypeError: 'double' is not a subtype of 'int?'` and
+/// blow up the entire generation preview, even though the underlying
+/// number is semantically integer-valued.
+///
+/// Accepts `int`, `double`, numeric strings, and null. Returns null
+/// for anything that can't be coerced.
+int? _asInt(Object? value) {
+  if (value == null) return null;
+  if (value is int) return value;
+  if (value is double) return value.round();
+  if (value is num) return value.toInt();
+  if (value is String) return int.tryParse(value) ?? double.tryParse(value)?.round();
+  return null;
+}
+
 class _GeneratedRecipePreview extends ConsumerWidget {
   const _GeneratedRecipePreview({required this.recipe});
   final Map<String, dynamic> recipe;
@@ -398,10 +416,10 @@ class _GeneratedRecipePreview extends ConsumerWidget {
     final cuisine = Cuisine.fromWire(cuisineWire);
     final title = (recipe['title'] as String?) ?? '';
     final description = (recipe['description'] as String?) ?? '';
-    final prep = (recipe['prep_minutes'] as int?) ?? 0;
-    final cook = (recipe['cook_minutes'] as int?) ?? 0;
-    final servings = (recipe['servings'] as int?) ?? 1;
-    final calories = recipe['calories_per_serving'] as int?;
+    final prep = _asInt(recipe['prep_minutes']) ?? 0;
+    final cook = _asInt(recipe['cook_minutes']) ?? 0;
+    final servings = _asInt(recipe['servings']) ?? 1;
+    final calories = _asInt(recipe['calories_per_serving']);
 
     return Container(
       padding: const EdgeInsets.all(20),

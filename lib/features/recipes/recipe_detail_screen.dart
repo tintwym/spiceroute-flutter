@@ -14,8 +14,16 @@ import '../../state/providers.dart';
 import '../../state/saved.dart';
 import 'recipe_reviews.dart';
 
+/// `.autoDispose` is critical here: this is a `family` provider keyed by
+/// recipe id, and without auto-dispose every recipe the user has ever
+/// opened stays cached in memory for the lifetime of the app. On a long
+/// browsing session the cache grows unbounded — each entry holds a full
+/// `SpiceRouteDetail` (with all steps, ingredients, image URLs, and the
+/// detached `recipe['photos']` byte payloads on signed-in users).
+/// Auto-dispose tears the entry down as soon as no widget watches it,
+/// which for a modal detail screen is immediately on close.
 final _detailProvider =
-    FutureProvider.family<SpiceRouteDetail, String>((ref, id) async {
+    FutureProvider.autoDispose.family<SpiceRouteDetail, String>((ref, id) async {
   return ref.read(apiClientProvider).getRecipe(id);
 });
 

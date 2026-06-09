@@ -94,6 +94,15 @@ class ExploreController extends StateNotifier<ExploreState> {
   final ApiClient _api;
   Timer? _searchDebounce;
 
+  /// Monotonic counter incremented on every `refresh()` entry. Used as
+  /// a write-fence: only the most recent in-flight request is allowed
+  /// to apply its result. Without this, rapidly cycling cuisine pills
+  /// (or typing fast in the search box) starts multiple parallel API
+  /// calls and the SLOWEST one's results win — so the visible recipes
+  /// stop matching the active filter pills (a common "the filter looks
+  /// broken" bug).
+  int _refreshToken = 0;
+
   void setCuisine(Cuisine? cuisine) {
     if (cuisine == state.cuisine) return;
     state = cuisine == null
@@ -125,6 +134,7 @@ class ExploreController extends StateNotifier<ExploreState> {
   }
 
   Future<void> refresh() async {
+    final token = ++_refreshToken;
     state = state.copyWith(loading: true, clearError: true);
     try {
       final res = await _api.listRecipes(
@@ -132,8 +142,10 @@ class ExploreController extends StateNotifier<ExploreState> {
         cuisine: state.cuisine,
         limit: 60,
       );
+      if (token != _refreshToken) return;
       state = state.copyWith(loading: false, items: res.items);
     } catch (e) {
+      if (token != _refreshToken) return;
       state = state.copyWith(loading: false, error: _humanError(e));
     }
   }

@@ -199,6 +199,17 @@ class _AvatarTrigger extends StatelessWidget {
                 backgroundImage: user?.photoUrl != null
                     ? NetworkImage(user!.photoUrl!)
                     : null,
+                // Swallow load failures silently. Google/Facebook avatar
+                // URLs DO 404 in the wild (deleted accounts, transient
+                // CDN hiccups, signed-URL expiry), and an unhandled
+                // image-load exception logs to the Flutter console on
+                // every rebuild — noisy and useless. The CircleAvatar's
+                // `child` fallback (initial / icon) renders anyway when
+                // backgroundImage fails to paint, so this is purely a
+                // matter of keeping the console clean.
+                onBackgroundImageError: user?.photoUrl != null
+                    ? (_, _) {}
+                    : null,
                 child: user?.photoUrl != null
                     ? null
                     : signedIn

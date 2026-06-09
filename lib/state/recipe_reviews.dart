@@ -3,12 +3,34 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/spice_route.dart';
+import '../shared/image_processing.dart';
 import 'auth.dart';
 import 'user_profile.dart';
+
+/// Translate a thrown exception into a STABLE error code string that
+/// the UI can switch on for localized copy. Critically, never returns
+/// `e.toString()` — that surfaces raw FirebaseException internals
+/// (project ids, internal call paths) directly into the user-facing
+/// banner.
+String _classifyFirestoreError(Object e) {
+  if (e is FirebaseException) {
+    switch (e.code) {
+      case 'permission-denied':
+        return 'permission-denied';
+      case 'unavailable':
+      case 'deadline-exceeded':
+        return 'network-error';
+      case 'resource-exhausted':
+        return 'rate-limited';
+      case 'unauthenticated':
+        return 'not-signed-in';
+    }
+  }
+  return 'generic';
+}
 
 /// A single review on a recipe (UGC). Mirrors the schema the React
 /// companion app writes into the `reviews` Firestore collection so both
@@ -68,7 +90,15 @@ class RecipeReview {
       id: d.id,
       recipeId: (data['recipeId'] as String?) ?? '',
       userId: data['userId'] as String?,
-      userName: (data['userName'] as String?) ?? 'Home Chef',
+      // Coerce missing OR empty/whitespace to the fallback. The new
+      // Firestore rule rejects empty userNames on create, but older
+      // docs (from before the rule landed) or the React companion
+      // may have written blanks — render those as "Home Chef"
+      // rather than an empty author byline with a trailing separator.
+      userName: () {
+        final raw = (data['userName'] as String?)?.trim();
+        return (raw == null || raw.isEmpty) ? 'Home Chef' : raw;
+      }(),
       rating: ((data['rating'] as num?) ?? 5).toInt().clamp(1, 5),
       comment: (data['comment'] as String?) ?? '',
       photoBase64: (data['photoUrl'] as String?) ?? '',
@@ -187,7 +217,10 @@ class ReviewSubmitController extends StateNotifier<ReviewSubmitState> {
       });
       state = state.copy(submitting: false, lastSuccess: true);
     } catch (e) {
-      state = state.copy(submitting: false, error: e.toString());
+      state = state.copy(
+        submitting: false,
+        error: _classifyFirestoreError(e),
+      );
     }
   }
 
@@ -197,30 +230,18 @@ class ReviewSubmitController extends StateNotifier<ReviewSubmitState> {
     try {
       await fs.collection('reviews').doc(reviewId).delete();
     } catch (e) {
-      state = state.copy(error: e.toString());
+      state = state.copy(error: _classifyFirestoreError(e));
     }
   }
 
   void dismissSuccess() => state = state.copy(lastSuccess: false);
 
-  /// Reuses the same compression budget as the community board so review
-  /// photos render at consistent quality across the app and Firestore docs
-  /// stay well under the 1 MB cap.
-  Future<Uint8List> _maybeCompress(Uint8List src) async {
-    if (kIsWeb) return src;
-    try {
-      final out = await FlutterImageCompress.compressWithList(
-        src,
-        minWidth: 800,
-        minHeight: 600,
-        quality: 70,
-        format: CompressFormat.jpeg,
-      );
-      return Uint8List.fromList(out);
-    } catch (_) {
-      return src;
-    }
-  }
+  /// Hands the photo to the shared [compressForUpload] helper, which
+  /// does the same compression budget the community board uses AND
+  /// strips EXIF metadata across web + mobile. Critical for privacy —
+  /// before this, web-uploaded review photos still carried the
+  /// camera's GPS coordinates in their EXIF tags.
+  Future<Uint8List> _maybeCompress(Uint8List src) => compressForUpload(src);
 }
 
 final reviewSubmitProvider =

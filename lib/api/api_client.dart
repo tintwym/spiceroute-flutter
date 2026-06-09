@@ -240,8 +240,26 @@ class ApiClient {
 
     final raw = body.stream.cast<List<int>>().transform(utf8.decoder);
     var buffer = '';
+    // Hard cap on the unframed buffer. A misbehaving backend, a proxy
+    // that fully buffers SSE, or a network that delivers bytes without
+    // the `\n\n` delimiter (rare but real) could otherwise grow the
+    // string indefinitely until the browser tab OOMs. 1 MB is far
+    // above any legitimate SSE frame size for this app (the largest
+    // delta is a single Gemini chunk, kilobytes at most).
+    const maxBufferSize = 1024 * 1024;
     await for (final chunk in raw) {
       buffer += chunk;
+      if (buffer.length > maxBufferSize) {
+        // Drop everything up to the last `data:` prefix so we keep
+        // a chance of recovering if we just missed a delimiter; if
+        // there's no prefix at all, reset entirely.
+        final lastDataIdx = buffer.lastIndexOf('data:');
+        buffer = lastDataIdx > 0 ? buffer.substring(lastDataIdx) : '';
+        throw ApiException(
+          0,
+          'Stream protocol error (oversized buffer).',
+        );
+      }
       while (true) {
         final newlineIdx = buffer.indexOf('\n\n');
         if (newlineIdx < 0) break;
@@ -251,23 +269,32 @@ class ApiClient {
           if (!line.startsWith('data:')) continue;
           final payload = line.substring(5).trim();
           if (payload.isEmpty) continue;
+          // Tolerant decode. `jsonDecode(...) as Map` was throwing a
+          // TypeError (not a FormatException) on valid-but-non-object
+          // payloads — e.g. if a proxy injects a keepalive `data:
+          // "ping"` line, or if the backend ever yields a non-dict
+          // in its error path. Catch broadly so one weird frame
+          // doesn't kill the whole stream.
+          dynamic raw;
           try {
-            final event = jsonDecode(payload) as Map<String, dynamic>;
-            switch (event['type']) {
-              case 'delta':
-                final text = event['text'] as String?;
-                if (text != null && text.isNotEmpty) yield text;
-                break;
-              case 'error':
-                throw ApiException(
-                  502,
-                  event['message']?.toString() ?? 'stream error',
-                );
-              case 'done':
-                return;
-            }
-          } on FormatException {
-            // ignore malformed frames
+            raw = jsonDecode(payload);
+          } catch (_) {
+            continue;
+          }
+          if (raw is! Map<String, dynamic>) continue;
+          final event = raw;
+          switch (event['type']) {
+            case 'delta':
+              final text = event['text'] as String?;
+              if (text != null && text.isNotEmpty) yield text;
+              break;
+            case 'error':
+              throw ApiException(
+                502,
+                event['message']?.toString() ?? 'stream error',
+              );
+            case 'done':
+              return;
           }
         }
       }

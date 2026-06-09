@@ -109,21 +109,34 @@ class AiRecipeController extends StateNotifier<AiRecipeState> {
     }
   }
 
-  /// Append a saved AI recipe to `users/{uid}.customRecipes` (capped at 50
-  /// entries so the doc stays under Firestore's 1 MB cap even with rich
-  /// recipe payloads). De-duplicates by recipe id.
+  /// Append a saved AI recipe REFERENCE to `users/{uid}.customRecipes`
+  /// (capped at 50 entries). De-duplicates by recipe id.
+  ///
+  /// IMPORTANT: we store ONLY the skinny `{id, title, imageUrl,
+  /// createdAt}` shape — NOT the full Gemini payload. An earlier
+  /// version embedded the entire `result.recipe` (including all
+  /// ingredients and step bodies) inline. With Gemini occasionally
+  /// returning ~20 KB recipes, 50 entries × 20 KB plus the user's
+  /// up-to-1000 `savedRecipeIds` strings would blow past Firestore's
+  /// 1 MB document cap. Once that happens, EVERY subsequent
+  /// `ref.set(..., merge: true)` to this doc fails — including the
+  /// unrelated saved-recipes writes — and the user is effectively
+  /// locked out of their own cloud profile until an operator
+  /// manually trims the doc.
+  ///
+  /// Source of truth for the full recipe stays on the backend
+  /// (`saved.id` resolves via `GET /spice_routes/{id}`); this
+  /// list is just a recently-viewed index for the home screen.
   Future<void> _mirrorToCloud(AiRecipeResult result) async {
     final user = _ref.read(authControllerProvider);
     final fs = _ref.read(firestoreProvider);
     if (user == null || fs == null) return;
     final saved = result.saved;
     if (saved == null) return;
-    // The Gemini payload + the backend-assigned id is the most portable
-    // representation — it round-trips through whatever renderer the
-    // consumer uses without depending on `SpiceRouteDetail.toJson`.
     final entry = <String, dynamic>{
       'id': saved.id,
-      'recipe': result.recipe,
+      'title': saved.title,
+      if (saved.imageUrl != null) 'imageUrl': saved.imageUrl,
       'createdAt': DateTime.now().toUtc().toIso8601String(),
     };
     try {

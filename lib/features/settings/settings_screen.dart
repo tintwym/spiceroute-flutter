@@ -51,8 +51,13 @@ class SettingsScreen extends ConsumerWidget {
             trailing: user == null
                 ? FilledButton.tonal(
                     // Modal flow — push so dismissing returns to Settings
-                    // instead of routing away.
-                    onPressed: () => context.push('/sign-in'),
+                    // instead of routing away. Pass `?next=/settings`
+                    // too, otherwise a successful sign-in falls through
+                    // to the default `/` and silently dumps the user
+                    // on Explore instead of bouncing them back here.
+                    onPressed: () => context.push(
+                      '/sign-in?next=${Uri.encodeComponent('/settings')}',
+                    ),
                     child: Text(l.authSignIn),
                   )
                 : TextButton(

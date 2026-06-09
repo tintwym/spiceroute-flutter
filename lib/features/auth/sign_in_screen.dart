@@ -39,37 +39,56 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   Future<void> _signIn() async {
     if (!(_form.currentState?.validate() ?? false)) return;
     setState(() => _busy = true);
-    final result = await ref
-        .read(authControllerProvider.notifier)
-        .signInWithEmail(email: _email.text, password: _password.text);
-    if (!mounted) return;
-    setState(() => _busy = false);
-    if (result.ok) {
-      _flashThenGo(AppL10n.of(context).authSuccessSignIn);
-    } else {
-      showSnack(context, localizeAuthError(AppL10n.of(context), result.error));
+    // try/finally guarantees `_busy` is reset even if the controller
+    // throws an UNCAUGHT exception (network blip, plugin error, etc.).
+    // Without it, the button stays disabled forever and the user is
+    // wedged with no way to retry.
+    try {
+      final result = await ref
+          .read(authControllerProvider.notifier)
+          .signInWithEmail(email: _email.text, password: _password.text);
+      if (!mounted) return;
+      if (result.ok) {
+        _flashThenGo(AppL10n.of(context).authSuccessSignIn);
+      } else {
+        showSnack(context, localizeAuthError(AppL10n.of(context), result.error));
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
   }
 
   Future<void> _google() async {
     setState(() => _busy = true);
-    final result =
-        await ref.read(authControllerProvider.notifier).signInWithGoogle();
-    if (!mounted) return;
-    setState(() => _busy = false);
-    if (result.ok) {
-      _flashThenGo(AppL10n.of(context).authSuccessGoogle);
-    } else if (result.error != 'cancelled') {
-      showSnack(context, localizeAuthError(AppL10n.of(context), result.error));
+    try {
+      final result =
+          await ref.read(authControllerProvider.notifier).signInWithGoogle();
+      if (!mounted) return;
+      if (result.ok) {
+        _flashThenGo(AppL10n.of(context).authSuccessGoogle);
+      } else if (result.error != 'cancelled') {
+        showSnack(context, localizeAuthError(AppL10n.of(context), result.error));
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
   }
 
   /// Show the inline success banner for 1.2s, then navigate. Short enough
   /// that the user isn't blocked, long enough that the affordance reads
   /// as a confirmation rather than a glitch.
+  ///
+  /// The mounted guard inside the callback is mandatory: the user can
+  /// close the modal (or the route can be popped externally by a deep
+  /// link) during the 1.2 s window. Without it, `_goNext` would touch
+  /// `context.go` / `Navigator.of(context)` on a disposed `State`,
+  /// throwing `Looking up a deactivated widget's ancestor is unsafe`.
   void _flashThenGo(String message) {
     setState(() => _successMsg = message);
-    Future<void>.delayed(const Duration(milliseconds: 1200), _goNext);
+    Future<void>.delayed(const Duration(milliseconds: 1200), () {
+      if (!mounted) return;
+      _goNext();
+    });
   }
 
   Future<void> _forgotPassword() async {

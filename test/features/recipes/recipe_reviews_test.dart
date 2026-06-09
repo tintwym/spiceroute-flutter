@@ -76,15 +76,17 @@ Future<void> pumpSection(
 }
 
 void main() {
-  testWidgets('empty state shows fallback 4.8 rating and the "be first" line',
+  testWidgets('empty state shows em-dash instead of fake rating',
       (tester) async {
     final recipe = _recipe();
     await pumpSection(tester, recipe: recipe, reviews: const []);
 
-    // The widget seeds 4.8 when reviews list is empty so the average
-    // never reads as a flat 0.0 (which looks broken). Verify both the
-    // numeric label and the localized "0 reviews" count are present.
-    expect(find.text('4.8'), findsOneWidget);
+    // Honest empty state: no fake 4.8★ — show an em-dash so users
+    // can tell at a glance no one's rated yet. The earlier behavior
+    // showed 4.8 to make recipes "look populated" but it was a dark
+    // pattern (users assumed others had rated when nobody had).
+    expect(find.text('—'), findsOneWidget);
+    expect(find.text('4.8'), findsNothing);
 
     // Photo-gallery empty placeholder: should NOT find any Image widget.
     expect(find.byType(Image), findsNothing);

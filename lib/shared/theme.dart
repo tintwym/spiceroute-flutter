@@ -196,9 +196,49 @@ TextTheme _buildTextTheme(Color onSurface) {
   // is unreachable.
   const serif = 'PlayfairDisplay';
 
+  // fontFamilyFallback — fixes the "Could not find a set of Noto fonts
+  // to display all missing characters" console warning on Flutter web.
+  //
+  // Playfair Display only covers Latin glyphs, and Flutter web's default
+  // sans (Roboto) doesn't cover CJK or Burmese. Without an explicit
+  // fallback chain, Flutter's auto-fallback hits fonts.gstatic.com per
+  // missing glyph subset; if that fails or doesn't cover every char it
+  // spams the console.
+  //
+  // Declaring the chain here makes Flutter pick a font from the user's
+  // OS directly — every modern OS ships at least one of these:
+  //   * macOS / iOS: PingFang SC (zh), Hiragino Sans (ja), Apple SD
+  //                  Gothic Neo (ko), Myanmar Sangam MN (my)
+  //   * Windows:     Microsoft YaHei (zh), Yu Gothic (ja), Malgun Gothic
+  //                  (ko), Myanmar Text (my)
+  //   * Android:     Noto Sans CJK, Noto Sans Myanmar
+  //   * ChromeOS:    Noto fonts
+  //
+  // We list the Noto family names first (they're the most consistent
+  // cross-platform) and the OS-specific names after as backup, then
+  // generic `sans-serif` as final fallback so the browser picks a
+  // reasonable system font on the web.
+  const fallback = <String>[
+    'Noto Sans',
+    'Noto Sans CJK SC',
+    'Noto Sans CJK JP',
+    'Noto Sans CJK KR',
+    'Noto Sans Myanmar',
+    'PingFang SC',
+    'Hiragino Sans',
+    'Apple SD Gothic Neo',
+    'Myanmar MN',
+    'Microsoft YaHei',
+    'Yu Gothic',
+    'Malgun Gothic',
+    'Myanmar Text',
+    'sans-serif',
+  ];
+
   return TextTheme(
     displayLarge: TextStyle(
       fontFamily: serif,
+      fontFamilyFallback: fallback,
       fontSize: 48,
       height: 1.05,
       fontWeight: FontWeight.w700,
@@ -207,6 +247,7 @@ TextTheme _buildTextTheme(Color onSurface) {
     ),
     displayMedium: TextStyle(
       fontFamily: serif,
+      fontFamilyFallback: fallback,
       fontSize: 36,
       height: 1.1,
       fontWeight: FontWeight.w700,
@@ -214,6 +255,7 @@ TextTheme _buildTextTheme(Color onSurface) {
     ),
     headlineLarge: TextStyle(
       fontFamily: serif,
+      fontFamilyFallback: fallback,
       fontSize: 28,
       height: 1.15,
       fontWeight: FontWeight.w700,
@@ -221,6 +263,7 @@ TextTheme _buildTextTheme(Color onSurface) {
     ),
     headlineMedium: TextStyle(
       fontFamily: serif,
+      fontFamilyFallback: fallback,
       fontSize: 22,
       height: 1.2,
       fontWeight: FontWeight.w700,
@@ -228,36 +271,43 @@ TextTheme _buildTextTheme(Color onSurface) {
     ),
     titleLarge: TextStyle(
       fontFamily: serif,
+      fontFamilyFallback: fallback,
       fontSize: 20,
       fontWeight: FontWeight.w700,
       color: onSurface,
     ),
     titleMedium: TextStyle(
+      fontFamilyFallback: fallback,
       fontSize: 16,
       fontWeight: FontWeight.w600,
       color: onSurface,
     ),
     bodyLarge: TextStyle(
+      fontFamilyFallback: fallback,
       fontSize: 16,
       height: 1.5,
       color: onSurface,
     ),
     bodyMedium: TextStyle(
+      fontFamilyFallback: fallback,
       fontSize: 14,
       height: 1.45,
       color: onSurface,
     ),
     bodySmall: TextStyle(
+      fontFamilyFallback: fallback,
       fontSize: 12.5,
       height: 1.4,
       color: onSurface.withValues(alpha: 0.7),
     ),
     labelLarge: TextStyle(
+      fontFamilyFallback: fallback,
       fontSize: 14,
       fontWeight: FontWeight.w600,
       color: onSurface,
     ),
     labelMedium: TextStyle(
+      fontFamilyFallback: fallback,
       fontSize: 12.5,
       fontWeight: FontWeight.w500,
       color: onSurface,

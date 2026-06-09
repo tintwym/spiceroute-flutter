@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -13,9 +12,28 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../models/spice_route.dart';
 import '../../shared/breakpoints.dart';
 import '../../shared/cuisine_chrome.dart';
+import '../../shared/image_processing.dart';
 import '../../shared/widgets.dart';
 import '../../state/explore.dart';
 import '../../state/user_profile.dart';
+
+/// Translate any thrown Firestore exception into a STABLE error code
+/// rather than dumping the raw `e.toString()` (which leaks project
+/// ids + internal call paths) into the user-visible state.
+String _classifyFirestoreError(Object e) {
+  if (e is FirebaseException) {
+    switch (e.code) {
+      case 'permission-denied':
+        return 'permission-denied';
+      case 'unavailable':
+      case 'deadline-exceeded':
+        return 'network-error';
+      case 'resource-exhausted':
+        return 'rate-limited';
+    }
+  }
+  return 'generic';
+}
 
 // ─────────────────────────────────────────────────────────────────────────
 // Model + Firestore data layer
@@ -151,29 +169,18 @@ class CommunityUploadController extends StateNotifier<CommunityUploadState> {
       });
       state = state.copy(uploading: false, lastSuccess: true);
     } catch (e) {
-      state = state.copy(uploading: false, error: e.toString());
+      state = state.copy(
+        uploading: false,
+        error: _classifyFirestoreError(e),
+      );
     }
   }
 
-  /// Mobile platforms get the native compressor for big HEIC/JPEG; on web
-  /// the plugin isn't wired up so we just return the raw bytes (image_picker
-  /// already gives us reasonable JPEGs from `<input type="file">`).
-  Future<Uint8List> _maybeCompress(Uint8List src) async {
-    if (kIsWeb) return src;
-    try {
-      final out = await FlutterImageCompress.compressWithList(
-        src,
-        minWidth: 800,
-        minHeight: 600,
-        quality: 70,
-        format: CompressFormat.jpeg,
-      );
-      return Uint8List.fromList(out);
-    } catch (_) {
-      // Codec missing on this platform — fall back to the raw bytes.
-      return src;
-    }
-  }
+  /// Hands the upload bytes to the shared [compressForUpload] helper,
+  /// which handles BOTH compression AND EXIF stripping across web +
+  /// mobile. The previous bespoke implementation skipped both on web,
+  /// which leaked GPS coordinates in posted photos.
+  Future<Uint8List> _maybeCompress(Uint8List src) => compressForUpload(src);
 
   void dismissSuccess() => state = state.copy(lastSuccess: false);
 }
@@ -771,7 +778,9 @@ class _PostTile extends StatelessWidget {
                         ),
                         if (post.createdAt != null)
                           Text(
-                            DateFormat.MMMd().add_Hm().format(post.createdAt!),
+                            DateFormat.MMMd(
+                              Localizations.localeOf(context).toString(),
+                            ).add_Hm().format(post.createdAt!),
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: Colors.white.withValues(alpha: 0.7),
                               fontFeatures: const [FontFeature.tabularFigures()],

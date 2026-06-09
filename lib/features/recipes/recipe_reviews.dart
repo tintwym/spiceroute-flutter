@@ -89,12 +89,16 @@ class _RatingSummary extends StatelessWidget {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
 
-    // 4.8 is the fallback used by the React companion when no community
-    // reviews exist yet — keeps the average "looking populated" instead
-    // of an empty 0/5. Once a real review lands, this falls away.
-    final double avg = reviews.isEmpty
-        ? 4.8
-        : reviews.map((r) => r.rating).reduce((a, b) => a + b) / reviews.length;
+    // True average over real reviews. Empty state shows an em-dash
+    // instead of a number — the previous build inherited a fake 4.8
+    // from the React companion so the average "looked populated", but
+    // that's a dark pattern (users think other people have rated when
+    // nobody has) and made the platform feel dishonest the moment a
+    // user noticed every brand-new recipe somehow shipped at 4.8.
+    final hasReviews = reviews.isNotEmpty;
+    final double avg = hasReviews
+        ? reviews.map((r) => r.rating).reduce((a, b) => a + b) / reviews.length
+        : 0.0;
     final photoCount = reviews.where((r) => r.hasPhoto).length;
 
     return Container(
@@ -124,16 +128,17 @@ class _RatingSummary extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      avg.toStringAsFixed(1),
+                      hasReviews ? avg.toStringAsFixed(1) : '—',
                       style: theme.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
-                      child: _StarRow(value: avg, size: 14),
-                    ),
+                    if (hasReviews)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: _StarRow(value: avg, size: 14),
+                      ),
                   ],
                 ),
                 const SizedBox(height: 4),
@@ -445,7 +450,12 @@ class _ReviewFormState extends ConsumerState<_ReviewForm> {
   final _author = TextEditingController();
   final _comment = TextEditingController();
   final _picker = ImagePicker();
-  int _rating = 5;
+  // Default to 0 (no rating). The Publish button is disabled until
+  // the user actively taps a star. Previously defaulted to 5, which
+  // silently inflated the average — a user typing "ok" and tapping
+  // Publish would submit a 5★ review without ever touching the
+  // star row.
+  int _rating = 0;
   Uint8List? _photoBytes;
   bool _showSuccess = false;
 
@@ -484,7 +494,10 @@ class _ReviewFormState extends ConsumerState<_ReviewForm> {
   }
 
   Future<void> _submit() async {
-    if (_comment.text.trim().isEmpty) return;
+    // Require both a rating AND a comment. Rating gate also keeps
+    // the average honest (no silent 5★ defaults from people who
+    // never touched the star row).
+    if (_rating < 1 || _comment.text.trim().isEmpty) return;
     await ref.read(reviewSubmitProvider.notifier).submit(
           recipeId: widget.recipe.id,
           userName: _author.text,
@@ -499,7 +512,7 @@ class _ReviewFormState extends ConsumerState<_ReviewForm> {
       setState(() {
         _comment.clear();
         _photoBytes = null;
-        _rating = 5;
+        _rating = 0;
         _showSuccess = true;
       });
       // Auto-dismiss the success banner after a beat so the form is ready
@@ -663,8 +676,15 @@ class _ReviewFormState extends ConsumerState<_ReviewForm> {
           SizedBox(
             width: double.infinity,
             child: FilledButton(
-              onPressed:
-                  state.submitting || _comment.text.trim().isEmpty ? null : _submit,
+              // Gate the button on BOTH a rating ≥ 1 AND a non-empty
+              // comment. The rating gate keeps the average honest;
+              // without it, a user could publish a 5★ default by
+              // typing one word and tapping send.
+              onPressed: state.submitting ||
+                      _comment.text.trim().isEmpty ||
+                      _rating < 1
+                  ? null
+                  : _submit,
               child: Text(
                 state.submitting ? l.reviewsPublishing : l.reviewsPublishBtn,
               ),
@@ -854,7 +874,9 @@ class _ReviewTile extends ConsumerWidget {
                         if (review.createdAt != null) ...[
                           const SizedBox(width: 6),
                           Text(
-                            '· ${DateFormat.yMMMd().format(review.createdAt!)}',
+                            '· ${DateFormat.yMMMd(
+                              Localizations.localeOf(context).toString(),
+                            ).format(review.createdAt!)}',
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: cs.onSurfaceVariant,
                               fontFeatures: const [FontFeature.tabularFigures()],

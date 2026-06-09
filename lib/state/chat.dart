@@ -56,12 +56,13 @@ class ChatController extends StateNotifier<ChatState> {
       clearError: true,
       rateLimited: false,
     );
-    _cancel = CancelToken();
+    final cancel = CancelToken();
+    _cancel = cancel;
     try {
       final stream = _api.chatStream(
         messages: history.sublist(0, history.length - 1),
         language: language,
-        cancelToken: _cancel,
+        cancelToken: cancel,
       );
       await for (final chunk in stream) {
         final list = state.messages;
@@ -75,15 +76,31 @@ class ChatController extends StateNotifier<ChatState> {
       }
       state = state.copyWith(streaming: false);
     } on ApiException catch (e) {
-      state = state.copyWith(
-        streaming: false,
-        error: e.message,
-        rateLimited: e.isRateLimited,
-      );
+      // Tapping "Stop" cancels the CancelToken mid-stream, which
+      // surfaces as a DioException(type: cancel) → ApiException(0,
+      // "Request cancelled."). That's a USER-initiated abort, not
+      // a backend failure — showing it in the red error banner
+      // confuses people ("Why is it telling me something failed? I
+      // pressed the stop button"). Silently land in the "stopped"
+      // state instead; the partial reply already in `messages` is
+      // what the user wanted to keep.
+      if (cancel.isCancelled) {
+        state = state.copyWith(streaming: false);
+      } else {
+        state = state.copyWith(
+          streaming: false,
+          error: e.message,
+          rateLimited: e.isRateLimited,
+        );
+      }
     } catch (e) {
-      state = state.copyWith(streaming: false, error: e.toString());
+      if (cancel.isCancelled) {
+        state = state.copyWith(streaming: false);
+      } else {
+        state = state.copyWith(streaming: false, error: e.toString());
+      }
     } finally {
-      _cancel = null;
+      if (identical(_cancel, cancel)) _cancel = null;
     }
   }
 
@@ -91,6 +108,12 @@ class ChatController extends StateNotifier<ChatState> {
     if (!state.streaming) return;
     _cancel?.cancel();
     _cancel = null;
+    // Flip streaming to false IMMEDIATELY so the UI's spinner/stop
+    // button reacts to the tap without waiting for the SSE stream to
+    // observe the cancellation (which can lag by a chunk). The
+    // catch branch in `send()` is cancel-aware, so it won't
+    // double-flip into the error state when the cancellation
+    // propagates through.
     state = state.copyWith(streaming: false);
   }
 

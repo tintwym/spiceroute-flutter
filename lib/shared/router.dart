@@ -23,8 +23,21 @@ final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/',
     redirect: (context, state) {
+      final auth = ref.read(authControllerProvider.notifier);
       final user = ref.read(authControllerProvider);
       final loc = state.matchedLocation;
+
+      // CRITICAL: don't redirect protected routes until Firebase has
+      // told us whether there's a restored session. On cold start
+      // (especially deep-link to /my-recipes), `state == null` for
+      // a few hundred ms while Firebase Web rehydrates the user
+      // from IndexedDB. Bouncing to /sign-in during that window
+      // causes a visible flash, then a second bounce back when the
+      // real user arrives. Returning `null` here lets the loading
+      // shell paint while we wait; the router re-evaluates as soon
+      // as the auth state notifier emits its first event.
+      if (!auth.isInitialized) return null;
+
       // Gate authed-only routes behind /sign-in.
       if (loc == '/my-recipes' && user == null) {
         return '/sign-in?next=/my-recipes';

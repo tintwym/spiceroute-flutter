@@ -92,20 +92,39 @@ class SavedRecipesController extends StateNotifier<SavedRecipesState> {
       state = state.copyWith(recipes: const [], loading: false);
       return;
     }
-    final futures = state.ids.map((id) async {
-      try {
-        return await _api.getRecipe(id);
-      } catch (_) {
-        return null;
-      }
-    });
-    final results = await Future.wait(futures);
-    final hydrated = results.whereType<SpiceRouteDetail>().toList();
+    // Chunk the fetches into batches of 8 so a 200-bookmark user
+    // doesn't open up 200 parallel HTTP requests at once — that used
+    // to saturate the Dio pool and starve every other view in the
+    // app until they all completed.
+    const batchSize = 8;
+    final ids = state.ids.toList();
+    final hydrated = <SpiceRouteDetail>[];
+    for (var i = 0; i < ids.length; i += batchSize) {
+      final batch = ids.sublist(
+        i,
+        i + batchSize > ids.length ? ids.length : i + batchSize,
+      );
+      final batchResults = await Future.wait(
+        batch.map((id) async {
+          try {
+            return await _api.getRecipe(id);
+          } catch (_) {
+            return null;
+          }
+        }),
+      );
+      hydrated.addAll(batchResults.whereType<SpiceRouteDetail>());
+    }
     // Drop ids that no longer resolve (e.g. deleted server-side).
     final stillValid = hydrated.map((r) => r.id).toSet();
     final pruned = state.ids.intersection(stillValid);
     if (pruned.length != state.ids.length) {
-      await _persist(pruned);
+      final removedIds = state.ids.difference(stillValid);
+      await _persistLocal(pruned);
+      // Use targeted arrayRemove for each cleanup so concurrent
+      // toggles on another device aren't clobbered by a whole-array
+      // overwrite. See `_persistCloudDelta` for the full rationale.
+      await _persistCloudDelta(remove: removedIds);
     }
     state = state.copyWith(
       ids: pruned,
@@ -138,7 +157,15 @@ class SavedRecipesController extends StateNotifier<SavedRecipesState> {
         return;
       }
       state = state.copyWith(ids: merged);
-      await _persist(merged);
+      await _persistLocal(merged);
+      // Push the IDs that exist locally but not in the cloud as
+      // targeted arrayUnion entries. We deliberately don't write the
+      // full merged list back as a whole-array replace — that would
+      // squash any in-flight toggles from a second device.
+      final toAdd = state.ids.difference(cloudIds);
+      if (toAdd.isNotEmpty) {
+        await _persistCloudDelta(add: toAdd);
+      }
       if (hydrateAfter) await _hydrate();
     } catch (_) {
       // Best-effort: a Firestore outage shouldn't break local bookmarks.
@@ -148,7 +175,7 @@ class SavedRecipesController extends StateNotifier<SavedRecipesState> {
   void toggle(SpiceRouteSummary recipe) {
     // Optimistic update: flip state synchronously so the bookmark icon
     // animates immediately, then persist to secure storage in the background.
-    // Awaiting `_persist` first added a perceptible 50–200 ms lag on web
+    // Awaiting `_persist*` first added a perceptible 50–200 ms lag on web
     // (secure_storage uses IndexedDB) and made the button feel sluggish.
     final current = Set<String>.from(state.ids);
     final wasSaved = current.contains(recipe.id);
@@ -162,15 +189,29 @@ class SavedRecipesController extends StateNotifier<SavedRecipesState> {
         : [recipe, ...state.recipes];
     state = state.copyWith(ids: current, recipes: updatedRecipes);
 
-    unawaited(_persist(current));
+    unawaited(_persistLocal(current));
+    // Single-id cloud delta. arrayUnion / arrayRemove commute, so
+    // two devices toggling DIFFERENT recipes at the same time both
+    // succeed — the old whole-array overwrite would silently drop
+    // whichever write landed first.
+    unawaited(_persistCloudDelta(
+      add: wasSaved ? const {} : {recipe.id},
+      remove: wasSaved ? {recipe.id} : const {},
+    ));
   }
 
   void clearAll() {
+    final removed = state.ids;
     state = state.copyWith(ids: const {}, recipes: const []);
-    unawaited(_persist(const {}));
+    unawaited(_persistLocal(const {}));
+    if (removed.isNotEmpty) {
+      unawaited(_persistCloudDelta(remove: removed));
+    }
   }
 
-  Future<void> _persist(Set<String> ids) async {
+  /// Local-only persistence. Always operates on the full current set
+  /// (it's the source of truth on-device).
+  Future<void> _persistLocal(Set<String> ids) async {
     try {
       if (ids.isEmpty) {
         await _storage.delete(key: _savedKey);
@@ -180,21 +221,56 @@ class SavedRecipesController extends StateNotifier<SavedRecipesState> {
     } catch (_) {
       // best-effort
     }
-    // Cloud write-through. Fires in parallel with the local write above;
-    // failures are silent — local storage is the source of truth, Firestore
-    // is the cross-device shadow. A retry loop here would just queue up
-    // duplicate writes on flaky connections.
+  }
+
+  /// Cloud persistence as TARGETED additions / removals using
+  /// [FieldValue.arrayUnion] and [FieldValue.arrayRemove].
+  ///
+  /// Why not just write the whole array (`set({savedRecipeIds: [...]},
+  /// merge: true)`)? Because `merge: true` only merges at the
+  /// *field* level — the array itself is overwritten. So if device
+  /// A is saving recipe X right when device B is saving recipe Y,
+  /// whichever write lands second replaces the other's addition.
+  /// Real "I saved it on my phone, opened the laptop, it's gone"
+  /// report waiting to happen.
+  ///
+  /// arrayUnion / arrayRemove are server-side mutators — they
+  /// commute, so concurrent writes from N devices all succeed
+  /// without clobbering each other.
+  Future<void> _persistCloudDelta({
+    Set<String> add = const {},
+    Set<String> remove = const {},
+  }) async {
+    if (add.isEmpty && remove.isEmpty) return;
     final user = _ref.read(authControllerProvider);
     final fs = _fs;
-    if (user != null && fs != null) {
-      try {
+    if (user == null || fs == null) return;
+    try {
+      final doc = <String, Object>{
+        'updatedAt': FieldValue.serverTimestamp(),
+      };
+      if (add.isNotEmpty) {
+        doc['savedRecipeIds'] = FieldValue.arrayUnion(add.toList());
+      } else if (remove.isNotEmpty) {
+        doc['savedRecipeIds'] = FieldValue.arrayRemove(remove.toList());
+      }
+      // arrayUnion + arrayRemove on the same field in one write is
+      // not allowed by Firestore — split into two writes when both
+      // sides are non-empty.
+      await fs.collection('users').doc(user.uid).set(
+            doc,
+            SetOptions(merge: true),
+          );
+      if (add.isNotEmpty && remove.isNotEmpty) {
         await fs.collection('users').doc(user.uid).set({
-          'savedRecipeIds': ids.toList(),
+          'savedRecipeIds': FieldValue.arrayRemove(remove.toList()),
           'updatedAt': FieldValue.serverTimestamp(),
         }, SetOptions(merge: true));
-      } catch (_) {
-        // ignore — see comment above
       }
+    } catch (_) {
+      // ignore — local storage is the source of truth; Firestore
+      // is the cross-device shadow. A retry loop here would just
+      // queue up duplicate writes on flaky connections.
     }
   }
 

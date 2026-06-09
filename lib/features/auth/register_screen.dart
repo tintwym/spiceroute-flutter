@@ -39,38 +39,53 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Future<void> _register() async {
     if (!(_form.currentState?.validate() ?? false)) return;
     setState(() => _busy = true);
-    final result = await ref
-        .read(authControllerProvider.notifier)
-        .registerWithEmail(
-          email: _email.text,
-          password: _password.text,
-          displayName: _name.text,
-        );
-    if (!mounted) return;
-    setState(() => _busy = false);
-    if (result.ok) {
-      _flashThenGo(AppL10n.of(context).authSuccessRegister);
-    } else {
-      showSnack(context, localizeAuthError(AppL10n.of(context), result.error));
+    // try/finally so `_busy` always resets — even if the controller
+    // throws uncaught (e.g. plugin/network error). See sign_in_screen
+    // for the full rationale.
+    try {
+      final result = await ref
+          .read(authControllerProvider.notifier)
+          .registerWithEmail(
+            email: _email.text,
+            password: _password.text,
+            displayName: _name.text,
+          );
+      if (!mounted) return;
+      if (result.ok) {
+        _flashThenGo(AppL10n.of(context).authSuccessRegister);
+      } else {
+        showSnack(context, localizeAuthError(AppL10n.of(context), result.error));
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
   }
 
   Future<void> _google() async {
     setState(() => _busy = true);
-    final result =
-        await ref.read(authControllerProvider.notifier).signInWithGoogle();
-    if (!mounted) return;
-    setState(() => _busy = false);
-    if (result.ok) {
-      _flashThenGo(AppL10n.of(context).authSuccessGoogle);
-    } else if (result.error != 'cancelled') {
-      showSnack(context, localizeAuthError(AppL10n.of(context), result.error));
+    try {
+      final result =
+          await ref.read(authControllerProvider.notifier).signInWithGoogle();
+      if (!mounted) return;
+      if (result.ok) {
+        _flashThenGo(AppL10n.of(context).authSuccessGoogle);
+      } else if (result.error != 'cancelled') {
+        showSnack(context, localizeAuthError(AppL10n.of(context), result.error));
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
   }
 
+  /// See `sign_in_screen.dart` for the rationale behind the mounted
+  /// guard — same modal-can-be-closed-during-delay use-after-dispose
+  /// race applies here.
   void _flashThenGo(String message) {
     setState(() => _successMsg = message);
-    Future<void>.delayed(const Duration(milliseconds: 1200), _goNext);
+    Future<void>.delayed(const Duration(milliseconds: 1200), () {
+      if (!mounted) return;
+      _goNext();
+    });
   }
 
   /// Same modal-aware navigation as [SignInScreen]: honour an explicit

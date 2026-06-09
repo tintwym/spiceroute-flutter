@@ -20,7 +20,11 @@ dependencies:
   freezed_annotation: ^2.4.4
   json_annotation: ^4.9.0
   cached_network_image: ^3.4.1
-  intl: any
+  # Pinned with a caret range. We were on `any`, which means a fresh
+  # `pub get` on a CI machine could pull a newer major version that
+  # breaks our l10n generated code without warning. Caret allows
+  # minor + patch upgrades within 0.20.x.
+  intl: ^0.20.2
   characters: ^1.4.0
   flutter_svg: ^2.0.10
 

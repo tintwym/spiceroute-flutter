@@ -66,14 +66,26 @@ class _NavSearchFieldState extends ConsumerState<NavSearchField> {
     final cs = theme.colorScheme;
     final state = ref.watch(exploreProvider);
 
-    // Keep the visible text in sync with external resets (e.g. the user
+    // Keep the visible text in sync with EXTERNAL resets (e.g. the user
     // navigates back to Explore and the query was cleared elsewhere).
-    if (_ctl.text != state.q) {
-      _ctl.value = TextEditingValue(
-        text: state.q,
-        selection: TextSelection.collapsed(offset: state.q.length),
-      );
-    }
+    //
+    // We use `ref.listen` instead of mutating the controller inline
+    // during `build`. Direct `_ctl.value = ...` inside build worked,
+    // but it's a Flutter anti-pattern: it triggers another rebuild on
+    // the same frame (the TextField listens to the controller), which
+    // burns frames and can cause a feedback loop if any other widget
+    // also watches `state.q`. `ref.listen` fires only on actual state
+    // changes — safer and cheaper.
+    ref.listen<String>(
+      exploreProvider.select((s) => s.q),
+      (_, next) {
+        if (_ctl.text == next) return;
+        _ctl.value = TextEditingValue(
+          text: next,
+          selection: TextSelection.collapsed(offset: next.length),
+        );
+      },
+    );
 
     final controller = ref.read(exploreProvider.notifier);
 
