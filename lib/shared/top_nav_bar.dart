@@ -71,32 +71,39 @@ class TopNavBar extends ConsumerWidget implements PreferredSizeWidget {
                 constraints: BoxConstraints(maxWidth: maxW),
                 child: LayoutBuilder(builder: (context, constraints) {
                   final w = constraints.maxWidth;
-                  // Reference design always shows endonyms on desktop, so
-                  // we set a generous threshold here. The pills are also
-                  // small enough (~70 px each labelled) that 6 of them
-                  // fit alongside brand + SIGN IN well below 900 px.
-                  //   >= 760 -> flag + endonym
-                  //   >= 540 -> flag-only
-                  //   < 540  -> hidden (settings page handles language)
-                  final showFlagLabels = w >= 760;
+                  // We render flag-only pills at every width — the
+                  // labelled variant pushed the whole language row ~480 px
+                  // wide and broke the right-edge alignment with the body
+                  // ("Showing N recipes", "MY SAVED RECIPES", filter
+                  // dropdowns). Below 540 px we hide the row entirely;
+                  // the in-page Settings + account menu still expose the
+                  // full language list with names.
                   final showFlags = w >= 540;
                   return SizedBox(
                     height: _row1,
                     width: double.infinity,
                     child: Row(
                       children: [
-                        // Brand block: logo + serif wordmark + tagline.
+                        // Brand block: logo + serif wordmark.
                         Flexible(
                           child: _Brand(onTap: () => context.go('/')),
                         ),
                         const SizedBox(width: 16),
                         const Spacer(),
-                        // Pills sized to their natural width — no scroll
-                        // view, no Flexible, so what you see is always
-                        // the full row starting at the active language
-                        // on the left.
+                        // Flag-only pills tucked tight against the
+                        // trailing SIGN IN / avatar so the language UI's
+                        // right edge lines up with the body's right
+                        // edge (Showing N recipes, MY SAVED RECIPES,
+                        // filter dropdowns). We used to render endonyms
+                        // here too (English / 中文 / မြန်မာ / …) but
+                        // that made the row ~480 px wide and pushed
+                        // the language UI well left of the body's
+                        // right-side content. Endonyms still live in
+                        // the account-menu language submenu and on the
+                        // Settings page; the tooltips on each pill
+                        // cover hover-discovery on web.
                         if (showFlags) ...[
-                          LanguageFlagPills(showLabels: showFlagLabels),
+                          const LanguageFlagPills(showLabels: false),
                           const SizedBox(width: 12),
                         ],
                         ...actions,

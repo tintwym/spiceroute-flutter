@@ -88,43 +88,56 @@ class _Pill extends StatelessWidget {
     // selected language reads as the obvious anchor of the row.
     const Color activeBorder = Color(0xFF3D8BFD);
 
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        onTap: onTap,
+    // The flag-only variant lives in the top nav for compactness — the
+    // endonym is the only thing that tells you "this is Burmese vs
+    // Japanese" once labels are gone, so wrap the pill in a Tooltip so
+    // hovering on web / long-pressing on mobile reveals the language
+    // name. The labelled variant still shows the endonym inline, but
+    // the tooltip stays for keyboard / screen-reader users.
+    return Tooltip(
+      message: option.label,
+      child: Material(
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(20),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 140),
-          curve: Curves.easeOut,
-          padding: EdgeInsets.symmetric(
-            horizontal: showLabel ? 9 : 7,
-            vertical: 5,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: selected ? activeBorder : Colors.transparent,
-              width: 1.5,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(20),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 140),
+            curve: Curves.easeOut,
+            padding: EdgeInsets.symmetric(
+              horizontal: showLabel ? 9 : 7,
+              vertical: 5,
             ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(option.flag, style: const TextStyle(fontSize: 13, height: 1)),
-              if (showLabel) ...[
-                const SizedBox(width: 5),
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: selected ? activeBorder : Colors.transparent,
+                width: 1.5,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
                 Text(
-                  option.label,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    fontSize: 12,
-                    color: selected ? cs.onSurface : cs.onSurfaceVariant,
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                  ),
+                  option.flag,
+                  style: const TextStyle(fontSize: 13, height: 1),
                 ),
+                if (showLabel) ...[
+                  const SizedBox(width: 5),
+                  Text(
+                    option.label,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      fontSize: 12,
+                      color: selected ? cs.onSurface : cs.onSurfaceVariant,
+                      fontWeight:
+                          selected ? FontWeight.w700 : FontWeight.w500,
+                    ),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),

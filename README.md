@@ -155,6 +155,53 @@ flutter build apk --release
 flutter build ios --release   # requires Xcode + Apple Developer signing
 ```
 
+## Deployment
+
+### Web → Vercel
+
+The repo ships with a ready-to-use Vercel config (`vercel.json` + `build.sh`):
+
+- `vercel.json` — disables Vercel's default Node install (`installCommand: "echo skip"`), runs `bash build.sh`, serves from `build/web`, rewrites every unknown path to `/index.html` (so deep links like `/recipes/abc-123` work with `go_router`), and stamps long-lived `Cache-Control` headers on hashed assets while keeping `index.html` no-cache.
+- `build.sh` — Vercel's build container has no Flutter toolchain, so the script clones a pinned `FLUTTER_VERSION` of the SDK into `flutter-sdk/` (cached between builds when possible), runs `flutter pub get`, then `flutter build web --release --no-tree-shake-icons --dart-define=API_BASE_URL=$API_BASE_URL`.
+
+`--no-tree-shake-icons` is deliberate — `ShellDestination` stores `IconData` in a field, which defeats Flutter's static-icon tree-shake and would otherwise leave blank squares in the bottom-nav on mobile builds.
+
+#### One-time Vercel setup
+
+1. **Pre-requisite: a deployed backend.** The Flutter app talks to `spiceroute-backend` for `/spice_routes` and `/ai/*`. Deploy that first — the backend repo ships a ready-to-use [Render Blueprint](../render.yaml) (see `spiceroute-backend/README.md` → Deployment → Render). Any HTTPS-reachable host works (Railway, Cloud Run, etc.) — just grab the URL.
+2. **Create a Vercel project** pointing at this repo. In _Project Settings → General_:
+   - **Root Directory**: `spiceroute-flutter` (so Vercel finds `vercel.json` and `build.sh`)
+   - **Framework Preset**: `Other` (already overridden by `vercel.json`)
+   - **Build / Install / Output**: leave blank — `vercel.json` provides them
+3. **Set environment variables** in _Project Settings → Environment Variables_:
+
+   | Name | Value | Notes |
+   |---|---|---|
+   | `API_BASE_URL` | `https://your-backend.example.com` | **Required.** Without it the build warns and the app falls back to `http://localhost:8000`. |
+   | `FLUTTER_VERSION` | e.g. `3.27.1` | Optional. Defaults to `stable`. Pin to a tag for reproducible builds. |
+
+4. **Backend CORS** — add your Vercel preview + production domains to `CORS_ORIGINS` in the backend `.env` (`https://your-app.vercel.app,https://your-app-*.vercel.app`).
+5. **Firebase Auth authorized domains** — in [Firebase Console → Authentication → Settings → Authorized domains](https://console.firebase.google.com), add `your-app.vercel.app` (and any custom domain). Without this, Google Sign-In popups will fail in production.
+6. **Firestore rules** — deploy from the repo root with `firebase deploy --only firestore:rules` (rules live at `../firestore.rules`).
+7. **First deploy**: push to your default branch, or run `vercel --prod` from inside `spiceroute-flutter/`.
+
+#### Local dry-run (mirrors what Vercel will do)
+
+Before the first deploy, sanity-check the build locally:
+
+```bash
+cd spiceroute-flutter
+API_BASE_URL=https://your-backend.example.com bash build.sh
+# Then preview:
+cd build/web && python3 -m http.server 8080
+```
+
+Open <http://localhost:8080>. If the page loads, hot-tap a few routes (cuisine pills, recipe modal, sign-in), and the network tab shows requests against `https://your-backend.example.com` — you're good to ship.
+
+### Mobile
+
+`build.sh` is web-only. For native builds use the standard `flutter build apk` / `flutter build ios` flow described above and ship via Play Console / TestFlight. Set `API_BASE_URL` via `--dart-define` at build time; Vercel is not involved.
+
 ## App icons
 
 Icons are generated from `assets/icon/icon.png` (1024×1024 source). After replacing the source, regenerate platform-specific assets with:
