@@ -73,3 +73,36 @@ double recipeCardMaxExtent(BuildContext context) {
       return 320;
   }
 }
+
+/// Fixed column count for the main Explore grid. The design calls for
+/// exactly 4 cards per row on desktop/wide; smaller classes step down so
+/// the rich card footer (time · servings · kcal · difficulty) still fits
+/// without clipping.
+int recipeGridColumns(BuildContext context) {
+  switch (deviceClassOf(context)) {
+    case DeviceClass.phone:
+      return 1;
+    case DeviceClass.tablet:
+      return 2;
+    case DeviceClass.desktop:
+      return 4;
+    case DeviceClass.wide:
+      return 4;
+  }
+}
+
+/// Width / height ratio for grid cards, tuned per column count so the
+/// worst case (2-line title + 2-line description + footer) never overflows
+/// the cell. Lower = taller cell.
+double recipeCardAspectRatio(BuildContext context) {
+  switch (deviceClassOf(context)) {
+    case DeviceClass.phone:
+      return 0.82;
+    case DeviceClass.tablet:
+      return 0.80;
+    case DeviceClass.desktop:
+      return 0.70;
+    case DeviceClass.wide:
+      return 0.74;
+  }
+}

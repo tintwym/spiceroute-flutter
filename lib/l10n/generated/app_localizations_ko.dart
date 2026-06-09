@@ -30,7 +30,7 @@ class AppL10nKo extends AppL10n {
   String get languageChinese => '중국어';
 
   @override
-  String get languageThai => '태국어';
+  String get languageBurmese => '버마어';
 
   @override
   String get languageJapanese => '일본어';
@@ -79,6 +79,155 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get exploreSearchHint => '레시피, 재료, 태그 검색';
+
+  @override
+  String get exploreSearchHintLong => '레시피, 재료 또는 요리를 검색...';
+
+  @override
+  String get heroBadge => 'CULINARY STUDIO';
+
+  @override
+  String get heroTitle => 'SpiceRoute';
+
+  @override
+  String heroSubtitle(int cuisines) {
+    return '$cuisines가지 서로 다른 식문화를 둘러보는 미식 여행을 시작하세요. 정통 레시피를 필터링하고, AI 셰프와 대화하고, 원하는 언어로 번역을 만들어 보세요.';
+  }
+
+  @override
+  String brandTagline(int cuisines, int languages) {
+    return '요리 $cuisines가지 · 언어 $languages개';
+  }
+
+  @override
+  String exploreResultCount(int count, String scope) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$scope에서 레시피 $count개 표시 중',
+      one: '$scope에서 레시피 1개 표시 중',
+      zero: '$scope에 레시피가 없어요',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get communityBadge => '실시간 동기화';
+
+  @override
+  String get communityTitle => '커뮤니티 요리 게시판';
+
+  @override
+  String get communitySubtitle =>
+      '다른 음식 애호가들이 무엇을 만들고 있는지 살펴보거나, 어떤 세계 요리든 직접 만든 작품을 업로드하세요!';
+
+  @override
+  String get communityShowcaseTitle => '당신의 요리를 자랑하세요';
+
+  @override
+  String get communityUploadCta => '클릭해서 요리 사진을 업로드';
+
+  @override
+  String get communityUploadHint => 'JPEG / PNG (자동 압축)';
+
+  @override
+  String get communityChefLabel => '셰프 / 요리사 이름';
+
+  @override
+  String get communityChefHint => '예: 노나 소피아, 알렉스';
+
+  @override
+  String get communityCaptionLabel => '캡션 / 사연';
+
+  @override
+  String get communityCaptionHint => '일요일 저녁으로 만들었어요! 신선한 허브로 대체했어요.';
+
+  @override
+  String get communityShareBtn => '라이브 보드에 공유';
+
+  @override
+  String communityFeedTitle(int count) {
+    return '라이브 피드 ($count장)';
+  }
+
+  @override
+  String get communityEmptyTitle => '아직 사진이 없어요';
+
+  @override
+  String get communityEmptySubtitle => '이 요리의 첫 번째 작품 사진을 가장 먼저 올려 보세요!';
+
+  @override
+  String get communitySharedToast => '라이브 보드에 공유했어요!';
+
+  @override
+  String communityByLine(String name) {
+    return 'by $name';
+  }
+
+  @override
+  String get communityRemovePhoto => '사진 삭제';
+
+  @override
+  String get communityUploading => '압축 후 공유 중…';
+
+  @override
+  String get communityUploaded => '라이브 피드에 공개되었습니다';
+
+  @override
+  String communityFilteredTo(String cuisine) {
+    return '필터: $cuisine';
+  }
+
+  @override
+  String storiesHeading(String cuisine) {
+    return '$cuisine의 식문화 역사와 크로스컬처 연결';
+  }
+
+  @override
+  String get storiesSubtitle =>
+      '하루 한 끼, 식탁 위에 깃든 역사적 배경과 전통 접근법 요약 (카드를 클릭하여 필터링)';
+
+  @override
+  String get storiesActiveBadge => 'ACTIVE';
+
+  @override
+  String get footerBlurb =>
+      '다양한 요리 전통에서 엄선한 레시피를 모은 우아한 미식 게이트웨이. 국제적인 풍미와 실시간 AI 도움으로 가정 요리를 한 단계 끌어올리세요.';
+
+  @override
+  String get footerQuickNav => '퀵 내비게이션';
+
+  @override
+  String get footerLinkExplore => '레시피 탐색';
+
+  @override
+  String get footerLinkCreator => 'AI 레시피 작성기';
+
+  @override
+  String get footerLinkCompanion => 'AI 셰프 어시스턴트';
+
+  @override
+  String get footerLinkSaved => '내 저장 요리책';
+
+  @override
+  String get footerConnect => '함께하기';
+
+  @override
+  String get footerEmailHint => '이메일 주소';
+
+  @override
+  String get footerJoin => '허브 가입';
+
+  @override
+  String get footerJoinedToast => '허브 가입에 감사드려요!';
+
+  @override
+  String footerCopyright(int year, String brand) {
+    return '© $year $brand. All rights reserved.';
+  }
+
+  @override
+  String get footerLicense => 'MIT 라이선스로 공개됩니다.';
 
   @override
   String get exploreEmptyTitle => '일치하는 레시피가 없어요';
@@ -202,6 +351,30 @@ class AppL10nKo extends AppL10n {
   String get detailIngredients => '재료';
 
   @override
+  String get detailCookingInstructions => '조리 방법';
+
+  @override
+  String get detailPrepTime => '준비 시간';
+
+  @override
+  String get detailCookTime => '조리 시간';
+
+  @override
+  String get detailServingsShort => '분량';
+
+  @override
+  String get detailDifficultyEasy => '쉬움';
+
+  @override
+  String get detailDifficultyMedium => '보통';
+
+  @override
+  String get detailDifficultyHard => '어려움';
+
+  @override
+  String get detailClose => '닫기';
+
+  @override
   String get detailSteps => '조리법';
 
   @override
@@ -231,10 +404,24 @@ class AppL10nKo extends AppL10n {
   String get savedTitle => '내가 저장한 레시피';
 
   @override
+  String get savedHeroSubtitle => '당신만의 요리책. 어떤 요리든 북마크해 두면 언제든 다시 꺼내 볼 수 있어요.';
+
+  @override
+  String savedCountHeading(int count) {
+    return '내 저장 레시피 ($count)';
+  }
+
+  @override
   String get savedEmptyTitle => '아직 저장한 레시피가 없어요';
 
   @override
   String get savedEmptySubtitle => '마음에 드는 레시피의 하트를 눌러 저장하세요.';
+
+  @override
+  String get savedEmptyCta => '레시피 탐색하기';
+
+  @override
+  String get savedCloudSyncedBadge => '클라우드 동기화';
 
   @override
   String get savedClearAll => '전체 삭제';
@@ -250,6 +437,22 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get aiCreatorTitle => 'AI 레시피 만들기';
+
+  @override
+  String get aiCreatorCardTitle => '맞춤 AI 레시피 생성';
+
+  @override
+  String get aiCreatorCardSubtitle =>
+      '가지고 있는 재료나 먹고 싶은 것을 입력하면, AI 셰프가 원하는 언어로 단계별 맞춤 요리를 곧바로 만들어 드려요.';
+
+  @override
+  String get aiCreatorIngredientsLabel => '재료 / 아이디어';
+
+  @override
+  String get aiCreatorIdeaHintLong => '예: 토마토, 달걀, 쪽파 또는 \'가벼운 두부 저녁\'';
+
+  @override
+  String get aiCreatorCreateBtn => '만들기';
 
   @override
   String get aiCreatorIdeaLabel => '오늘은 무엇을 만들까요?';
@@ -285,7 +488,32 @@ class AppL10nKo extends AppL10n {
   String get aiCreatorRateLimited => '오늘의 무료 생성 한도를 모두 사용했어요. 내일 다시 시도해 주세요.';
 
   @override
+  String get aiCreatorQuote1 => '칼을 갈고 대파를 다지는 중…';
+
+  @override
+  String get aiCreatorQuote2 => '향신료를 볶아 황금빛 향을 끌어올리는 중…';
+
+  @override
+  String get aiCreatorQuote3 => '정성스러운 육수를 끓이고 간을 맞추는 중…';
+
+  @override
+  String get aiCreatorQuote4 => '당신의 입맛에 맞춰 최상급 재료를 고르는 중…';
+
+  @override
+  String get aiCreatorQuote5 => '완벽한 결과를 위해 단계별 안내를 정리하는 중…';
+
+  @override
   String get aiCompanionTitle => 'AI 주방 도우미';
+
+  @override
+  String get aiCompanionActiveFocus => '활성 포커스: 글로벌';
+
+  @override
+  String get aiCompanionGreeting =>
+      '안녕하세요! 글로벌 미식 AI 셰프예요. 재료 대체, 요리 팁, 완전히 새로운 맞춤 레시피까지 무엇이든 물어보세요!';
+
+  @override
+  String get aiCompanionSuggestionsLabel => '고메 추천';
 
   @override
   String get aiCompanionEmptyTitle => '요리에 관해 무엇이든 물어보세요';
@@ -310,6 +538,11 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get aiCompanionRateLimited => '이번 시간에 메시지가 너무 많아요. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String aiCompanionActiveFocusCuisine(String cuisine) {
+    return '활성 포커스: $cuisine';
+  }
 
   @override
   String get aiCompanionSuggestion1 => '피쉬 소스의 비건 대체품은?';
@@ -505,6 +738,15 @@ class AppL10nKo extends AppL10n {
   String get authErrorGeneric => '로그인 중 오류가 발생했어요.';
 
   @override
+  String get authSuccessSignIn => '로그인되었습니다. 즐거운 요리 되세요!';
+
+  @override
+  String get authSuccessRegister => '계정이 생성되었습니다. 환영합니다!';
+
+  @override
+  String get authSuccessGoogle => 'Google 로그인 완료!';
+
+  @override
   String get recipeOwnerYou => '내가 작성';
 
   @override
@@ -539,4 +781,91 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get detailDeletedToast => '레시피를 삭제했어요.';
+
+  @override
+  String get reviewsTitle => '커뮤니티 갤러리 및 후기';
+
+  @override
+  String get reviewsSubtitle => '다른 홈 셰프들의 요리 작품을 보거나, 직접 만든 요리 사진을 업로드해 보세요!';
+
+  @override
+  String get reviewsAverage => '평균 평점';
+
+  @override
+  String reviewsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '후기 $count개',
+      one: '후기 1개',
+      zero: '아직 후기가 없습니다',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reviewsUploadedCooks(int count) {
+    return '업로드 사진: $count';
+  }
+
+  @override
+  String get reviewsEmptyState => '아직 등록된 사진이 없습니다. 직접 요리하고 첫 번째 후기를 작성해 보세요!';
+
+  @override
+  String get reviewsLoginPrompt => '요리를 등록하고 평점을 남기려면 먼저 로그인해 주세요.';
+
+  @override
+  String get reviewsLoginCta => '로그인하고 후기 남기기';
+
+  @override
+  String get reviewsFormTitle => '나만의 요리 인증하기';
+
+  @override
+  String get reviewsRatingLabel => '평점';
+
+  @override
+  String get reviewsAuthorLabel => '닉네임';
+
+  @override
+  String get reviewsAuthorHint => '여기에 닉네임을 적어주세요…';
+
+  @override
+  String get reviewsCommentLabel => '요리 한 줄 평';
+
+  @override
+  String get reviewsCommentHint =>
+      '맛은 어땠나요? 나만의 꿀팁이나 대체 재료가 있다면 공유해 주세요 (예: 마늘 가득!)';
+
+  @override
+  String get reviewsPhotoHint => '탭하여 완성된 요리 사진을 첨부하세요';
+
+  @override
+  String get reviewsPublishBtn => '커뮤니티에 전송';
+
+  @override
+  String get reviewsPublishing => '게시 중…';
+
+  @override
+  String get reviewsSubmitted => '갤러리에 정상적으로 등록되었습니다!';
+
+  @override
+  String get reviewsPostAnother => '다른 후기 남기기';
+
+  @override
+  String get reviewsPhotoTooLarge => '사진이 너무 큽니다. 작은 사진으로 다시 시도해 주세요.';
+
+  @override
+  String get reviewsErrorGeneric => '후기 등록에 실패했습니다. 다시 시도해 주세요.';
+
+  @override
+  String get reviewsDeleteTooltip => '후기 삭제';
+
+  @override
+  String get reviewsDeleteConfirm => '내 후기를 삭제하시겠어요?';
+
+  @override
+  String get reviewsAnonymousChef => '홈 셰프';
+
+  @override
+  String get reviewsLightboxCloseTooltip => '사진 닫기';
 }

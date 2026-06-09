@@ -4,7 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../models/chat.dart';
 import '../../shared/breakpoints.dart';
+import '../../shared/cuisine_pill_bar.dart';
+import '../../shared/studio_page.dart';
 import '../../state/chat.dart';
+import '../../state/explore.dart';
 import '../../state/locale.dart';
 
 class AiCompanionScreen extends ConsumerStatefulWidget {
@@ -48,126 +51,270 @@ class _AiCompanionScreenState extends ConsumerState<AiCompanionScreen> {
   Widget build(BuildContext context) {
     final l = AppL10n.of(context);
     final theme = Theme.of(context);
+    final cs = theme.colorScheme;
     final state = ref.watch(chatProvider);
+    final dc = deviceClassOf(context);
 
     ref.listen(chatProvider, (_, _) => _scrollToBottom());
 
-    return Padding(
-      padding: pagePadding(context),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: contentMaxWidth(context)),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(l.aiCompanionTitle,
-                          style: theme.textTheme.headlineLarge),
-                    ),
-                    if (state.messages.isNotEmpty)
-                      TextButton.icon(
-                        onPressed: state.streaming
-                            ? null
-                            : () => ref.read(chatProvider.notifier).clear(),
-                        icon: const Icon(Icons.delete_sweep_outlined),
-                        label: Text(l.aiCompanionClear),
-                      ),
-                  ],
-                ),
-              ),
-              if (state.messages.isEmpty)
-                Expanded(child: _EmptyState(onPick: _send))
-              else
-                Expanded(
-                  child: ListView.builder(
+    final isEmpty = state.messages.isEmpty;
+    final double chatHeight = switch (dc) {
+      DeviceClass.phone => 320,
+      DeviceClass.tablet => 360,
+      DeviceClass.desktop => 400,
+      DeviceClass.wide => 440,
+    };
+
+    final card = Container(
+      decoration: BoxDecoration(
+        color: cs.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: cs.outlineVariant),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          _CardHeader(
+            showClear: !isEmpty,
+            onClear: state.streaming
+                ? null
+                : () => ref.read(chatProvider.notifier).clear(),
+          ),
+          Divider(height: 1, color: cs.outlineVariant),
+          SizedBox(
+            height: chatHeight,
+            child: isEmpty
+                ? _GreetingView(scrollController: _scrollCtl)
+                : ListView.builder(
                     controller: _scrollCtl,
-                    padding: const EdgeInsets.only(bottom: 24),
+                    padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
                     itemCount: state.messages.length,
                     itemBuilder: (_, i) =>
                         _MessageBubble(message: state.messages[i]),
                   ),
-                ),
-              if (state.error != null)
-                Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.errorContainer,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Text(
-                    state.rateLimited
-                        ? l.aiCompanionRateLimited
-                        : state.error!,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onErrorContainer,
-                    ),
-                  ),
-                ),
-              _Composer(
-                controller: _inputCtl,
-                streaming: state.streaming,
-                onSend: _send,
-                onStop: () => ref.read(chatProvider.notifier).cancel(),
-              ),
-              const SizedBox(height: 16),
-            ],
           ),
-        ),
+          if (isEmpty) _Suggestions(onPick: _send),
+          if (state.error != null)
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: cs.errorContainer,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Text(
+                state.rateLimited ? l.aiCompanionRateLimited : state.error!,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: cs.onErrorContainer,
+                ),
+              ),
+            ),
+          Divider(height: 1, color: cs.outlineVariant),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: _Composer(
+              controller: _inputCtl,
+              streaming: state.streaming,
+              onSend: _send,
+              onStop: () => ref.read(chatProvider.notifier).cancel(),
+            ),
+          ),
+        ],
       ),
     );
+
+    return StudioPage(child: card);
   }
 }
 
-class _EmptyState extends ConsumerWidget {
-  const _EmptyState({required this.onPick});
-  final ValueChanged<String> onPick;
+/// Card title bar: chef avatar + "AI Kitchen Companion" + active focus, with
+/// a reset button on the right once a conversation has started.
+///
+/// "Active Focus" pulls the currently-selected cuisine from
+/// [exploreProvider] so the chat reflects what the user is browsing.
+/// Falls back to the generic "Global" label when "All cuisines" is
+/// selected, matching the React companion behaviour.
+class _CardHeader extends ConsumerWidget {
+  const _CardHeader({required this.showClear, required this.onClear});
+  final bool showClear;
+  final VoidCallback? onClear;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppL10n.of(context);
     final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final cuisine = ref.watch(exploreProvider.select((s) => s.cuisine));
+    final focusLabel = cuisine == null
+        ? l.aiCompanionActiveFocus
+        : l.aiCompanionActiveFocusCuisine(
+            CuisinePillBar.labelFor(l, cuisine),
+          );
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 12, 16),
+      child: Row(
+        children: [
+          _ChefAvatar(online: true),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l.aiCompanionTitle, style: theme.textTheme.titleLarge),
+                const SizedBox(height: 2),
+                Text(
+                  focusLabel,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: cs.onSurfaceVariant,
+                    letterSpacing: 0.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (showClear)
+            IconButton(
+              tooltip: l.aiCompanionClear,
+              onPressed: onClear,
+              icon: Icon(Icons.restart_alt, color: cs.onSurfaceVariant),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChefAvatar extends StatelessWidget {
+  const _ChefAvatar({this.online = false, this.radius = 18});
+  final bool online;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Stack(
+      children: [
+        CircleAvatar(
+          radius: radius,
+          backgroundColor: cs.surfaceContainerHighest,
+          child: Icon(Icons.soup_kitchen_outlined,
+              size: radius, color: cs.onSurface),
+        ),
+        if (online)
+          Positioned(
+            right: 0,
+            bottom: 0,
+            child: Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(
+                color: const Color(0xFF3FA35A),
+                shape: BoxShape.circle,
+                border: Border.all(color: cs.surface, width: 2),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+/// Shown before the first message: the assistant's greeting bubble.
+class _GreetingView extends StatelessWidget {
+  const _GreetingView({required this.scrollController});
+  final ScrollController scrollController;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    return ListView(
+      controller: scrollController,
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
+      children: [
+        _AssistantRow(text: l.aiCompanionGreeting),
+      ],
+    );
+  }
+}
+
+/// Assistant message with the chef avatar to its left (used for the
+/// greeting). Regular turns use the lighter [_MessageBubble].
+class _AssistantRow extends StatelessWidget {
+  const _AssistantRow({required this.text});
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _ChefAvatar(radius: 14),
+        const SizedBox(width: 10),
+        Flexible(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: cs.surfaceContainerHighest,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(4),
+                topRight: Radius.circular(18),
+                bottomLeft: Radius.circular(18),
+                bottomRight: Radius.circular(18),
+              ),
+            ),
+            child: Text(
+              text,
+              style: theme.textTheme.bodyMedium?.copyWith(height: 1.45),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// "GOURMET SUGGESTIONS" chips shown in the initial state.
+class _Suggestions extends StatelessWidget {
+  const _Suggestions({required this.onPick});
+  final ValueChanged<String> onPick;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
     final suggestions = [
       l.aiCompanionSuggestion1,
       l.aiCompanionSuggestion2,
       l.aiCompanionSuggestion3,
       l.aiCompanionSuggestion4,
     ];
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.forum_outlined,
-                size: 56, color: theme.colorScheme.outline),
-            const SizedBox(height: 16),
-            Text(l.aiCompanionEmptyTitle,
-                style: theme.textTheme.headlineMedium,
-                textAlign: TextAlign.center),
-            const SizedBox(height: 8),
-            Text(l.aiCompanionEmptySubtitle,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.outline),
-                textAlign: TextAlign.center),
-            const SizedBox(height: 24),
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 10,
-              runSpacing: 10,
-              children: [
-                for (final s in suggestions)
-                  ActionChip(
-                    label: Text(s),
-                    onPressed: () => onPick(s),
-                  ),
-              ],
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l.aiCompanionSuggestionsLabel.toUpperCase(),
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: cs.onSurfaceVariant,
+              letterSpacing: 1.1,
+              fontWeight: FontWeight.w700,
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final s in suggestions)
+                ActionChip(label: Text(s), onPressed: () => onPick(s)),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -181,6 +328,7 @@ class _MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isUser = message.role == ChatRole.user;
+    final isPlaceholder = !isUser && message.content.isEmpty;
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: ConstrainedBox(
@@ -201,21 +349,84 @@ class _MessageBubble extends StatelessWidget {
               bottomRight: Radius.circular(isUser ? 4 : 18),
             ),
           ),
-          child: SelectableText(
-            message.content.isEmpty
-                ? AppL10n.of(context).aiCompanionTyping
-                : message.content,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: isUser
-                  ? theme.colorScheme.onPrimary
-                  : theme.colorScheme.onSurface,
-              fontStyle: message.content.isEmpty
-                  ? FontStyle.italic
-                  : FontStyle.normal,
-            ),
-          ),
+          // When the assistant has been asked but hasn't streamed any text
+          // yet, render an animated 3-dot indicator so the bubble feels
+          // alive instead of an empty italic "typing…" string.
+          child: isPlaceholder
+              ? const _TypingDots()
+              : SelectableText(
+                  message.content,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: isUser
+                        ? theme.colorScheme.onPrimary
+                        : theme.colorScheme.onSurface,
+                  ),
+                ),
         ),
       ),
+    );
+  }
+}
+
+/// Three bouncing dots used in place of an empty assistant bubble while
+/// the model is still composing its reply. Each dot's animation is
+/// phase-shifted by 1/3 of the period so the row reads as a wave.
+class _TypingDots extends StatefulWidget {
+  const _TypingDots();
+
+  @override
+  State<_TypingDots> createState() => _TypingDotsState();
+}
+
+class _TypingDotsState extends State<_TypingDots>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctl;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _ctl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var i = 0; i < 3; i++) ...[
+          if (i > 0) const SizedBox(width: 5),
+          AnimatedBuilder(
+            animation: _ctl,
+            builder: (_, _) {
+              final phase = (_ctl.value + i / 3) % 1.0;
+              // Bell-curve-shaped opacity: dim at the edges of the cycle,
+              // bright in the middle. Avoids the jarring linear bounce.
+              final t = 1 - (phase - 0.5).abs() * 2;
+              return Opacity(
+                opacity: 0.35 + 0.65 * t,
+                child: Container(
+                  width: 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: cs.onSurface,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ],
     );
   }
 }
@@ -236,6 +447,7 @@ class _Composer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppL10n.of(context);
+    final cs = Theme.of(context).colorScheme;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -249,19 +461,31 @@ class _Composer extends StatelessWidget {
             decoration: InputDecoration(hintText: l.aiCompanionInputHint),
           ),
         ),
-        const SizedBox(width: 12),
-        if (streaming)
-          OutlinedButton.icon(
-            onPressed: onStop,
-            icon: const Icon(Icons.stop),
-            label: Text(l.aiCompanionStop),
-          )
-        else
-          FilledButton.icon(
-            onPressed: () => onSend(controller.text),
-            icon: const Icon(Icons.send),
-            label: Text(l.aiCompanionSend),
-          ),
+        const SizedBox(width: 10),
+        // Circular send / stop button, matching the reference design.
+        SizedBox(
+          width: 48,
+          height: 48,
+          child: streaming
+              ? Material(
+                  color: cs.surfaceContainerHighest,
+                  shape: const CircleBorder(),
+                  child: IconButton(
+                    tooltip: l.aiCompanionStop,
+                    onPressed: onStop,
+                    icon: Icon(Icons.stop, color: cs.onSurface),
+                  ),
+                )
+              : Material(
+                  color: cs.primary,
+                  shape: const CircleBorder(),
+                  child: IconButton(
+                    tooltip: l.aiCompanionSend,
+                    onPressed: () => onSend(controller.text),
+                    icon: Icon(Icons.send, color: cs.onPrimary, size: 20),
+                  ),
+                ),
+        ),
       ],
     );
   }

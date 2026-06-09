@@ -1,151 +1,174 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'nav_search_field.dart';
-import 'responsive_scaffold.dart';
+import '../l10n/generated/app_localizations.dart';
+import 'breakpoints.dart';
+import 'language_flag_pills.dart';
 
-/// Sticky top navigation bar used on tablet+ in place of the side rail.
+/// Sticky top navigation used on tablet+ in place of the side rail.
 ///
-/// Layout (left → right):
-///   [ Brand "SpiceRoute" ]   [ Explore  AI Creator  AI Companion  Saved  Mine ]   [ Actions ]
+/// Single row matching the editorial reference design:
+///   brand mark + wordmark (left), language flag pills +
+///   account avatar (right).
 ///
-/// Selection style mirrors the rest of the app's "pill" language: the
-/// active destination wears a filled primary-tinted pill, bumps to a
-/// 600-weight, and shifts to the on-primary text color.
+/// The page-level tab row (Explore / AI Creator / AI Companion / Saved)
+/// no longer lives here — it has moved into the body, just below each
+/// page's hero. See [PageTabs] in `page_tabs.dart`.
 ///
-/// Implements [PreferredSizeWidget] so it can be slotted directly into
-/// `Scaffold.appBar`, which is what makes it sticky for free — the body
-/// scrolls while the AppBar surface stays pinned to the viewport top.
-class TopNavBar extends StatelessWidget implements PreferredSizeWidget {
-  const TopNavBar({
-    super.key,
-    required this.title,
-    required this.destinations,
-    required this.selectedIndex,
-    required this.onDestinationSelected,
-    required this.actions,
-  });
+/// Implements [PreferredSizeWidget] so it slots into `Scaffold.appBar`,
+/// which is what makes it sticky for free.
+class TopNavBar extends ConsumerWidget implements PreferredSizeWidget {
+  const TopNavBar({super.key, required this.actions});
 
-  final String title;
-  final List<ShellDestination> destinations;
-  final int selectedIndex;
-  final ValueChanged<int> onDestinationSelected;
+  /// Trailing actions (the account avatar dropdown).
   final List<Widget> actions;
 
-  static const double _height = 64;
+  static const double _row1 = 60;
+
+  /// Width of the 1-px bottom hairline on the header container. The
+  /// preferred-size advertised to the [Scaffold] / [SliverPersistentHeader]
+  /// has to include this — otherwise the inner row (`_row1 = 60`) gets
+  /// squeezed into 59 px and Flutter logs a "RenderFlex overflowed by
+  /// 1.00 pixels on the bottom" exception.
+  static const double _borderH = 1;
 
   @override
-  Size get preferredSize => const Size.fromHeight(_height);
+  Size get preferredSize => const Size.fromHeight(_row1 + _borderH);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
 
+    // Match the body's content frame so the header lines up with the grid.
+    //
+    // IMPORTANT: ordering matters. The body wraps content in
+    //   SliverPadding(pagePad) -> Center -> ConstrainedBox(maxW)
+    // i.e. *outer* pagePadding first, *then* the centered max-width cap.
+    // We do the same here. A previous version applied the padding INSIDE
+    // the ConstrainedBox, which doubled the indent on wide viewports
+    // (vw > maxW) and pushed the wordmark ~64 px further right than the
+    // hero badge below it.
+    final pagePad = pagePadding(context);
+    final maxW = contentMaxWidth(context);
+
     return Material(
-      // Solid surface so content scrolling underneath doesn't ghost
-      // through. Same color as the rest of the chrome.
       color: cs.surface,
       elevation: 0,
       child: SafeArea(
         bottom: false,
         child: Container(
-          height: _height,
-          padding: const EdgeInsets.symmetric(horizontal: 20),
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(color: cs.outlineVariant, width: 1),
             ),
           ),
-          child: LayoutBuilder(builder: (context, constraints) {
-            // Adaptive layout based on viewport width:
-            //   - <760 px: hide the search pill (it would crowd the
-            //     nav items). The phone AppBar carries the search
-            //     instead.
-            //   - 760-1080 px: logo + nav + compact search.
-            //   - >=1080 px: logo + nav + roomy search.
-            final w = constraints.maxWidth;
-            final showSearch = w >= 760;
-            // Cap the search width tighter on medium widths so nav
-            // items don't get pushed off-screen.
-            final searchMaxWidth = w >= 1080 ? 420.0 : 280.0;
-            return Row(
-              children: [
-                _Brand(
-                  title: title,
-                  onTap: () => context.go('/'),
-                ),
-                const SizedBox(width: 20),
-                // Nav items get a flex factor so they expand to fill
-                // available space *up to* their intrinsic width. The
-                // inner horizontal scroller is the safety net for the
-                // pathological case (super-long localized labels).
-                Flexible(
-                  flex: 3,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    physics: const ClampingScrollPhysics(),
+          child: Padding(
+            padding: pagePad,
+            child: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: maxW),
+                child: LayoutBuilder(builder: (context, constraints) {
+                  final w = constraints.maxWidth;
+                  // Reference design always shows endonyms on desktop, so
+                  // we set a generous threshold here. The pills are also
+                  // small enough (~70 px each labelled) that 6 of them
+                  // fit alongside brand + SIGN IN well below 900 px.
+                  //   >= 760 -> flag + endonym
+                  //   >= 540 -> flag-only
+                  //   < 540  -> hidden (settings page handles language)
+                  final showFlagLabels = w >= 760;
+                  final showFlags = w >= 540;
+                  return SizedBox(
+                    height: _row1,
+                    width: double.infinity,
                     child: Row(
                       children: [
-                        for (var i = 0; i < destinations.length; i++) ...[
-                          if (i > 0) const SizedBox(width: 4),
-                          _NavItem(
-                            label: destinations[i].label,
-                            selected: i == selectedIndex,
-                            onTap: () => onDestinationSelected(i),
-                          ),
+                        // Brand block: logo + serif wordmark + tagline.
+                        Flexible(
+                          child: _Brand(onTap: () => context.go('/')),
+                        ),
+                        const SizedBox(width: 16),
+                        const Spacer(),
+                        // Pills sized to their natural width — no scroll
+                        // view, no Flexible, so what you see is always
+                        // the full row starting at the active language
+                        // on the left.
+                        if (showFlags) ...[
+                          LanguageFlagPills(showLabels: showFlagLabels),
+                          const SizedBox(width: 12),
                         ],
+                        ...actions,
                       ],
                     ),
-                  ),
-                ),
-                if (showSearch) ...[
-                  const SizedBox(width: 16),
-                  Flexible(
-                    flex: 4,
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: NavSearchField(maxWidth: searchMaxWidth),
-                    ),
-                  ),
-                ],
-                const SizedBox(width: 12),
-                ...actions,
-              ],
-            );
-          }),
+                  );
+                }),
+              ),
+            ),
+          ),
         ),
       ),
     );
   }
 }
 
-/// Brand block on the leading edge.
+/// Brand block: logo mark + serif wordmark.
 ///
-/// Renders the [BrandLogo] mark only — the wordmark has been retired in
-/// favour of the icon. Tapping the mark routes home, matching the
-/// universal web convention.
+/// We previously rendered a "{11 CUISINES · 6 LANGUAGES}" tagline under
+/// the wordmark via [AppL10n.brandTagline], but it just restated info
+/// already visible on screen — the hero subtitle counts the same
+/// cuisines, the cuisine pill bar enumerates them as chips, and the
+/// flag-pills row in this same header lists the supported locales. The
+/// header earned more room than the brag earned visual interest, so
+/// the tagline is gone. The ARB string is intentionally kept so future
+/// marketing surfaces (e.g. a landing page outside the app shell) can
+/// reuse it without re-translating into the 6 locales.
 class _Brand extends StatelessWidget {
-  const _Brand({required this.title, required this.onTap});
-
-  /// Kept around for `Semantics` / tooltip purposes so screen readers
-  /// and hover-tips still announce the app name.
-  final String title;
+  const _Brand({required this.onTap});
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final l = AppL10n.of(context);
+    // Wordmark uses `heroTitle` (the displayed brand name). Right now
+    // `heroTitle == appTitle == "SpiceRoute"`, but keeping the indirection
+    // means we can swap the marketing headline without touching the
+    // technical product id used elsewhere.
+    final title = l.heroTitle;
+
     return Tooltip(
       message: title,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(10),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-          child: Semantics(
-            label: title,
-            button: true,
-            child: const BrandLogo(size: 34),
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const BrandLogo(size: 36),
+              const SizedBox(width: 10),
+              Flexible(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    // Bumped from 22 -> 26 now that the tagline is gone
+                    // — the wordmark has the vertical room to be the
+                    // sole anchor of the header, and a slightly larger
+                    // serif reads more confidently as a brand mark.
+                    fontSize: 26,
+                    height: 1.0,
+                    fontWeight: FontWeight.w800,
+                    color: cs.onSurface,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -153,13 +176,8 @@ class _Brand extends StatelessWidget {
   }
 }
 
-/// Square brand mark (the steaming-bowl icon). Lives here so any other
-/// surface that wants to show the logo (recipe detail header, splash,
-/// empty states, etc.) has one canonical widget to drop in.
-///
-/// Rendered with `filterQuality: FilterQuality.medium` because we're
-/// downsampling from a 1024 px source to a ~32 px slot — the default
-/// `low` filter produces visible aliasing on the bowl's curves.
+/// Square brand mark (the steaming-bowl icon). Canonical so any surface
+/// (header, footer, recipe detail, empty states) drops in the same logo.
 class BrandLogo extends StatelessWidget {
   const BrandLogo({super.key, this.size = 32});
   final double size;
@@ -167,9 +185,6 @@ class BrandLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      // Slightly-rounded square reads "app icon" without going full
-      // circle — the bowl-on-red mark loses its identity if cropped to
-      // a circle and the corners get clipped.
       borderRadius: BorderRadius.circular(size * 0.22),
       child: Image.asset(
         'assets/icon/icon.png',
@@ -182,62 +197,3 @@ class BrandLogo extends StatelessWidget {
   }
 }
 
-/// One destination in the top nav. Text-only — keeps the bar light and
-/// readable, which is the whole reason for moving off the icon-heavy
-/// rail.
-class _NavItem extends StatelessWidget {
-  const _NavItem({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final cs = theme.colorScheme;
-
-    // Selected: filled secondary-container pill with primary-tinted text
-    //           and a bumped weight. Reads as "you're here".
-    // Idle    : transparent, onSurfaceVariant text.
-    // Hover/  : InkWell handles the subtle highlight automatically.
-    final bg = selected ? cs.secondaryContainer : Colors.transparent;
-    final fg = selected ? cs.onSecondaryContainer : cs.onSurfaceVariant;
-    final weight = selected ? FontWeight.w700 : FontWeight.w500;
-
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 160),
-          curve: Curves.easeOut,
-          padding:
-              const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            color: bg,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.fade,
-            softWrap: false,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: fg,
-              fontWeight: weight,
-              letterSpacing: 0.1,
-              height: 1.2,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}

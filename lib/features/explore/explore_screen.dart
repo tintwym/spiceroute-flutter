@@ -4,13 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../shared/breakpoints.dart';
 import '../../shared/filter_bar.dart';
+import '../../shared/page_tabs.dart';
+import '../../shared/site_footer.dart';
 import '../../shared/widgets.dart';
 import '../../state/explore.dart';
+import 'community_board.dart';
+import 'cross_cultural_stories.dart';
+import 'explore_hero.dart';
 
-/// Explore tab — the recipe grid. The search field that used to live at
-/// the top of this scroll view has been promoted to the nav bar (top
-/// nav on tablet+, phone AppBar on phone), so it's reachable from every
-/// screen. This page is now just filters + results.
+/// Explore tab — the editorial home page. Top to bottom: hero (badge +
+/// serif headline + search + result count), the filter bar, the recipe
+/// grid, the Community Culinary Board, and the site footer.
 class ExploreScreen extends ConsumerWidget {
   const ExploreScreen({super.key});
 
@@ -23,6 +27,15 @@ class ExploreScreen extends ConsumerWidget {
     final maxW = contentMaxWidth(context);
     final pagePad = pagePadding(context);
 
+    // Center + max-width helper so every section shares the body content
+    // frame (and lines up with the header above).
+    Widget framed(Widget child) => Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxW),
+            child: child,
+          ),
+        );
+
     // Sliver-based scroll view so the recipe grid is *actually* lazy. The
     // previous ListView+shrinkWrap-GridView combo mounted every card up
     // front (60+ CachedNetworkImage widgets at once on Explore), which made
@@ -34,21 +47,39 @@ class ExploreScreen extends ConsumerWidget {
       physics: const ClampingScrollPhysics(),
       slivers: [
         SliverPadding(
+          padding: pagePad.copyWith(top: 32, bottom: 8),
+          sliver: SliverToBoxAdapter(child: framed(const ExploreHero())),
+        ),
+        // Page-level tab row sits between the hero and the filter bar —
+        // mirrors the reference design's banded sub-nav under the
+        // editorial headline.
+        SliverPadding(
+          padding: pagePad.copyWith(top: 12, bottom: 0),
+          sliver: SliverToBoxAdapter(child: framed(const PageTabs())),
+        ),
+        SliverPadding(
           padding: pagePad.copyWith(top: 20),
           sliver: SliverToBoxAdapter(
-            child: Center(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: maxW),
-                child: FilterBar(
-                  cuisine: state.cuisine,
-                  course: state.course,
-                  dietary: state.dietary,
-                  onCuisineChanged: controller.setCuisine,
-                  onCourseChanged: controller.setCourse,
-                  onDietaryChanged: controller.setDietary,
-                ),
+            child: framed(
+              FilterBar(
+                cuisine: state.cuisine,
+                course: state.course,
+                dietary: state.dietary,
+                onCuisineChanged: controller.setCuisine,
+                onCourseChanged: controller.setCourse,
+                onDietaryChanged: controller.setDietary,
               ),
             ),
+          ),
+        ),
+        // "Cuisine Culinary Heritage & Connections" — only renders when
+        // a specific cuisine is selected (else collapses to zero height).
+        // Slots between the filter bar and the recipe grid so the heritage
+        // copy reads as context for the dishes about to appear below.
+        SliverPadding(
+          padding: pagePad.copyWith(top: 16, bottom: 0),
+          sliver: SliverToBoxAdapter(
+            child: framed(const CrossCulturalStoriesCard()),
           ),
         ),
         const SliverToBoxAdapter(child: SizedBox(height: 16)),
@@ -60,7 +91,14 @@ class ExploreScreen extends ConsumerWidget {
           pagePad: pagePad,
           maxW: maxW,
         ),
-        const SliverToBoxAdapter(child: SizedBox(height: 32)),
+        SliverPadding(
+          padding: pagePad.copyWith(top: 44),
+          sliver: SliverToBoxAdapter(child: framed(const CommunityBoard())),
+        ),
+        SliverPadding(
+          padding: pagePad.copyWith(top: 48, bottom: 28),
+          sliver: SliverToBoxAdapter(child: framed(const SiteFooter())),
+        ),
       ],
     );
   }
@@ -84,13 +122,13 @@ class ExploreScreen extends ConsumerWidget {
         SliverPadding(
           padding: pagePad,
           sliver: SliverGrid.builder(
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: recipeCardMaxExtent(context),
-              childAspectRatio: 0.78,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: recipeGridColumns(context),
+              childAspectRatio: recipeCardAspectRatio(context),
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
             ),
-            itemCount: 6,
+            itemCount: 8,
             itemBuilder: (_, _) => const LoadingShimmer(height: 240),
           ),
         ),
@@ -133,9 +171,9 @@ class ExploreScreen extends ConsumerWidget {
         sliver: SliverCrossAxisConstrained(
           maxCrossAxisExtent: maxW,
           child: SliverGrid.builder(
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: recipeCardMaxExtent(context),
-              childAspectRatio: 0.78,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: recipeGridColumns(context),
+              childAspectRatio: recipeCardAspectRatio(context),
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
             ),

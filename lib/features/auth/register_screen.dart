@@ -23,6 +23,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   bool _busy = false;
   bool _showPassword = false;
 
+  /// Same inline-confirmation pattern as [SignInScreen] — flash a short
+  /// success banner before dismissing so the user knows the action
+  /// completed instead of having the modal just blink out.
+  String? _successMsg;
+
   @override
   void dispose() {
     _name.dispose();
@@ -44,7 +49,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (!mounted) return;
     setState(() => _busy = false);
     if (result.ok) {
-      context.go(widget.redirectTo ?? '/');
+      _flashThenGo(AppL10n.of(context).authSuccessRegister);
     } else {
       showSnack(context, localizeAuthError(AppL10n.of(context), result.error));
     }
@@ -57,9 +62,31 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (!mounted) return;
     setState(() => _busy = false);
     if (result.ok) {
-      context.go(widget.redirectTo ?? '/');
+      _flashThenGo(AppL10n.of(context).authSuccessGoogle);
     } else if (result.error != 'cancelled') {
       showSnack(context, localizeAuthError(AppL10n.of(context), result.error));
+    }
+  }
+
+  void _flashThenGo(String message) {
+    setState(() => _successMsg = message);
+    Future<void>.delayed(const Duration(milliseconds: 1200), _goNext);
+  }
+
+  /// Same modal-aware navigation as [SignInScreen]: honour an explicit
+  /// `redirectTo` (the protected-route flow), otherwise dismiss the modal
+  /// and return to whatever page opened it.
+  void _goNext() {
+    final dest = widget.redirectTo;
+    if (dest != null) {
+      context.go(dest);
+      return;
+    }
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+    } else {
+      context.go('/');
     }
   }
 
@@ -77,6 +104,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            if (_successMsg != null) ...[
+              _SuccessBanner(message: _successMsg!),
+              const SizedBox(height: 18),
+            ],
             AuthLabel(l.authNameLabel),
             AuthField(
               controller: _name,
@@ -145,7 +176,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           TextButton(
             onPressed: _busy
                 ? null
-                : () => context.go('/sign-in', extra: widget.redirectTo),
+                // pushReplacement keeps both auth modes inside a single
+                // modal layer — flipping back to sign-in doesn't stack a
+                // second card on top of the first.
+                : () => context.pushReplacement(
+                      '/sign-in',
+                      extra: widget.redirectTo,
+                    ),
             child: Text(l.authSignInHere),
           ),
         ],
@@ -194,6 +231,43 @@ class _BottomNote extends StatelessWidget {
       style: theme.textTheme.bodySmall?.copyWith(
         color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
         height: 1.4,
+        fontStyle: FontStyle.italic,
+      ),
+    );
+  }
+}
+
+class _SuccessBanner extends StatelessWidget {
+  const _SuccessBanner({required this.message});
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF3FA35A).withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: const Color(0xFF3FA35A).withValues(alpha: 0.35),
+        ),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.check_circle,
+              size: 18, color: Color(0xFF2E7D43)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: const Color(0xFF2E7D43),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

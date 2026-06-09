@@ -1,5 +1,5 @@
 name: savor_global
-description: "Savor Global Recipes - mobile + web"
+description: "SpiceRoute - mobile + web"
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -26,8 +26,14 @@ dependencies:
 
   firebase_core: ^3.6.0
   firebase_auth: ^5.3.1
+  cloud_firestore: ^5.4.4
   google_sign_in: ^6.2.1
 
+  # Community board upload: real photo picker + client-side compression
+  # so a phone-sized HEIC drops under Firestore's 1 MB document cap
+  # before we base64 it into the doc.
+  image_picker: ^1.1.2
+  flutter_image_compress: ^2.3.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -36,12 +42,25 @@ dev_dependencies:
   freezed: ^2.5.7
   json_serializable: ^6.9.0
   flutter_launcher_icons: ^0.14.4
+  fake_cloud_firestore: ^3.1.0
+  network_image_mock: ^2.1.1
 
 flutter:
   uses-material-design: true
   generate: true
   assets:
     - assets/icon/icon.png
+  # Bundled serif headline face. We were fetching this from
+  # fonts.gstatic.com via the google_fonts package, which logs a runtime
+  # exception (and falls back to Roboto) whenever the user is offline or
+  # behind a firewall. Bundling avoids that entirely and makes the first
+  # paint feel snappier — no waiting on a network font.
+  fonts:
+    - family: PlayfairDisplay
+      fonts:
+        - asset: assets/fonts/PlayfairDisplay-Variable.ttf
+        - asset: assets/fonts/PlayfairDisplay-Variable.ttf
+          weight: 700
 
 flutter_launcher_icons:
   image_path: "assets/icon/icon.png"

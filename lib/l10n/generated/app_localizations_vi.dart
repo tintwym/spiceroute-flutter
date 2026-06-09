@@ -30,7 +30,7 @@ class AppL10nVi extends AppL10n {
   String get languageChinese => 'Tiếng Trung';
 
   @override
-  String get languageThai => 'Tiếng Thái';
+  String get languageBurmese => 'Tiếng Miến';
 
   @override
   String get languageJapanese => 'Tiếng Nhật';
@@ -79,6 +79,158 @@ class AppL10nVi extends AppL10n {
 
   @override
   String get exploreSearchHint => 'Tìm công thức, nguyên liệu, thẻ';
+
+  @override
+  String get exploreSearchHintLong =>
+      'Tìm công thức, nguyên liệu hoặc ẩm thực...';
+
+  @override
+  String get heroBadge => 'CULINARY STUDIO';
+
+  @override
+  String get heroTitle => 'SpiceRoute';
+
+  @override
+  String heroSubtitle(int cuisines) {
+    return 'Hành trình ẩm thực qua $cuisines nền văn hóa khác biệt. Lọc công thức chính gốc, trò chuyện cùng AI Chef hoặc tạo bản dịch theo ý bạn.';
+  }
+
+  @override
+  String brandTagline(int cuisines, int languages) {
+    return '$cuisines ẩm thực · $languages ngôn ngữ';
+  }
+
+  @override
+  String exploreResultCount(int count, String scope) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Hiển thị $count công thức trong $scope',
+      one: 'Hiển thị 1 công thức trong $scope',
+      zero: 'Không có công thức trong $scope',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get communityBadge => 'ĐỒNG BỘ THỜI GIAN THỰC';
+
+  @override
+  String get communityTitle => 'Bảng Ẩm Thực Cộng Đồng';
+
+  @override
+  String get communitySubtitle =>
+      'Xem những người yêu ẩm thực khác đang nấu gì, hoặc tải lên tác phẩm của chính bạn cho bất kỳ nền ẩm thực quốc tế nào!';
+
+  @override
+  String get communityShowcaseTitle => 'Khoe Món Của Bạn';
+
+  @override
+  String get communityUploadCta => 'Bấm để tải ảnh tác phẩm ẩm thực';
+
+  @override
+  String get communityUploadHint => 'JPEG / PNG (tự động nén)';
+
+  @override
+  String get communityChefLabel => 'Tên đầu bếp';
+
+  @override
+  String get communityChefHint => 'Ví dụ: Nonna Sophia, Alex';
+
+  @override
+  String get communityCaptionLabel => 'Chú thích / Câu chuyện';
+
+  @override
+  String get communityCaptionHint =>
+      'Làm cho bữa tối Chủ Nhật! Thay bằng thảo mộc tươi.';
+
+  @override
+  String get communityShareBtn => 'CHIA SẺ LÊN BẢNG TRỰC TIẾP';
+
+  @override
+  String communityFeedTitle(int count) {
+    return 'BẢNG TIN TRỰC TIẾP ($count ẢNH)';
+  }
+
+  @override
+  String get communityEmptyTitle => 'Chưa có ảnh nào';
+
+  @override
+  String get communityEmptySubtitle =>
+      'Hãy là người đầu tiên đăng ảnh kiệt tác của bạn cho nền ẩm thực này!';
+
+  @override
+  String get communitySharedToast => 'Đã chia sẻ lên bảng trực tiếp!';
+
+  @override
+  String communityByLine(String name) {
+    return 'bởi $name';
+  }
+
+  @override
+  String get communityRemovePhoto => 'GỠ ẢNH';
+
+  @override
+  String get communityUploading => 'Đang nén và chia sẻ…';
+
+  @override
+  String get communityUploaded => 'Đã đăng lên bảng cộng đồng';
+
+  @override
+  String communityFilteredTo(String cuisine) {
+    return 'Đã lọc: $cuisine';
+  }
+
+  @override
+  String storiesHeading(String cuisine) {
+    return 'Di sản ẩm thực $cuisine và sự giao thoa';
+  }
+
+  @override
+  String get storiesSubtitle =>
+      'Khám phá cách bày bữa truyền thống và câu chuyện văn hoá — chạm thẻ để lọc công thức.';
+
+  @override
+  String get storiesActiveBadge => 'ĐANG CHỌN';
+
+  @override
+  String get footerBlurb =>
+      'Một cánh cổng ẩm thực thanh lịch tổng hợp các công thức chọn lọc từ nhiều truyền thống ẩm thực khác biệt. Nâng tầm bữa cơm nhà bạn bằng hương vị quốc tế và hỗ trợ AI theo thời gian thực.';
+
+  @override
+  String get footerQuickNav => 'ĐIỀU HƯỚNG NHANH';
+
+  @override
+  String get footerLinkExplore => 'Khám phá công thức';
+
+  @override
+  String get footerLinkCreator => 'AI Tạo Công Thức';
+
+  @override
+  String get footerLinkCompanion => 'AI Chef Đồng Hành';
+
+  @override
+  String get footerLinkSaved => 'Sổ Tay Đã Lưu';
+
+  @override
+  String get footerConnect => 'KẾT NỐI VỚI CHÚNG TÔI';
+
+  @override
+  String get footerEmailHint => 'Địa chỉ email của bạn';
+
+  @override
+  String get footerJoin => 'Tham gia';
+
+  @override
+  String get footerJoinedToast => 'Cảm ơn bạn đã tham gia!';
+
+  @override
+  String footerCopyright(int year, String brand) {
+    return '© $year $brand. Mọi quyền được bảo lưu.';
+  }
+
+  @override
+  String get footerLicense => 'Phát hành theo Giấy phép MIT.';
 
   @override
   String get exploreEmptyTitle => 'Chưa có công thức phù hợp';
@@ -202,6 +354,30 @@ class AppL10nVi extends AppL10n {
   String get detailIngredients => 'Nguyên liệu';
 
   @override
+  String get detailCookingInstructions => 'Hướng dẫn nấu';
+
+  @override
+  String get detailPrepTime => 'Thời gian chuẩn bị';
+
+  @override
+  String get detailCookTime => 'Thời gian nấu';
+
+  @override
+  String get detailServingsShort => 'Khẩu phần';
+
+  @override
+  String get detailDifficultyEasy => 'Dễ';
+
+  @override
+  String get detailDifficultyMedium => 'Trung bình';
+
+  @override
+  String get detailDifficultyHard => 'Khó';
+
+  @override
+  String get detailClose => 'Đóng';
+
+  @override
   String get detailSteps => 'Cách làm';
 
   @override
@@ -231,11 +407,26 @@ class AppL10nVi extends AppL10n {
   String get savedTitle => 'Công thức đã lưu';
 
   @override
+  String get savedHeroSubtitle =>
+      'Sổ tay cá nhân của bạn. Đánh dấu món ăn từ bất kỳ nền ẩm thực nào và chúng sẽ xuất hiện tại đây để bạn xem lại bất cứ lúc nào.';
+
+  @override
+  String savedCountHeading(int count) {
+    return 'Công thức đã lưu ($count)';
+  }
+
+  @override
   String get savedEmptyTitle => 'Chưa lưu công thức nào';
 
   @override
   String get savedEmptySubtitle =>
       'Nhấn vào biểu tượng tim ở bất kỳ công thức nào để lưu lại đây.';
+
+  @override
+  String get savedEmptyCta => 'Khám phá công thức ngay';
+
+  @override
+  String get savedCloudSyncedBadge => 'ĐỒNG BỘ ĐÁM MÂY';
 
   @override
   String get savedClearAll => 'Xóa tất cả';
@@ -251,6 +442,23 @@ class AppL10nVi extends AppL10n {
 
   @override
   String get aiCreatorTitle => 'AI Tạo công thức';
+
+  @override
+  String get aiCreatorCardTitle => 'Tạo Công Thức AI Tùy Chỉnh';
+
+  @override
+  String get aiCreatorCardSubtitle =>
+      'Nhập nguyên liệu bạn có hoặc món bạn thèm, và xem AI Chef ngay lập tức nấu nên một kiệt tác công thức từng bước trong ngôn ngữ bạn chọn.';
+
+  @override
+  String get aiCreatorIngredientsLabel => 'Nguyên liệu / Ý tưởng món ăn';
+
+  @override
+  String get aiCreatorIdeaHintLong =>
+      'Ví dụ: Cà chua, trứng, hành lá hoặc \'Bữa tối nhẹ nhàng với đậu phụ\'';
+
+  @override
+  String get aiCreatorCreateBtn => 'Tạo';
 
   @override
   String get aiCreatorIdeaLabel => 'Hôm nay bạn muốn nấu món gì?';
@@ -287,7 +495,34 @@ class AppL10nVi extends AppL10n {
       'Bạn đã dùng hết lượt tạo miễn phí hôm nay. Hãy thử lại vào ngày mai.';
 
   @override
+  String get aiCreatorQuote1 => 'Đang mài dao và thái hành lá…';
+
+  @override
+  String get aiCreatorQuote2 => 'Đang rang gia vị để khơi hương thơm vàng óng…';
+
+  @override
+  String get aiCreatorQuote3 => 'Đang ninh nước dùng truyền thống và nêm nếm…';
+
+  @override
+  String get aiCreatorQuote4 =>
+      'Đang chọn nguyên liệu chất lượng cao theo khẩu vị của bạn…';
+
+  @override
+  String get aiCreatorQuote5 =>
+      'Đang biên soạn hướng dẫn từng bước cho một món hoàn hảo…';
+
+  @override
   String get aiCompanionTitle => 'AI Trợ lý nhà bếp';
+
+  @override
+  String get aiCompanionActiveFocus => 'Trọng tâm: Toàn cầu';
+
+  @override
+  String get aiCompanionGreeting =>
+      'Xin chào! Tôi là AI Chef Ẩm Thực Toàn Cầu. Hãy hỏi tôi về cách thay thế nguyên liệu, mẹo nấu ăn, hoặc yêu cầu một công thức hoàn toàn mới!';
+
+  @override
+  String get aiCompanionSuggestionsLabel => 'Gợi ý sành ăn';
 
   @override
   String get aiCompanionEmptyTitle => 'Hỏi tôi bất cứ điều gì về nấu ăn';
@@ -314,6 +549,11 @@ class AppL10nVi extends AppL10n {
   @override
   String get aiCompanionRateLimited =>
       'Quá nhiều tin nhắn trong giờ này. Vui lòng thử lại sau.';
+
+  @override
+  String aiCompanionActiveFocusCuisine(String cuisine) {
+    return 'Trọng tâm: $cuisine';
+  }
 
   @override
   String get aiCompanionSuggestion1 => 'Thay nước mắm cho người ăn chay?';
@@ -515,6 +755,15 @@ class AppL10nVi extends AppL10n {
   String get authErrorGeneric => 'Đã xảy ra lỗi khi đăng nhập.';
 
   @override
+  String get authSuccessSignIn => 'Đăng nhập thành công. Chúc nấu ăn vui vẻ!';
+
+  @override
+  String get authSuccessRegister => 'Tạo tài khoản thành công. Chào mừng bạn!';
+
+  @override
+  String get authSuccessGoogle => 'Đăng nhập Google thành công!';
+
+  @override
   String get recipeOwnerYou => 'Tác giả: bạn';
 
   @override
@@ -549,4 +798,95 @@ class AppL10nVi extends AppL10n {
 
   @override
   String get detailDeletedToast => 'Đã xóa công thức.';
+
+  @override
+  String get reviewsTitle => 'Thư viện cộng đồng & đánh giá';
+
+  @override
+  String get reviewsSubtitle =>
+      'Xem tác phẩm của các đầu bếp tại gia khác, hoặc tải lên ảnh món bạn vừa nấu!';
+
+  @override
+  String get reviewsAverage => 'ĐIỂM TRUNG BÌNH';
+
+  @override
+  String reviewsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count đánh giá',
+      one: '1 đánh giá',
+      zero: 'Chưa có đánh giá',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reviewsUploadedCooks(int count) {
+    return 'Ảnh đã tải lên: $count';
+  }
+
+  @override
+  String get reviewsEmptyState =>
+      'Chưa có ảnh nào từ cộng đồng. Hãy là người đầu tiên nấu và đánh giá món này!';
+
+  @override
+  String get reviewsLoginPrompt =>
+      'Vui lòng đăng nhập để chia sẻ món ăn và đánh giá công thức này.';
+
+  @override
+  String get reviewsLoginCta => 'Đăng nhập để đánh giá';
+
+  @override
+  String get reviewsFormTitle => 'Khoe thành quả của bạn';
+
+  @override
+  String get reviewsRatingLabel => 'Điểm';
+
+  @override
+  String get reviewsAuthorLabel => 'Tên đầu bếp';
+
+  @override
+  String get reviewsAuthorHint => 'Nhập biệt danh của bạn…';
+
+  @override
+  String get reviewsCommentLabel => 'Ghi chú bếp';
+
+  @override
+  String get reviewsCommentHint =>
+      'Hương vị thế nào? Có thay thế hay mẹo gì không? (Ví dụ: thêm tỏi!)';
+
+  @override
+  String get reviewsPhotoHint => 'Nhấn để đính kèm ảnh món bạn nấu';
+
+  @override
+  String get reviewsPublishBtn => 'Đăng lên cộng đồng';
+
+  @override
+  String get reviewsPublishing => 'Đang đăng…';
+
+  @override
+  String get reviewsSubmitted => 'Đã thêm vào thư viện cộng đồng thành công!';
+
+  @override
+  String get reviewsPostAnother => 'Viết đánh giá khác';
+
+  @override
+  String get reviewsPhotoTooLarge => 'Ảnh quá lớn, thử ảnh nhỏ hơn.';
+
+  @override
+  String get reviewsErrorGeneric =>
+      'Không gửi được đánh giá. Vui lòng thử lại.';
+
+  @override
+  String get reviewsDeleteTooltip => 'Xoá đánh giá';
+
+  @override
+  String get reviewsDeleteConfirm => 'Xoá đánh giá của bạn?';
+
+  @override
+  String get reviewsAnonymousChef => 'Đầu bếp tại gia';
+
+  @override
+  String get reviewsLightboxCloseTooltip => 'Đóng ảnh';
 }

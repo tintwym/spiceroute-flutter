@@ -65,24 +65,77 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/sign-in',
-        builder: (_, st) => SignInScreen(
-          redirectTo: st.uri.queryParameters['next'] ?? (st.extra as String?),
+        // Render as a modal overlay over whatever page opened it (the
+        // dimmed Explore / Settings stays visible behind). Same recipe
+        // as the recipe-detail route below.
+        pageBuilder: (_, st) => _authModalPage(
+          key: st.pageKey,
+          child: SignInScreen(
+            redirectTo: st.uri.queryParameters['next'] ?? (st.extra as String?),
+          ),
         ),
       ),
       GoRoute(
         path: '/register',
-        builder: (_, st) => RegisterScreen(
-          redirectTo: st.uri.queryParameters['next'] ?? (st.extra as String?),
+        pageBuilder: (_, st) => _authModalPage(
+          key: st.pageKey,
+          child: RegisterScreen(
+            redirectTo: st.uri.queryParameters['next'] ?? (st.extra as String?),
+          ),
         ),
       ),
       GoRoute(
         path: '/recipes/:id',
-        builder: (_, st) =>
-            RecipeDetailScreen(recipeId: st.pathParameters['id']!),
+        // Render the detail as a modal box floating over the page that
+        // launched it (the dimmed Explore grid stays visible behind).
+        pageBuilder: (_, st) => _modalPage(
+          key: st.pageKey,
+          child: RecipeDetailScreen(recipeId: st.pathParameters['id']!),
+        ),
       ),
     ],
   );
 });
+
+/// Wraps [child] in a `CustomTransitionPage` configured as a modal
+/// overlay: the route is non-opaque (so the underlying page keeps
+/// painting), the barrier is a 55%-black scrim, and the page itself fades
+/// + scales in. Shared by the recipe detail modal and the auth modals so
+/// they feel identical.
+CustomTransitionPage<void> _modalPage({
+  required LocalKey key,
+  required Widget child,
+}) {
+  return CustomTransitionPage<void>(
+    key: key,
+    opaque: false,
+    barrierDismissible: true,
+    barrierColor: Colors.black.withValues(alpha: 0.55),
+    barrierLabel: 'Dismiss',
+    transitionDuration: const Duration(milliseconds: 220),
+    reverseTransitionDuration: const Duration(milliseconds: 160),
+    transitionsBuilder: (context, anim, _, c) {
+      final curved = CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
+      return FadeTransition(
+        opacity: curved,
+        child: ScaleTransition(
+          scale: Tween<double>(begin: 0.96, end: 1.0).animate(curved),
+          child: c,
+        ),
+      );
+    },
+    child: child,
+  );
+}
+
+/// Auth modal page wrapper — same modal feel as [_modalPage] but kept as
+/// a thin alias so it's obvious at the call site that we're using the
+/// shared transition.
+CustomTransitionPage<void> _authModalPage({
+  required LocalKey key,
+  required Widget child,
+}) =>
+    _modalPage(key: key, child: child);
 
 class _NotFoundScreen extends StatelessWidget {
   const _NotFoundScreen({required this.uri});

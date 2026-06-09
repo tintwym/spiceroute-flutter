@@ -35,6 +35,17 @@ class AccountMenuButton extends ConsumerWidget {
     final user = ref.watch(authControllerProvider);
     final currentLocale = ref.watch(localeProvider);
 
+    // Signed-out users get a dedicated "SIGN IN" pill button instead of
+    // an empty avatar — clearer call-to-action that matches the editorial
+    // reference design. (The Settings / Language menu is still reachable
+    // from the in-page Settings tab.)
+    if (user == null) {
+      return _SignInButton(
+        label: l.authSignIn,
+        onTap: () => context.push('/sign-in'),
+      );
+    }
+
     return MenuAnchor(
       // Pin the menu to the bottom-right of the avatar so it never gets
       // clipped against the viewport edge.
@@ -66,20 +77,15 @@ class AccountMenuButton extends ConsumerWidget {
         );
       },
       menuChildren: [
-        if (user != null) ...[
-          _AccountHeader(user: user),
-          const Divider(height: 8),
-          MenuItemButton(
-            leadingIcon: const Icon(Icons.restaurant_outlined),
-            onPressed: () => context.go('/my-recipes'),
-            child: Text(l.myRecipesTitle),
-          ),
-        ] else
-          MenuItemButton(
-            leadingIcon: const Icon(Icons.login),
-            onPressed: () => context.go('/sign-in'),
-            child: Text(l.authSignIn),
-          ),
+        // We already returned early if `user == null`, so the menu only
+        // ever shows the signed-in flow.
+        _AccountHeader(user: user),
+        const Divider(height: 8),
+        MenuItemButton(
+          leadingIcon: const Icon(Icons.restaurant_outlined),
+          onPressed: () => context.go('/my-recipes'),
+          child: Text(l.myRecipesTitle),
+        ),
         const Divider(height: 8),
         MenuItemButton(
           leadingIcon: const Icon(Icons.settings_outlined),
@@ -104,27 +110,25 @@ class AccountMenuButton extends ConsumerWidget {
           menuChildren: [
             _localeItem(ref, currentLocale, const Locale('en'), l.languageEnglish),
             _localeItem(ref, currentLocale, const Locale('zh'), l.languageChinese),
-            _localeItem(ref, currentLocale, const Locale('th'), l.languageThai),
+            _localeItem(ref, currentLocale, const Locale('my'), l.languageBurmese),
             _localeItem(ref, currentLocale, const Locale('ja'), l.languageJapanese),
             _localeItem(ref, currentLocale, const Locale('ko'), l.languageKorean),
             _localeItem(ref, currentLocale, const Locale('vi'), l.languageVietnamese),
           ],
           child: Text(l.settingsLanguage),
         ),
-        if (user != null) ...[
-          const Divider(height: 8),
-          MenuItemButton(
-            leadingIcon: const Icon(Icons.logout),
-            onPressed: () async {
-              final router = GoRouter.of(context);
-              await ref.read(authControllerProvider.notifier).signOut();
-              // Bounce home so a user on a protected route (/my-recipes)
-              // doesn't get punted to /sign-in by the router redirect.
-              router.go('/');
-            },
-            child: Text(l.authSignOut),
-          ),
-        ],
+        const Divider(height: 8),
+        MenuItemButton(
+          leadingIcon: const Icon(Icons.logout),
+          onPressed: () async {
+            final router = GoRouter.of(context);
+            await ref.read(authControllerProvider.notifier).signOut();
+            // Bounce home so a user on a protected route (/my-recipes)
+            // doesn't get punted to /sign-in by the router redirect.
+            router.go('/');
+          },
+          child: Text(l.authSignOut),
+        ),
       ],
     );
   }
@@ -169,31 +173,88 @@ class _AvatarTrigger extends StatelessWidget {
     final signedIn = user != null;
     return Tooltip(
       message: tooltip,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(22),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(22),
+          child: Padding(
+            padding: const EdgeInsets.all(3),
+            // Soft ring around the avatar so it reads as a clickable target
+            // and visually balances the flag-pill row next to it.
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: cs.outlineVariant, width: 1),
+              ),
+              padding: const EdgeInsets.all(2),
+              child: CircleAvatar(
+                radius: 15,
+                backgroundColor: signedIn
+                    ? cs.primaryContainer
+                    : cs.surfaceContainerHighest,
+                foregroundColor:
+                    signedIn ? cs.onPrimaryContainer : cs.onSurfaceVariant,
+                backgroundImage: user?.photoUrl != null
+                    ? NetworkImage(user!.photoUrl!)
+                    : null,
+                child: user?.photoUrl != null
+                    ? null
+                    : signedIn
+                        ? Text(
+                            user!.initial,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                            ),
+                          )
+                        : const Icon(Icons.person_outline, size: 18),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Dark olive pill that doubles as the "signed-out" affordance in the
+/// top nav — opens the sign-in modal in one tap. Trailing arrow signals
+/// "this goes somewhere"; uppercase tracked label matches the rest of
+/// the editorial typography.
+class _SignInButton extends StatelessWidget {
+  const _SignInButton({required this.label, required this.onTap});
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    return Material(
+      color: cs.primary,
+      borderRadius: BorderRadius.circular(22),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(22),
         child: Padding(
-          padding: const EdgeInsets.all(4),
-          child: CircleAvatar(
-            radius: 16,
-            backgroundColor:
-                signedIn ? cs.primaryContainer : cs.surfaceContainerHighest,
-            foregroundColor:
-                signedIn ? cs.onPrimaryContainer : cs.onSurfaceVariant,
-            backgroundImage: user?.photoUrl != null
-                ? NetworkImage(user!.photoUrl!)
-                : null,
-            child: user?.photoUrl != null
-                ? null
-                : signedIn
-                    ? Text(
-                        user!.initial,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                        ),
-                      )
-                    : const Icon(Icons.person_outline, size: 18),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.arrow_forward, size: 16, color: cs.onPrimary),
+              const SizedBox(width: 8),
+              Text(
+                label.toUpperCase(),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: cs.onPrimary,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.0,
+                ),
+              ),
+            ],
           ),
         ),
       ),
