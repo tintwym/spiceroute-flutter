@@ -8,6 +8,7 @@ import '../models/spice_route.dart';
 import '../state/saved.dart';
 import 'cuisine_pill_bar.dart';
 import 'format.dart';
+import 'theme.dart';
 
 /// Muted orange/brown used for the cuisine eyebrow on cards and the
 /// difficulty pill text — reads on both the cream and dark-olive surfaces.
@@ -193,7 +194,12 @@ class RecipeCard extends ConsumerWidget {
                               ),
                               child: Text(
                                 CuisinePillBar.foodEmojiFor(recipe.cuisine!),
-                                style: const TextStyle(fontSize: 17, height: 1),
+                                // Use the emoji-safe TextStyle helper so
+                                // CanvasKit can locate a color emoji
+                                // glyph for the badge — a plain
+                                // `TextStyle(fontSize: 17)` rendered as
+                                // a blank box on Flutter web.
+                                style: emojiTextStyle(fontSize: 17),
                               ),
                             ),
                             if (recipe.isAiAuthored) ...[
@@ -400,7 +406,7 @@ class _ImageFallback extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 44, height: 1)),
+            Text(emoji, style: emojiTextStyle(fontSize: 44)),
             if (recipe.cuisine != null) ...[
               const SizedBox(height: 6),
               Container(

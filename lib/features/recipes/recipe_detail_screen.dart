@@ -44,12 +44,19 @@ class RecipeDetailScreen extends ConsumerWidget {
     final async = ref.watch(_detailProvider(recipeId));
     final myId = ref.watch(meProvider).valueOrNull;
     final size = MediaQuery.sizeOf(context);
+    final viewPadding = MediaQuery.viewPaddingOf(context);
     final dc = deviceClassOf(context);
 
     // Phone: near-fullscreen sheet. Tablet+: a roomy floating card.
-    final margin = dc.isPhone ? 10.0 : 28.0;
+    // On phones we add the system status-bar / notch inset to the top
+    // margin so the close button doesn't sit under the iPhone notch
+    // (status bar = 44 px on a Pro / 14+). Bottom inset goes in too
+    // for gesture-bar-aware bottom padding.
+    final baseMargin = dc.isPhone ? 10.0 : 28.0;
+    final topInset = baseMargin + (dc.isPhone ? viewPadding.top : 0);
+    final bottomInset = baseMargin + (dc.isPhone ? viewPadding.bottom : 0);
     final maxW = dc.isAtLeastDesktop ? 1040.0 : 760.0;
-    final maxH = size.height - margin * 2;
+    final maxH = size.height - topInset - bottomInset;
 
     Widget actionsFor(SpiceRouteDetail recipe) {
       final isOwner = myId != null && recipe.owner?.id == myId;
@@ -84,7 +91,12 @@ class RecipeDetailScreen extends ConsumerWidget {
           ),
           Center(
             child: Padding(
-              padding: EdgeInsets.all(margin),
+              padding: EdgeInsets.fromLTRB(
+                baseMargin,
+                topInset,
+                baseMargin,
+                bottomInset,
+              ),
               child: ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: maxW, maxHeight: maxH),
                 child: Material(

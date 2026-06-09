@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../models/spice_route.dart';
 import '../shared/cuisine_pill_bar.dart';
+import '../shared/theme.dart';
 
 /// Three-column filter bar shown above the Explore grid:
 ///   [ SELECT CUISINE ]   [ SELECT COURSE ]   [ DIETARY, LIFESTYLE & FORMAT ]
@@ -324,7 +325,10 @@ class _GlassDropdownState<T> extends State<_GlassDropdown<T>> {
                 width: 22,
                 child: Text(
                   displayEmoji,
-                  style: const TextStyle(fontSize: 16, height: 1.0),
+                  // Emoji-safe TextStyle — see kEmojiFontFallback
+                  // docstring. A bare TextStyle(fontSize: 16) here
+                  // would render as a missing-glyph box on web.
+                  style: emojiTextStyle(fontSize: 16),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -596,7 +600,8 @@ class _GlassMenuItem<T> extends StatelessWidget {
                   width: 24,
                   child: Text(
                     item.emoji,
-                    style: const TextStyle(fontSize: 18, height: 1.0),
+                    // Emoji-safe TextStyle — see kEmojiFontFallback.
+                    style: emojiTextStyle(fontSize: 18),
                     textAlign: TextAlign.center,
                   ),
                 ),

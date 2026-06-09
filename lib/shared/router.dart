@@ -42,12 +42,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (loc == '/my-recipes' && user == null) {
         return '/sign-in?next=/my-recipes';
       }
-      // If you're already signed in, /sign-in and /register would be a dead
-      // end — bounce to home (or to ?next=... if the original caller passed
-      // one through).
-      if ((loc == '/sign-in' || loc == '/register') && user != null) {
-        return state.uri.queryParameters['next'] ?? '/';
-      }
+      // Deliberately NOT redirecting away from /sign-in or /register
+      // when the user becomes authed (e.g. on sign-in success). A
+      // top-level redirect uses `go` semantics which collapses the
+      // route stack — so if the auth modal was pushed on top of a
+      // recipe-detail modal, the recipe modal would be destroyed when
+      // the redirect ran. Each auth screen handles the "already signed
+      // in" case itself: `_goNext` pops the auth modal when possible
+      // (preserving the underlying stack) and only falls back to
+      // navigating when there's nothing to pop (the direct-URL case).
       return null;
     },
     errorBuilder: (context, state) => _NotFoundScreen(uri: state.uri),

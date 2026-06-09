@@ -22,6 +22,53 @@ class SavorPalette {
   static const lineSoft = Color(0xFFE5E1D8);
 }
 
+/// Font names to fall back to for emoji + flag glyphs.
+///
+/// On Flutter web (CanvasKit) the engine does NOT automatically pick
+/// the browser's emoji font — if no entry in the active TextStyle's
+/// fontFamily / fontFamilyFallback covers the glyph, the character
+/// just doesn't render (a missing-glyph box, or nothing at all).
+/// Playfair Display, Roboto, and the Noto Sans family all stop at
+/// Latin/CJK/Burmese, so 🍣 / 🇰🇷 / 🌮 / 🎉 turn invisible.
+///
+/// Names ordered by OS coverage:
+///   * `Apple Color Emoji` — macOS, iOS, iPadOS (includes flag glyphs)
+///   * `Noto Color Emoji`  — Android, ChromeOS, most Linux distros
+///                           (includes flag glyphs)
+///   * `Segoe UI Emoji`    — Windows 10/11 (does NOT include flag
+///                           glyphs by design; falls back to letter
+///                           pairs like "KR" / "JP", which is the
+///                           best Windows can do natively)
+///   * `Twemoji Mozilla`   — Firefox-specific bundled emoji font
+///   * `EmojiOne Color` / `Symbola` — older Linux fallbacks
+///
+/// `emoji` is the W3C generic family name; some browsers honour it
+/// and pick whichever emoji font the system advertises.
+const List<String> kEmojiFontFallback = <String>[
+  'Apple Color Emoji',
+  'Noto Color Emoji',
+  'Segoe UI Emoji',
+  'Twemoji Mozilla',
+  'EmojiOne Color',
+  'Symbola',
+  'emoji',
+];
+
+/// Convenience helper for inline emoji `Text(...)` widgets.
+///
+/// Creates a [TextStyle] sized and line-heighted for an emoji glyph
+/// that explicitly includes [kEmojiFontFallback]. Use this anywhere
+/// you'd otherwise write `TextStyle(fontSize: X, height: Y)` for a
+/// pure-emoji string — without the fallback list, the glyph renders
+/// as a missing-glyph box on Flutter web.
+TextStyle emojiTextStyle({double fontSize = 16, double height = 1.0}) {
+  return TextStyle(
+    fontSize: fontSize,
+    height: height,
+    fontFamilyFallback: kEmojiFontFallback,
+  );
+}
+
 ThemeData buildTheme(Brightness brightness) {
   final isDark = brightness == Brightness.dark;
   final base = ColorScheme.fromSeed(
@@ -218,7 +265,11 @@ TextTheme _buildTextTheme(Color onSurface) {
   // cross-platform) and the OS-specific names after as backup, then
   // generic `sans-serif` as final fallback so the browser picks a
   // reasonable system font on the web.
-  const fallback = <String>[
+  // Append the emoji fallback list AT THE END so non-emoji glyphs
+  // still pick a Noto/system font first (faster + sharper); only
+  // characters none of those fonts cover (i.e. emoji + flags) reach
+  // the color emoji fonts.
+  final fallback = <String>[
     'Noto Sans',
     'Noto Sans CJK SC',
     'Noto Sans CJK JP',
@@ -233,6 +284,7 @@ TextTheme _buildTextTheme(Color onSurface) {
     'Malgun Gothic',
     'Myanmar Text',
     'sans-serif',
+    ...kEmojiFontFallback,
   ];
 
   return TextTheme(

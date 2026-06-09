@@ -197,10 +197,18 @@ class ReviewSubmitController extends StateNotifier<ReviewSubmitState> {
         // React stores `photoUrl` as a `data:` URL so it can drop straight
         // into an <img src>. We do the same here for full interop — the
         // client decoder strips the prefix at render time.
-        photoField = 'data:image/jpeg;base64,${base64Encode(compressed)}';
-        // Firestore docs cap at ~1 MB; bail loudly before we waste the round
-        // trip if compression couldn't bring us under the limit.
-        if (photoField.length > 800 * 1024) {
+        //
+        // The MIME prefix MUST match the actual bytes: native compresses
+        // to JPEG, web compresses to PNG. Hardcoding `image/jpeg` made
+        // strict data-URL parsers (and any analytics that trust the
+        // prefix) misclassify the payload on web.
+        final mime = detectImageMime(compressed);
+        photoField = 'data:$mime;base64,${base64Encode(compressed)}';
+        // Firestore docs cap at ~1 MiB; bail loudly before we waste the
+        // round trip if compression couldn't bring us under the limit.
+        // We sit at 950 KB to leave headroom for the other fields in
+        // the doc (rating, comment, userName, timestamps).
+        if (photoField.length > 950 * 1024) {
           state = state.copy(submitting: false, error: 'photo-too-large');
           return;
         }

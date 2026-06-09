@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../state/locale.dart';
+import 'theme.dart';
 
 /// Per-locale display metadata for the flag-pill switcher.
 class _LangOption {
@@ -122,7 +123,11 @@ class _Pill extends StatelessWidget {
               children: [
                 Text(
                   option.flag,
-                  style: const TextStyle(fontSize: 13, height: 1),
+                  // Emoji-safe TextStyle so CanvasKit can locate a
+                  // flag glyph. Plain `TextStyle(fontSize: 13)` on
+                  // web rendered as a blank box on macOS and tofu
+                  // squares elsewhere.
+                  style: emojiTextStyle(fontSize: 13),
                 ),
                 if (showLabel) ...[
                   const SizedBox(width: 5),

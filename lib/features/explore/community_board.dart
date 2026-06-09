@@ -154,9 +154,12 @@ class CommunityUploadController extends StateNotifier<CommunityUploadState> {
     try {
       final compressed = await _maybeCompress(photoBytes);
       final b64 = base64Encode(compressed);
-      // Firestore docs cap at 1 MB; base64 adds ~33% overhead so we cap
-      // the compressed JPEG at ~700 KB just to be safe.
-      if (b64.length > 750 * 1024) {
+      // Firestore docs cap at 1 MiB. Web's PNG output is bulkier than
+      // mobile's JPEG output, so allow up to ~950 KB of base64 to give
+      // typical photos enough headroom — the remaining ~70 KB covers
+      // the rest of the doc (caption, author, cuisine, timestamps,
+      // server overhead).
+      if (b64.length > 950 * 1024) {
         state = state.copy(uploading: false, error: 'photo-too-large');
         return;
       }

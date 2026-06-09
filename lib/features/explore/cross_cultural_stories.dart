@@ -5,6 +5,7 @@ import '../../data/cross_cultural_stories.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../models/spice_route.dart';
 import '../../shared/cuisine_chrome.dart';
+import '../../shared/theme.dart';
 import '../../state/explore.dart';
 import '../../state/locale.dart';
 
@@ -166,7 +167,7 @@ class _StoryTile extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Text(_courseEmoji(course), style: const TextStyle(fontSize: 16)),
+                  Text(_courseEmoji(course), style: emojiTextStyle(fontSize: 16)),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(

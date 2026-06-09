@@ -29,6 +29,21 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   String? _successMsg;
 
   @override
+  void initState() {
+    super.initState();
+    // See `sign_in_screen.dart` for the rationale behind the
+    // post-frame bounce: the top-level GoRouter redirect would
+    // collapse the route stack on auth success, so each auth screen
+    // self-handles the "already signed in" case.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (ref.read(authControllerProvider) != null) {
+        _goNext();
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _name.dispose();
     _email.dispose();
@@ -88,21 +103,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     });
   }
 
-  /// Same modal-aware navigation as [SignInScreen]: honour an explicit
-  /// `redirectTo` (the protected-route flow), otherwise dismiss the modal
-  /// and return to whatever page opened it.
+  /// Same modal-aware navigation as [SignInScreen]: pop the auth modal
+  /// when possible (preserving any underlying recipe-detail / explore
+  /// stack), otherwise fall through to `redirectTo` (or `/`) for the
+  /// direct-URL case where the Navigator has nothing to pop.
   void _goNext() {
-    final dest = widget.redirectTo;
-    if (dest != null) {
-      context.go(dest);
-      return;
-    }
     final navigator = Navigator.of(context);
     if (navigator.canPop()) {
       navigator.pop();
-    } else {
-      context.go('/');
+      return;
     }
+    context.go(widget.redirectTo ?? '/');
   }
 
   @override

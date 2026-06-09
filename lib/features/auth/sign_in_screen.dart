@@ -30,6 +30,23 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   String? _successMsg;
 
   @override
+  void initState() {
+    super.initState();
+    // Used to be handled by a top-level GoRouter redirect, but that
+    // redirect would collapse the route stack (destroying any modal
+    // we were pushed on top of) when it fired in response to the
+    // sign-in success rebuild. Now each auth screen handles the
+    // already-signed-in case itself with a post-frame bounce, which
+    // uses pop-preferred navigation in `_goNext`.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (ref.read(authControllerProvider) != null) {
+        _goNext();
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _email.dispose();
     _password.dispose();
@@ -108,20 +125,21 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   }
 
   void _goNext() {
-    // Modal flow: if a caller passed a redirect (e.g. /sign-in?next=/my-recipes)
-    // honour it, otherwise just pop the modal so the user lands back on
-    // the page that opened auth.
-    final dest = widget.redirectTo;
-    if (dest != null) {
-      context.go(dest);
-      return;
-    }
+    // Preserve the underlying modal stack whenever possible. The auth
+    // modal is typically PUSHED on top of an existing route (e.g. a
+    // recipe-detail modal opened from the explore grid), so popping
+    // restores the user to exactly where they tapped "Sign in" with
+    // their checklist state intact.
+    //
+    // The `redirectTo` fallback only fires for the direct-URL case
+    // (e.g. /sign-in?next=/my-recipes followed in a fresh tab), where
+    // there's nothing on the Navigator to pop back to.
     final navigator = Navigator.of(context);
     if (navigator.canPop()) {
       navigator.pop();
-    } else {
-      context.go('/');
+      return;
     }
+    context.go(widget.redirectTo ?? '/');
   }
 
   @override
