@@ -503,6 +503,24 @@ class AppL10nEn extends AppL10n {
       'You\'ve hit today\'s free generation limit. Try again tomorrow.';
 
   @override
+  String get aiCreatorQuote1 => 'Sharpening the knives and chopping scallions…';
+
+  @override
+  String get aiCreatorQuote2 => 'Roasting raw spices to unlock golden aromas…';
+
+  @override
+  String get aiCreatorQuote3 =>
+      'Simmering authentic stock and checking seasonings…';
+
+  @override
+  String get aiCreatorQuote4 =>
+      'Curating high-quality ingredients for your custom palate…';
+
+  @override
+  String get aiCreatorQuote5 =>
+      'Assembling delicate step-by-step instructions for perfect execution…';
+
+  @override
   String get aiCompanionTitle => 'AI Kitchen Companion';
 
   @override
@@ -541,6 +559,11 @@ class AppL10nEn extends AppL10n {
   @override
   String get aiCompanionRateLimited =>
       'Too many messages this hour. Try again later.';
+
+  @override
+  String aiCompanionActiveFocusCuisine(String cuisine) {
+    return 'Active Focus: $cuisine';
+  }
 
   @override
   String get aiCompanionSuggestion1 =>
@@ -746,6 +769,15 @@ class AppL10nEn extends AppL10n {
   String get authErrorGeneric => 'Something went wrong with sign-in.';
 
   @override
+  String get authSuccessSignIn => 'Logged in successfully. Happy cooking!';
+
+  @override
+  String get authSuccessRegister => 'Account registered successfully! Welcome!';
+
+  @override
+  String get authSuccessGoogle => 'Logged in with Google successfully!';
+
+  @override
   String get recipeOwnerYou => 'By you';
 
   @override
@@ -781,4 +813,94 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get detailDeletedToast => 'Recipe deleted.';
+
+  @override
+  String get reviewsTitle => 'Community Gallery & Reviews';
+
+  @override
+  String get reviewsSubtitle =>
+      'See creations from fellow home chefs, or upload a photo of your own cooking masterwork!';
+
+  @override
+  String get reviewsAverage => 'AVERAGE RATING';
+
+  @override
+  String reviewsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reviews',
+      one: '1 review',
+      zero: 'No reviews yet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reviewsUploadedCooks(int count) {
+    return 'Uploaded: $count';
+  }
+
+  @override
+  String get reviewsEmptyState =>
+      'No community photos shared yet. Be the first to cook and review this dish!';
+
+  @override
+  String get reviewsLoginPrompt =>
+      'Please sign in to share your cooking and rate this recipe.';
+
+  @override
+  String get reviewsLoginCta => 'Sign in to review';
+
+  @override
+  String get reviewsFormTitle => 'Share Your Culinary Triumph';
+
+  @override
+  String get reviewsRatingLabel => 'Rating';
+
+  @override
+  String get reviewsAuthorLabel => 'Chef name';
+
+  @override
+  String get reviewsAuthorHint => 'Enter your nickname...';
+
+  @override
+  String get reviewsCommentLabel => 'Kitchen notes';
+
+  @override
+  String get reviewsCommentHint =>
+      'How did it taste? Any substitutions or tips? (e.g. added extra garlic!)';
+
+  @override
+  String get reviewsPhotoHint => 'Tap to attach a photo of your cooked dish';
+
+  @override
+  String get reviewsPublishBtn => 'Publish to community';
+
+  @override
+  String get reviewsPublishing => 'Publishing…';
+
+  @override
+  String get reviewsSubmitted => 'Successfully added to the community gallery!';
+
+  @override
+  String get reviewsPostAnother => 'Post another review';
+
+  @override
+  String get reviewsPhotoTooLarge => 'Photo is too large, try a smaller image.';
+
+  @override
+  String get reviewsErrorGeneric => 'Couldn\'t post review. Try again.';
+
+  @override
+  String get reviewsDeleteTooltip => 'Delete review';
+
+  @override
+  String get reviewsDeleteConfirm => 'Delete your review?';
+
+  @override
+  String get reviewsAnonymousChef => 'Home Chef';
+
+  @override
+  String get reviewsLightboxCloseTooltip => 'Close photo';
 }

@@ -981,6 +981,36 @@ abstract class AppL10n {
   /// **'You\'ve hit today\'s free generation limit. Try again tomorrow.'**
   String get aiCreatorRateLimited;
 
+  /// No description provided for @aiCreatorQuote1.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharpening the knives and chopping scallions…'**
+  String get aiCreatorQuote1;
+
+  /// No description provided for @aiCreatorQuote2.
+  ///
+  /// In en, this message translates to:
+  /// **'Roasting raw spices to unlock golden aromas…'**
+  String get aiCreatorQuote2;
+
+  /// No description provided for @aiCreatorQuote3.
+  ///
+  /// In en, this message translates to:
+  /// **'Simmering authentic stock and checking seasonings…'**
+  String get aiCreatorQuote3;
+
+  /// No description provided for @aiCreatorQuote4.
+  ///
+  /// In en, this message translates to:
+  /// **'Curating high-quality ingredients for your custom palate…'**
+  String get aiCreatorQuote4;
+
+  /// No description provided for @aiCreatorQuote5.
+  ///
+  /// In en, this message translates to:
+  /// **'Assembling delicate step-by-step instructions for perfect execution…'**
+  String get aiCreatorQuote5;
+
   /// No description provided for @aiCompanionTitle.
   ///
   /// In en, this message translates to:
@@ -1052,6 +1082,12 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Too many messages this hour. Try again later.'**
   String get aiCompanionRateLimited;
+
+  /// No description provided for @aiCompanionActiveFocusCuisine.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Focus: {cuisine}'**
+  String aiCompanionActiveFocusCuisine(String cuisine);
 
   /// No description provided for @aiCompanionSuggestion1.
   ///
@@ -1425,6 +1461,24 @@ abstract class AppL10n {
   /// **'Something went wrong with sign-in.'**
   String get authErrorGeneric;
 
+  /// No description provided for @authSuccessSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged in successfully. Happy cooking!'**
+  String get authSuccessSignIn;
+
+  /// No description provided for @authSuccessRegister.
+  ///
+  /// In en, this message translates to:
+  /// **'Account registered successfully! Welcome!'**
+  String get authSuccessRegister;
+
+  /// No description provided for @authSuccessGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged in with Google successfully!'**
+  String get authSuccessGoogle;
+
   /// No description provided for @recipeOwnerYou.
   ///
   /// In en, this message translates to:
@@ -1490,6 +1544,156 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Recipe deleted.'**
   String get detailDeletedToast;
+
+  /// No description provided for @reviewsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Community Gallery & Reviews'**
+  String get reviewsTitle;
+
+  /// No description provided for @reviewsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'See creations from fellow home chefs, or upload a photo of your own cooking masterwork!'**
+  String get reviewsSubtitle;
+
+  /// No description provided for @reviewsAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'AVERAGE RATING'**
+  String get reviewsAverage;
+
+  /// No description provided for @reviewsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No reviews yet} =1{1 review} other{{count} reviews}}'**
+  String reviewsCount(int count);
+
+  /// No description provided for @reviewsUploadedCooks.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploaded: {count}'**
+  String reviewsUploadedCooks(int count);
+
+  /// No description provided for @reviewsEmptyState.
+  ///
+  /// In en, this message translates to:
+  /// **'No community photos shared yet. Be the first to cook and review this dish!'**
+  String get reviewsEmptyState;
+
+  /// No description provided for @reviewsLoginPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to share your cooking and rate this recipe.'**
+  String get reviewsLoginPrompt;
+
+  /// No description provided for @reviewsLoginCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to review'**
+  String get reviewsLoginCta;
+
+  /// No description provided for @reviewsFormTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share Your Culinary Triumph'**
+  String get reviewsFormTitle;
+
+  /// No description provided for @reviewsRatingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get reviewsRatingLabel;
+
+  /// No description provided for @reviewsAuthorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Chef name'**
+  String get reviewsAuthorLabel;
+
+  /// No description provided for @reviewsAuthorHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your nickname...'**
+  String get reviewsAuthorHint;
+
+  /// No description provided for @reviewsCommentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Kitchen notes'**
+  String get reviewsCommentLabel;
+
+  /// No description provided for @reviewsCommentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'How did it taste? Any substitutions or tips? (e.g. added extra garlic!)'**
+  String get reviewsCommentHint;
+
+  /// No description provided for @reviewsPhotoHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to attach a photo of your cooked dish'**
+  String get reviewsPhotoHint;
+
+  /// No description provided for @reviewsPublishBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish to community'**
+  String get reviewsPublishBtn;
+
+  /// No description provided for @reviewsPublishing.
+  ///
+  /// In en, this message translates to:
+  /// **'Publishing…'**
+  String get reviewsPublishing;
+
+  /// No description provided for @reviewsSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Successfully added to the community gallery!'**
+  String get reviewsSubmitted;
+
+  /// No description provided for @reviewsPostAnother.
+  ///
+  /// In en, this message translates to:
+  /// **'Post another review'**
+  String get reviewsPostAnother;
+
+  /// No description provided for @reviewsPhotoTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo is too large, try a smaller image.'**
+  String get reviewsPhotoTooLarge;
+
+  /// No description provided for @reviewsErrorGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t post review. Try again.'**
+  String get reviewsErrorGeneric;
+
+  /// No description provided for @reviewsDeleteTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete review'**
+  String get reviewsDeleteTooltip;
+
+  /// No description provided for @reviewsDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete your review?'**
+  String get reviewsDeleteConfirm;
+
+  /// No description provided for @reviewsAnonymousChef.
+  ///
+  /// In en, this message translates to:
+  /// **'Home Chef'**
+  String get reviewsAnonymousChef;
+
+  /// No description provided for @reviewsLightboxCloseTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Close photo'**
+  String get reviewsLightboxCloseTooltip;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

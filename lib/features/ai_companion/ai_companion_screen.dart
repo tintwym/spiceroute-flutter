@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../models/chat.dart';
 import '../../shared/breakpoints.dart';
+import '../../shared/cuisine_pill_bar.dart';
 import '../../shared/studio_page.dart';
 import '../../state/chat.dart';
+import '../../state/explore.dart';
 import '../../state/locale.dart';
 
 class AiCompanionScreen extends ConsumerStatefulWidget {
@@ -128,16 +130,27 @@ class _AiCompanionScreenState extends ConsumerState<AiCompanionScreen> {
 
 /// Card title bar: chef avatar + "AI Kitchen Companion" + active focus, with
 /// a reset button on the right once a conversation has started.
-class _CardHeader extends StatelessWidget {
+///
+/// "Active Focus" pulls the currently-selected cuisine from
+/// [exploreProvider] so the chat reflects what the user is browsing.
+/// Falls back to the generic "Global" label when "All cuisines" is
+/// selected, matching the React companion behaviour.
+class _CardHeader extends ConsumerWidget {
   const _CardHeader({required this.showClear, required this.onClear});
   final bool showClear;
   final VoidCallback? onClear;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppL10n.of(context);
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
+    final cuisine = ref.watch(exploreProvider.select((s) => s.cuisine));
+    final focusLabel = cuisine == null
+        ? l.aiCompanionActiveFocus
+        : l.aiCompanionActiveFocusCuisine(
+            CuisinePillBar.labelFor(l, cuisine),
+          );
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 12, 16),
       child: Row(
@@ -151,7 +164,7 @@ class _CardHeader extends StatelessWidget {
                 Text(l.aiCompanionTitle, style: theme.textTheme.titleLarge),
                 const SizedBox(height: 2),
                 Text(
-                  l.aiCompanionActiveFocus,
+                  focusLabel,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: cs.onSurfaceVariant,
                     letterSpacing: 0.4,
@@ -315,6 +328,7 @@ class _MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isUser = message.role == ChatRole.user;
+    final isPlaceholder = !isUser && message.content.isEmpty;
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: ConstrainedBox(
@@ -335,21 +349,84 @@ class _MessageBubble extends StatelessWidget {
               bottomRight: Radius.circular(isUser ? 4 : 18),
             ),
           ),
-          child: SelectableText(
-            message.content.isEmpty
-                ? AppL10n.of(context).aiCompanionTyping
-                : message.content,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: isUser
-                  ? theme.colorScheme.onPrimary
-                  : theme.colorScheme.onSurface,
-              fontStyle: message.content.isEmpty
-                  ? FontStyle.italic
-                  : FontStyle.normal,
-            ),
-          ),
+          // When the assistant has been asked but hasn't streamed any text
+          // yet, render an animated 3-dot indicator so the bubble feels
+          // alive instead of an empty italic "typing…" string.
+          child: isPlaceholder
+              ? const _TypingDots()
+              : SelectableText(
+                  message.content,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: isUser
+                        ? theme.colorScheme.onPrimary
+                        : theme.colorScheme.onSurface,
+                  ),
+                ),
         ),
       ),
+    );
+  }
+}
+
+/// Three bouncing dots used in place of an empty assistant bubble while
+/// the model is still composing its reply. Each dot's animation is
+/// phase-shifted by 1/3 of the period so the row reads as a wave.
+class _TypingDots extends StatefulWidget {
+  const _TypingDots();
+
+  @override
+  State<_TypingDots> createState() => _TypingDotsState();
+}
+
+class _TypingDotsState extends State<_TypingDots>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctl;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _ctl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var i = 0; i < 3; i++) ...[
+          if (i > 0) const SizedBox(width: 5),
+          AnimatedBuilder(
+            animation: _ctl,
+            builder: (_, _) {
+              final phase = (_ctl.value + i / 3) % 1.0;
+              // Bell-curve-shaped opacity: dim at the edges of the cycle,
+              // bright in the middle. Avoids the jarring linear bounce.
+              final t = 1 - (phase - 0.5).abs() * 2;
+              return Opacity(
+                opacity: 0.35 + 0.65 * t,
+                child: Container(
+                  width: 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: cs.onSurface,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ],
     );
   }
 }

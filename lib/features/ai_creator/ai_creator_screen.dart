@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -61,6 +63,14 @@ class _AiCreatorScreenState extends ConsumerState<AiCreatorScreen> {
               controller.generate(language: locale.languageCode, save: true);
             },
           ),
+          // While the AI is thinking, rotate through chef-flavoured loading
+          // quotes ("Sharpening the knives…", etc.) so the user has a clear
+          // signal that work is in flight — a bare spinner makes a multi-
+          // second latency feel like a freeze.
+          if (state.loading) ...[
+            const SizedBox(height: 16),
+            const _LoadingPanel(),
+          ],
           const SizedBox(height: 20),
           if (state.error != null) _ErrorBanner(state: state, l: l),
           if (state.hasRecipe) _GeneratedRecipePreview(recipe: state.recipe!),
@@ -74,6 +84,100 @@ class _AiCreatorScreenState extends ConsumerState<AiCreatorScreen> {
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Dashed-bordered "AI is cooking" panel that swaps a quote every 3.5s.
+///
+/// Five quotes total, all localised — the timer cycles by index so the
+/// effect feels like a real assistant narrating the work rather than a
+/// canned spinner.
+class _LoadingPanel extends StatefulWidget {
+  const _LoadingPanel();
+
+  @override
+  State<_LoadingPanel> createState() => _LoadingPanelState();
+}
+
+class _LoadingPanelState extends State<_LoadingPanel> {
+  Timer? _timer;
+  int _index = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(milliseconds: 3500), (_) {
+      if (!mounted) return;
+      setState(() => _index = (_index + 1) % 5);
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final quotes = [
+      l.aiCreatorQuote1,
+      l.aiCreatorQuote2,
+      l.aiCreatorQuote3,
+      l.aiCreatorQuote4,
+      l.aiCreatorQuote5,
+    ];
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 28),
+      decoration: BoxDecoration(
+        color: cs.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: cs.outlineVariant),
+      ),
+      child: Column(
+        children: [
+          SizedBox(
+            width: 56,
+            height: 56,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                const CircularProgressIndicator(strokeWidth: 3),
+                Icon(Icons.soup_kitchen_outlined,
+                    size: 22, color: cs.onSurface),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+          Text(
+            l.aiCreatorGenerate,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 6),
+          // Soft cross-fade between quotes so the swap doesn't pop.
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 320),
+            child: Text(
+              quotes[_index],
+              key: ValueKey(_index),
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: cs.onSurfaceVariant,
+                fontStyle: FontStyle.italic,
+                height: 1.5,
+              ),
+            ),
+          ),
         ],
       ),
     );

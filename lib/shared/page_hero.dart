@@ -47,28 +47,40 @@ class PageHero extends StatelessWidget {
     final headline = title ?? l.heroTitle;
     final body = subtitle ?? l.heroSubtitle(Cuisine.values.length);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        HeroBadge(text: l.heroBadge),
-        const SizedBox(height: 16),
-        Text(headline, style: titleStyle),
-        const SizedBox(height: 12),
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 560),
-          child: Text(
-            body,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: cs.onSurfaceVariant,
-              height: 1.5,
+    // SizedBox(width: double.infinity) pins the Column to its parent's
+    // max cross-axis extent. Without it the Column would shrink to its
+    // widest fixed child (~560 px from the body Text's ConstrainedBox)
+    // and the outer Center would horizontally centre that narrow
+    // column on the page — which made studio pages (no `below` widget)
+    // look centred while Explore (with a width-greedy LayoutBuilder
+    // inside `below`) looked left-aligned. Now every page renders the
+    // hero flush against the framed content's left edge, lining up
+    // with the tab row beneath it.
+    return SizedBox(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          HeroBadge(text: l.heroBadge),
+          const SizedBox(height: 16),
+          Text(headline, style: titleStyle),
+          const SizedBox(height: 12),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 560),
+            child: Text(
+              body,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: cs.onSurfaceVariant,
+                height: 1.5,
+              ),
             ),
           ),
-        ),
-        if (below != null) ...[
-          const SizedBox(height: 28),
-          below!,
+          if (below != null) ...[
+            const SizedBox(height: 28),
+            below!,
+          ],
         ],
-      ],
+      ),
     );
   }
 }

@@ -488,6 +488,21 @@ class AppL10nJa extends AppL10n {
   String get aiCreatorRateLimited => '本日の無料生成回数を使い切りました。明日また試してください。';
 
   @override
+  String get aiCreatorQuote1 => '包丁を研ぎ、ねぎを刻んでいます…';
+
+  @override
+  String get aiCreatorQuote2 => 'スパイスを焙煎し、黄金の香りを引き出しています…';
+
+  @override
+  String get aiCreatorQuote3 => '本格的なだしを煮込み、味を整えています…';
+
+  @override
+  String get aiCreatorQuote4 => 'あなたの好みに合わせて高品質な食材を厳選中…';
+
+  @override
+  String get aiCreatorQuote5 => '完璧な仕上がりのために繊細なステップを組み立てています…';
+
+  @override
   String get aiCompanionTitle => 'AI キッチンアシスタント';
 
   @override
@@ -523,6 +538,11 @@ class AppL10nJa extends AppL10n {
 
   @override
   String get aiCompanionRateLimited => '1時間あたりの送信制限に達しました。後でもう一度どうぞ。';
+
+  @override
+  String aiCompanionActiveFocusCuisine(String cuisine) {
+    return 'アクティブフォーカス: $cuisine';
+  }
 
   @override
   String get aiCompanionSuggestion1 => 'ナンプラーのヴィーガン代用品は?';
@@ -718,6 +738,15 @@ class AppL10nJa extends AppL10n {
   String get authErrorGeneric => 'ログイン中にエラーが発生しました。';
 
   @override
+  String get authSuccessSignIn => 'ログインしました。良いお料理を!';
+
+  @override
+  String get authSuccessRegister => 'アカウントを登録しました。ようこそ!';
+
+  @override
+  String get authSuccessGoogle => 'Google でログインしました!';
+
+  @override
   String get recipeOwnerYou => 'あなたが投稿';
 
   @override
@@ -752,4 +781,90 @@ class AppL10nJa extends AppL10n {
 
   @override
   String get detailDeletedToast => 'レシピを削除しました。';
+
+  @override
+  String get reviewsTitle => 'コミュニティ・ギャラリーとレビュー';
+
+  @override
+  String get reviewsSubtitle => '他のホームシェフの作品を見たり、あなた自身の素晴らしい料理写真をアップロードしましょう!';
+
+  @override
+  String get reviewsAverage => '平均評価';
+
+  @override
+  String reviewsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件のレビュー',
+      one: '1 件のレビュー',
+      zero: 'まだレビューはありません',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reviewsUploadedCooks(int count) {
+    return '投稿写真: $count';
+  }
+
+  @override
+  String get reviewsEmptyState => 'コミュニティ写真がまだ投稿されていません。一番乗りで作って投稿してみませんか?';
+
+  @override
+  String get reviewsLoginPrompt => '料理写真を共有して評価するには、サインインしてください。';
+
+  @override
+  String get reviewsLoginCta => 'サインインしてレビュー';
+
+  @override
+  String get reviewsFormTitle => 'あなたの料理写真をシェア';
+
+  @override
+  String get reviewsRatingLabel => '評価';
+
+  @override
+  String get reviewsAuthorLabel => 'シェフ名(ニックネーム)';
+
+  @override
+  String get reviewsAuthorHint => 'ニックネームを入力してください…';
+
+  @override
+  String get reviewsCommentLabel => 'キッチンノート';
+
+  @override
+  String get reviewsCommentHint => '味はどうでしたか?アレンジやコツはありましたか?(例: にんにくを多めに!)';
+
+  @override
+  String get reviewsPhotoHint => 'タップして調理済みの写真を添付';
+
+  @override
+  String get reviewsPublishBtn => 'コミュニティに公開';
+
+  @override
+  String get reviewsPublishing => '公開中…';
+
+  @override
+  String get reviewsSubmitted => 'コミュニティギャラリーへの追加に成功しました!';
+
+  @override
+  String get reviewsPostAnother => '別のレビューを投稿';
+
+  @override
+  String get reviewsPhotoTooLarge => '画像が大きすぎます。より小さい画像を選んでください。';
+
+  @override
+  String get reviewsErrorGeneric => '投稿に失敗しました。再度お試しください。';
+
+  @override
+  String get reviewsDeleteTooltip => 'レビューを削除';
+
+  @override
+  String get reviewsDeleteConfirm => 'あなたのレビューを削除しますか?';
+
+  @override
+  String get reviewsAnonymousChef => 'ホームシェフ';
+
+  @override
+  String get reviewsLightboxCloseTooltip => '写真を閉じる';
 }

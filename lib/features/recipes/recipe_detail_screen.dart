@@ -12,6 +12,7 @@ import '../../shared/format.dart';
 import '../../shared/widgets.dart';
 import '../../state/providers.dart';
 import '../../state/saved.dart';
+import 'recipe_reviews.dart';
 
 final _detailProvider =
     FutureProvider.family<SpiceRouteDetail, String>((ref, id) async {
@@ -342,7 +343,10 @@ class _LeftColumn extends ConsumerWidget {
       recipeDifficultyLabel(l, totalMinutes: r.totalMinutes, steps: r.steps.length);
 }
 
-/// Right column: ingredients checklist + numbered cooking instructions.
+/// Right column: ingredients checklist + numbered cooking instructions +
+/// community reviews & photo gallery. The reviews block lives at the
+/// bottom so the cook can jump straight from the steps into "see what
+/// other people did with this".
 class _RightColumn extends StatelessWidget {
   const _RightColumn({required this.recipe});
   final SpiceRouteDetail recipe;
@@ -350,6 +354,7 @@ class _RightColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppL10n.of(context);
+    final cs = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -359,8 +364,11 @@ class _RightColumn extends StatelessWidget {
         const SizedBox(height: 28),
         _SectionHeader(text: l.detailCookingInstructions),
         const SizedBox(height: 12),
-        for (var i = 0; i < recipe.steps.length; i++)
-          _InstructionCard(number: i + 1, body: recipe.steps[i].body),
+        _InstructionChecklist(recipe: recipe),
+        const SizedBox(height: 32),
+        Divider(color: cs.outlineVariant, height: 1),
+        const SizedBox(height: 24),
+        RecipeReviewsSection(recipe: recipe),
       ],
     );
   }
@@ -512,53 +520,122 @@ class _IngredientRow extends StatelessWidget {
   }
 }
 
+/// Tap-to-tick cooking steps. Mirrors the React recipe modal where
+/// completing a step strikes it through + swaps the number badge for a
+/// check icon so cooks can keep their place while juggling pans.
+class _InstructionChecklist extends StatefulWidget {
+  const _InstructionChecklist({required this.recipe});
+  final SpiceRouteDetail recipe;
+
+  @override
+  State<_InstructionChecklist> createState() => _InstructionChecklistState();
+}
+
+class _InstructionChecklistState extends State<_InstructionChecklist> {
+  final _done = <int>{};
+
+  @override
+  Widget build(BuildContext context) {
+    final steps = widget.recipe.steps;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (var i = 0; i < steps.length; i++)
+          _InstructionCard(
+            number: i + 1,
+            body: steps[i].body,
+            done: _done.contains(i),
+            onToggle: () => setState(() {
+              if (!_done.add(i)) _done.remove(i);
+            }),
+          ),
+      ],
+    );
+  }
+}
+
 class _InstructionCard extends StatelessWidget {
-  const _InstructionCard({required this.number, required this.body});
+  const _InstructionCard({
+    required this.number,
+    required this.body,
+    required this.done,
+    required this.onToggle,
+  });
   final int number;
   final String body;
+  final bool done;
+  final VoidCallback onToggle;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: cs.surface,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: InkWell(
+        onTap: onToggle,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: cs.outlineVariant),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 26,
-            height: 26,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: cs.primary.withValues(alpha: 0.12),
-              shape: BoxShape.circle,
-            ),
-            child: Text(
-              '$number',
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: cs.primary,
-                fontWeight: FontWeight.w700,
-              ),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: done ? cs.surfaceContainerHighest : cs.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: done ? cs.primary.withValues(alpha: 0.40) : cs.outlineVariant,
             ),
           ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 2),
-              child: Text(
-                body,
-                style: theme.textTheme.bodyMedium?.copyWith(height: 1.5),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 140),
+                child: done
+                    ? Icon(
+                        Icons.check_circle,
+                        key: const ValueKey('check'),
+                        size: 26,
+                        color: cs.primary,
+                      )
+                    : Container(
+                        key: const ValueKey('num'),
+                        width: 26,
+                        height: 26,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: cs.primary.withValues(alpha: 0.12),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          '$number',
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: cs.primary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
               ),
-            ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Text(
+                    body,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      height: 1.5,
+                      color: done
+                          ? cs.onSurfaceVariant.withValues(alpha: 0.75)
+                          : cs.onSurface,
+                      decoration: done
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

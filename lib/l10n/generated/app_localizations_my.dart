@@ -502,6 +502,26 @@ class AppL10nMy extends AppL10n {
       'ယနေ့ အခမဲ့ ဖန်တီးနိုင်သော ကန့်သတ်ချက်သို့ ရောက်ပြီပါပြီ။ မနက်ဖြန် ပြန်စမ်းပါ။';
 
   @override
+  String get aiCreatorQuote1 =>
+      'ဓါးများ ထက်အောင်ပြုလုပ်၍ ကြက်သွန်ပင် ဖြတ်နေသည်…';
+
+  @override
+  String get aiCreatorQuote2 =>
+      'မွှေးထောင်ပြောင်လဲမှု အောက်တွင် ဆေးသွားများ ဖုတ်နေသည်…';
+
+  @override
+  String get aiCreatorQuote3 =>
+      'မူရင်း စာလုပ်ရည် ကို ပြုတ်ပြီး အရသာ စစ်ဆေးနေသည်…';
+
+  @override
+  String get aiCreatorQuote4 =>
+      'သင်၏ အရသာအတွက် အရည်အသွေးမြင့်သော အရာများ ရွေးချယ်နေသည်…';
+
+  @override
+  String get aiCreatorQuote5 =>
+      'ပြီးပြည့်စုံစွာ ပြုလုပ်ရန် တစ်ဆင့်စီ ညွှန်ကြားချက် တည်ဆောက်နေသည်…';
+
+  @override
   String get aiCompanionTitle => 'AI မီးဖိုချောင် လက်ထောက်';
 
   @override
@@ -540,6 +560,11 @@ class AppL10nMy extends AppL10n {
   @override
   String get aiCompanionRateLimited =>
       'ဤနာရီအတွင်း မက်ဆေ့ချ်များ များလွန်းနေပါသည်။ နောက်မှ ပြန်ကြိုးစားပါ။';
+
+  @override
+  String aiCompanionActiveFocusCuisine(String cuisine) {
+    return 'လက်ရှိ အာရုံ: $cuisine';
+  }
 
   @override
   String get aiCompanionSuggestion1 =>
@@ -747,6 +772,18 @@ class AppL10nMy extends AppL10n {
       'ဝင်ရောက်မှုတွင် တစ်စုံတစ်ရာ မှားယွင်းသွားသည်။';
 
   @override
+  String get authSuccessSignIn =>
+      'အောင်မြင်စွာ ဝင်ရောက်ပြီးပါပြီ။ ပျော်ရွှင်စွာ ချက်ပြုတ်ပါ!';
+
+  @override
+  String get authSuccessRegister =>
+      'အကောင့်ကို အောင်မြင်စွာ ဖန်တီးပြီးပါပြီ။ ကြိုဆိုပါသည်!';
+
+  @override
+  String get authSuccessGoogle =>
+      'Google ဖြင့် အောင်မြင်စွာ ဝင်ရောက်ပြီးပါပြီ!';
+
+  @override
   String get recipeOwnerYou => 'သင်က';
 
   @override
@@ -782,4 +819,94 @@ class AppL10nMy extends AppL10n {
 
   @override
   String get detailDeletedToast => 'ချက်ပြုတ်နည်း ဖျက်ပြီးပါပြီ။';
+
+  @override
+  String get reviewsTitle => 'အသိုက်အဝန်း ပုံတင်နှင့် သုံးသပ်ချက်များ';
+
+  @override
+  String get reviewsSubtitle =>
+      'အခြား စားဖိုမှူးများ ချက်ထားသည်များကို ကြည့်ပါ၊ သို့မဟုတ် သင်ကိုယ်တိုင် ချက်ထားသော ပုံကို တင်ပါ!';
+
+  @override
+  String get reviewsAverage => 'ပျမ်းမျှ အဆင့်';
+
+  @override
+  String reviewsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'သုံးသပ်ချက် $count ခု',
+      one: 'သုံးသပ်ချက် 1 ခု',
+      zero: 'သုံးသပ်ချက် မရှိသေးပါ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reviewsUploadedCooks(int count) {
+    return 'တင်ထားသော ပုံ: $count';
+  }
+
+  @override
+  String get reviewsEmptyState =>
+      'အသိုက်အဝန်းမှ ပုံများ မရှိသေးပါ။ ပထမဦးဆုံး ချက်၍ သုံးသပ်ပါ!';
+
+  @override
+  String get reviewsLoginPrompt =>
+      'သင်၏ ချက်ပြုတ်မှုကို ဝေမျှရန် ကျေးဇူးပြု၍ ဝင်ရောက်ပါ။';
+
+  @override
+  String get reviewsLoginCta => 'ဝင်ရောက်ပြီး သုံးသပ်ပါ';
+
+  @override
+  String get reviewsFormTitle => 'သင်၏ ချက်ပြုတ်မှု အောင်မြင်ခြင်းကို ဝေမျှပါ';
+
+  @override
+  String get reviewsRatingLabel => 'အဆင့်';
+
+  @override
+  String get reviewsAuthorLabel => 'စားဖိုမှူး အမည်';
+
+  @override
+  String get reviewsAuthorHint => 'သင်၏ အမည်ပြောင်ကို ထည့်ပါ…';
+
+  @override
+  String get reviewsCommentLabel => 'ချက်ပြုတ်ခန်း မှတ်စု';
+
+  @override
+  String get reviewsCommentHint => 'ဘယ်လို အရသာရှိသလဲ? အကြံပြုချက် ရှိပါသလား?';
+
+  @override
+  String get reviewsPhotoHint => 'ချက်ပြုတ်ပြီးသော ပုံ ပူးတွဲရန် တို့ပါ';
+
+  @override
+  String get reviewsPublishBtn => 'အသိုက်အဝန်းသို့ တင်မည်';
+
+  @override
+  String get reviewsPublishing => 'တင်နေသည်…';
+
+  @override
+  String get reviewsSubmitted => 'ဂယ်လာရီသို့ အောင်မြင်စွာ ထည့်ပြီးပါပြီ!';
+
+  @override
+  String get reviewsPostAnother => 'နောက်တစ်ခု ထပ်တင်မည်';
+
+  @override
+  String get reviewsPhotoTooLarge =>
+      'ပုံ ကြီးလွန်းသည်၊ ပိုသေးသော ပုံကို ရွေးပါ။';
+
+  @override
+  String get reviewsErrorGeneric => 'သုံးသပ်ချက် မတင်နိုင်ပါ၊ ပြန်ကြိုးစားပါ။';
+
+  @override
+  String get reviewsDeleteTooltip => 'သုံးသပ်ချက် ဖျက်';
+
+  @override
+  String get reviewsDeleteConfirm => 'သင်၏ သုံးသပ်ချက်ကို ဖျက်မှာလား?';
+
+  @override
+  String get reviewsAnonymousChef => 'အိမ်စားဖိုမှူး';
+
+  @override
+  String get reviewsLightboxCloseTooltip => 'ပုံ ပိတ်ပါ';
 }

@@ -3,15 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../l10n/generated/app_localizations.dart';
-import '../models/spice_route.dart';
-import '../state/locale.dart';
 import 'breakpoints.dart';
 import 'language_flag_pills.dart';
 
 /// Sticky top navigation used on tablet+ in place of the side rail.
 ///
 /// Single row matching the editorial reference design:
-///   brand mark + wordmark + tagline (left), language flag pills +
+///   brand mark + wordmark (left), language flag pills +
 ///   account avatar (right).
 ///
 /// The page-level tab row (Explore / AI Creator / AI Companion / Saved)
@@ -115,8 +113,17 @@ class TopNavBar extends ConsumerWidget implements PreferredSizeWidget {
   }
 }
 
-/// Brand block: logo mark + serif wordmark + dynamic tagline counting
-/// supported cuisines and locales (e.g. "11 CUISINES · 6 LANGUAGES").
+/// Brand block: logo mark + serif wordmark.
+///
+/// We previously rendered a "{11 CUISINES · 6 LANGUAGES}" tagline under
+/// the wordmark via [AppL10n.brandTagline], but it just restated info
+/// already visible on screen — the hero subtitle counts the same
+/// cuisines, the cuisine pill bar enumerates them as chips, and the
+/// flag-pills row in this same header lists the supported locales. The
+/// header earned more room than the brag earned visual interest, so
+/// the tagline is gone. The ARB string is intentionally kept so future
+/// marketing surfaces (e.g. a landing page outside the app shell) can
+/// reuse it without re-translating into the 6 locales.
 class _Brand extends StatelessWidget {
   const _Brand({required this.onTap});
   final VoidCallback onTap;
@@ -131,8 +138,6 @@ class _Brand extends StatelessWidget {
     // means we can swap the marketing headline without touching the
     // technical product id used elsewhere.
     final title = l.heroTitle;
-    final tagline =
-        l.brandTagline(Cuisine.values.length, supportedLocales.length);
 
     return Tooltip(
       message: title,
@@ -147,40 +152,20 @@ class _Brand extends StatelessWidget {
               const BrandLogo(size: 36),
               const SizedBox(width: 10),
               Flexible(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        // Bumped from 19 -> 22 with a heavier weight so
-                        // the serif wordmark anchors the header the way
-                        // the reference design's "Savor Global Recipes"
-                        // does. Tight line-height keeps it stacked with
-                        // the tagline at _row1 = 60 px.
-                        fontSize: 22,
-                        height: 1.0,
-                        fontWeight: FontWeight.w800,
-                        color: cs.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      tagline.toUpperCase(),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: cs.onSurfaceVariant,
-                        letterSpacing: 1.2,
-                        fontWeight: FontWeight.w600,
-                        height: 1.0,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    // Bumped from 22 -> 26 now that the tagline is gone
+                    // — the wordmark has the vertical room to be the
+                    // sole anchor of the header, and a slightly larger
+                    // serif reads more confidently as a brand mark.
+                    fontSize: 26,
+                    height: 1.0,
+                    fontWeight: FontWeight.w800,
+                    color: cs.onSurface,
+                  ),
                 ),
               ),
             ],

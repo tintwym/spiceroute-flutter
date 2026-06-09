@@ -495,6 +495,23 @@ class AppL10nVi extends AppL10n {
       'Bạn đã dùng hết lượt tạo miễn phí hôm nay. Hãy thử lại vào ngày mai.';
 
   @override
+  String get aiCreatorQuote1 => 'Đang mài dao và thái hành lá…';
+
+  @override
+  String get aiCreatorQuote2 => 'Đang rang gia vị để khơi hương thơm vàng óng…';
+
+  @override
+  String get aiCreatorQuote3 => 'Đang ninh nước dùng truyền thống và nêm nếm…';
+
+  @override
+  String get aiCreatorQuote4 =>
+      'Đang chọn nguyên liệu chất lượng cao theo khẩu vị của bạn…';
+
+  @override
+  String get aiCreatorQuote5 =>
+      'Đang biên soạn hướng dẫn từng bước cho một món hoàn hảo…';
+
+  @override
   String get aiCompanionTitle => 'AI Trợ lý nhà bếp';
 
   @override
@@ -532,6 +549,11 @@ class AppL10nVi extends AppL10n {
   @override
   String get aiCompanionRateLimited =>
       'Quá nhiều tin nhắn trong giờ này. Vui lòng thử lại sau.';
+
+  @override
+  String aiCompanionActiveFocusCuisine(String cuisine) {
+    return 'Trọng tâm: $cuisine';
+  }
 
   @override
   String get aiCompanionSuggestion1 => 'Thay nước mắm cho người ăn chay?';
@@ -733,6 +755,15 @@ class AppL10nVi extends AppL10n {
   String get authErrorGeneric => 'Đã xảy ra lỗi khi đăng nhập.';
 
   @override
+  String get authSuccessSignIn => 'Đăng nhập thành công. Chúc nấu ăn vui vẻ!';
+
+  @override
+  String get authSuccessRegister => 'Tạo tài khoản thành công. Chào mừng bạn!';
+
+  @override
+  String get authSuccessGoogle => 'Đăng nhập Google thành công!';
+
+  @override
   String get recipeOwnerYou => 'Tác giả: bạn';
 
   @override
@@ -767,4 +798,95 @@ class AppL10nVi extends AppL10n {
 
   @override
   String get detailDeletedToast => 'Đã xóa công thức.';
+
+  @override
+  String get reviewsTitle => 'Thư viện cộng đồng & đánh giá';
+
+  @override
+  String get reviewsSubtitle =>
+      'Xem tác phẩm của các đầu bếp tại gia khác, hoặc tải lên ảnh món bạn vừa nấu!';
+
+  @override
+  String get reviewsAverage => 'ĐIỂM TRUNG BÌNH';
+
+  @override
+  String reviewsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count đánh giá',
+      one: '1 đánh giá',
+      zero: 'Chưa có đánh giá',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reviewsUploadedCooks(int count) {
+    return 'Ảnh đã tải lên: $count';
+  }
+
+  @override
+  String get reviewsEmptyState =>
+      'Chưa có ảnh nào từ cộng đồng. Hãy là người đầu tiên nấu và đánh giá món này!';
+
+  @override
+  String get reviewsLoginPrompt =>
+      'Vui lòng đăng nhập để chia sẻ món ăn và đánh giá công thức này.';
+
+  @override
+  String get reviewsLoginCta => 'Đăng nhập để đánh giá';
+
+  @override
+  String get reviewsFormTitle => 'Khoe thành quả của bạn';
+
+  @override
+  String get reviewsRatingLabel => 'Điểm';
+
+  @override
+  String get reviewsAuthorLabel => 'Tên đầu bếp';
+
+  @override
+  String get reviewsAuthorHint => 'Nhập biệt danh của bạn…';
+
+  @override
+  String get reviewsCommentLabel => 'Ghi chú bếp';
+
+  @override
+  String get reviewsCommentHint =>
+      'Hương vị thế nào? Có thay thế hay mẹo gì không? (Ví dụ: thêm tỏi!)';
+
+  @override
+  String get reviewsPhotoHint => 'Nhấn để đính kèm ảnh món bạn nấu';
+
+  @override
+  String get reviewsPublishBtn => 'Đăng lên cộng đồng';
+
+  @override
+  String get reviewsPublishing => 'Đang đăng…';
+
+  @override
+  String get reviewsSubmitted => 'Đã thêm vào thư viện cộng đồng thành công!';
+
+  @override
+  String get reviewsPostAnother => 'Viết đánh giá khác';
+
+  @override
+  String get reviewsPhotoTooLarge => 'Ảnh quá lớn, thử ảnh nhỏ hơn.';
+
+  @override
+  String get reviewsErrorGeneric =>
+      'Không gửi được đánh giá. Vui lòng thử lại.';
+
+  @override
+  String get reviewsDeleteTooltip => 'Xoá đánh giá';
+
+  @override
+  String get reviewsDeleteConfirm => 'Xoá đánh giá của bạn?';
+
+  @override
+  String get reviewsAnonymousChef => 'Đầu bếp tại gia';
+
+  @override
+  String get reviewsLightboxCloseTooltip => 'Đóng ảnh';
 }

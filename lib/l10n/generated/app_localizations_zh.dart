@@ -486,6 +486,21 @@ class AppL10nZh extends AppL10n {
   String get aiCreatorRateLimited => '今天的免费生成次数用完了,明天再来吧。';
 
   @override
+  String get aiCreatorQuote1 => '正在磨刀切葱花…';
+
+  @override
+  String get aiCreatorQuote2 => '正在烘焙香料,释放黄金香气…';
+
+  @override
+  String get aiCreatorQuote3 => '正在熬煮原汁高汤,精心调味…';
+
+  @override
+  String get aiCreatorQuote4 => '正在为你的口味甄选高品质食材…';
+
+  @override
+  String get aiCreatorQuote5 => '正在编写精细的分步说明,确保完美出菜…';
+
+  @override
   String get aiCompanionTitle => 'AI 厨房帮手';
 
   @override
@@ -521,6 +536,11 @@ class AppL10nZh extends AppL10n {
 
   @override
   String get aiCompanionRateLimited => '本小时消息次数过多,请稍后再试。';
+
+  @override
+  String aiCompanionActiveFocusCuisine(String cuisine) {
+    return '当前焦点:$cuisine';
+  }
 
   @override
   String get aiCompanionSuggestion1 => '鱼露的素食替代品?';
@@ -715,6 +735,15 @@ class AppL10nZh extends AppL10n {
   String get authErrorGeneric => '登录时出错。';
 
   @override
+  String get authSuccessSignIn => '登录成功,愿你做菜愉快!';
+
+  @override
+  String get authSuccessRegister => '账号创建成功!欢迎加入!';
+
+  @override
+  String get authSuccessGoogle => '已通过 Google 登录成功!';
+
+  @override
   String get recipeOwnerYou => '由你发布';
 
   @override
@@ -748,4 +777,90 @@ class AppL10nZh extends AppL10n {
 
   @override
   String get detailDeletedToast => '食谱已删除。';
+
+  @override
+  String get reviewsTitle => '美食社区相册与评价';
+
+  @override
+  String get reviewsSubtitle => '看看其他家庭主厨的热情创作,或上传你亲手制作的美食大作!';
+
+  @override
+  String get reviewsAverage => '平均得分';
+
+  @override
+  String reviewsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 条评价',
+      one: '1 条评价',
+      zero: '暂无评价',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reviewsUploadedCooks(int count) {
+    return '晒图数:$count';
+  }
+
+  @override
+  String get reviewsEmptyState => '尚无社区分享照片。快来做这道菜,发表第一份晒照和评价吧!';
+
+  @override
+  String get reviewsLoginPrompt => '请登录以发表你的美食并评分。';
+
+  @override
+  String get reviewsLoginCta => '登录后即可评价';
+
+  @override
+  String get reviewsFormTitle => '分享你的丰盛之作';
+
+  @override
+  String get reviewsRatingLabel => '评分';
+
+  @override
+  String get reviewsAuthorLabel => '大厨姓名';
+
+  @override
+  String get reviewsAuthorHint => '请输入你的昵称…';
+
+  @override
+  String get reviewsCommentLabel => '烹饪心得';
+
+  @override
+  String get reviewsCommentHint => '味道如何?有什么小贴士吗?(例如:多加了点蒜蓉!)';
+
+  @override
+  String get reviewsPhotoHint => '轻触可附上你的成菜照片';
+
+  @override
+  String get reviewsPublishBtn => '发表到美食社区';
+
+  @override
+  String get reviewsPublishing => '正在发布…';
+
+  @override
+  String get reviewsSubmitted => '已成功加入社区美食墙!';
+
+  @override
+  String get reviewsPostAnother => '再发一条评价';
+
+  @override
+  String get reviewsPhotoTooLarge => '图片过大,请换张更小的图。';
+
+  @override
+  String get reviewsErrorGeneric => '发布失败,请稍后再试。';
+
+  @override
+  String get reviewsDeleteTooltip => '删除评价';
+
+  @override
+  String get reviewsDeleteConfirm => '要删除你的评价吗?';
+
+  @override
+  String get reviewsAnonymousChef => '民间主厨';
+
+  @override
+  String get reviewsLightboxCloseTooltip => '关闭图片';
 }

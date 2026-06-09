@@ -488,6 +488,21 @@ class AppL10nKo extends AppL10n {
   String get aiCreatorRateLimited => '오늘의 무료 생성 한도를 모두 사용했어요. 내일 다시 시도해 주세요.';
 
   @override
+  String get aiCreatorQuote1 => '칼을 갈고 대파를 다지는 중…';
+
+  @override
+  String get aiCreatorQuote2 => '향신료를 볶아 황금빛 향을 끌어올리는 중…';
+
+  @override
+  String get aiCreatorQuote3 => '정성스러운 육수를 끓이고 간을 맞추는 중…';
+
+  @override
+  String get aiCreatorQuote4 => '당신의 입맛에 맞춰 최상급 재료를 고르는 중…';
+
+  @override
+  String get aiCreatorQuote5 => '완벽한 결과를 위해 단계별 안내를 정리하는 중…';
+
+  @override
   String get aiCompanionTitle => 'AI 주방 도우미';
 
   @override
@@ -523,6 +538,11 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get aiCompanionRateLimited => '이번 시간에 메시지가 너무 많아요. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String aiCompanionActiveFocusCuisine(String cuisine) {
+    return '활성 포커스: $cuisine';
+  }
 
   @override
   String get aiCompanionSuggestion1 => '피쉬 소스의 비건 대체품은?';
@@ -718,6 +738,15 @@ class AppL10nKo extends AppL10n {
   String get authErrorGeneric => '로그인 중 오류가 발생했어요.';
 
   @override
+  String get authSuccessSignIn => '로그인되었습니다. 즐거운 요리 되세요!';
+
+  @override
+  String get authSuccessRegister => '계정이 생성되었습니다. 환영합니다!';
+
+  @override
+  String get authSuccessGoogle => 'Google 로그인 완료!';
+
+  @override
   String get recipeOwnerYou => '내가 작성';
 
   @override
@@ -752,4 +781,91 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get detailDeletedToast => '레시피를 삭제했어요.';
+
+  @override
+  String get reviewsTitle => '커뮤니티 갤러리 및 후기';
+
+  @override
+  String get reviewsSubtitle => '다른 홈 셰프들의 요리 작품을 보거나, 직접 만든 요리 사진을 업로드해 보세요!';
+
+  @override
+  String get reviewsAverage => '평균 평점';
+
+  @override
+  String reviewsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '후기 $count개',
+      one: '후기 1개',
+      zero: '아직 후기가 없습니다',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reviewsUploadedCooks(int count) {
+    return '업로드 사진: $count';
+  }
+
+  @override
+  String get reviewsEmptyState => '아직 등록된 사진이 없습니다. 직접 요리하고 첫 번째 후기를 작성해 보세요!';
+
+  @override
+  String get reviewsLoginPrompt => '요리를 등록하고 평점을 남기려면 먼저 로그인해 주세요.';
+
+  @override
+  String get reviewsLoginCta => '로그인하고 후기 남기기';
+
+  @override
+  String get reviewsFormTitle => '나만의 요리 인증하기';
+
+  @override
+  String get reviewsRatingLabel => '평점';
+
+  @override
+  String get reviewsAuthorLabel => '닉네임';
+
+  @override
+  String get reviewsAuthorHint => '여기에 닉네임을 적어주세요…';
+
+  @override
+  String get reviewsCommentLabel => '요리 한 줄 평';
+
+  @override
+  String get reviewsCommentHint =>
+      '맛은 어땠나요? 나만의 꿀팁이나 대체 재료가 있다면 공유해 주세요 (예: 마늘 가득!)';
+
+  @override
+  String get reviewsPhotoHint => '탭하여 완성된 요리 사진을 첨부하세요';
+
+  @override
+  String get reviewsPublishBtn => '커뮤니티에 전송';
+
+  @override
+  String get reviewsPublishing => '게시 중…';
+
+  @override
+  String get reviewsSubmitted => '갤러리에 정상적으로 등록되었습니다!';
+
+  @override
+  String get reviewsPostAnother => '다른 후기 남기기';
+
+  @override
+  String get reviewsPhotoTooLarge => '사진이 너무 큽니다. 작은 사진으로 다시 시도해 주세요.';
+
+  @override
+  String get reviewsErrorGeneric => '후기 등록에 실패했습니다. 다시 시도해 주세요.';
+
+  @override
+  String get reviewsDeleteTooltip => '후기 삭제';
+
+  @override
+  String get reviewsDeleteConfirm => '내 후기를 삭제하시겠어요?';
+
+  @override
+  String get reviewsAnonymousChef => '홈 셰프';
+
+  @override
+  String get reviewsLightboxCloseTooltip => '사진 닫기';
 }

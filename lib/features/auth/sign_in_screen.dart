@@ -24,6 +24,11 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   bool _busy = false;
   bool _showPassword = false;
 
+  /// Localized success message shown inline for ~1.2s before [_goNext]
+  /// closes the modal. Mirrors the React modal which flashes "Logged in
+  /// successfully" before dismissing.
+  String? _successMsg;
+
   @override
   void dispose() {
     _email.dispose();
@@ -40,7 +45,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     if (!mounted) return;
     setState(() => _busy = false);
     if (result.ok) {
-      _goNext();
+      _flashThenGo(AppL10n.of(context).authSuccessSignIn);
     } else {
       showSnack(context, localizeAuthError(AppL10n.of(context), result.error));
     }
@@ -53,10 +58,18 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     if (!mounted) return;
     setState(() => _busy = false);
     if (result.ok) {
-      _goNext();
+      _flashThenGo(AppL10n.of(context).authSuccessGoogle);
     } else if (result.error != 'cancelled') {
       showSnack(context, localizeAuthError(AppL10n.of(context), result.error));
     }
+  }
+
+  /// Show the inline success banner for 1.2s, then navigate. Short enough
+  /// that the user isn't blocked, long enough that the affordance reads
+  /// as a confirmation rather than a glitch.
+  void _flashThenGo(String message) {
+    setState(() => _successMsg = message);
+    Future<void>.delayed(const Duration(milliseconds: 1200), _goNext);
   }
 
   Future<void> _forgotPassword() async {
@@ -106,6 +119,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            if (_successMsg != null) ...[
+              _SuccessBanner(message: _successMsg!),
+              const SizedBox(height: 18),
+            ],
             AuthLabel(l.authEmail),
             AuthField(
               controller: _email,
@@ -229,6 +246,45 @@ class _BottomNote extends StatelessWidget {
         // Italic "fine-print" voice — matches the editorial subtitle
         // above and tells the reader this is supporting info, not action.
         fontStyle: FontStyle.italic,
+      ),
+    );
+  }
+}
+
+/// Inline confirmation banner shown immediately after a successful sign-in
+/// or registration, just before the modal dismisses itself. Soft green to
+/// echo the editorial accent and match the community-board success state.
+class _SuccessBanner extends StatelessWidget {
+  const _SuccessBanner({required this.message});
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF3FA35A).withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: const Color(0xFF3FA35A).withValues(alpha: 0.35),
+        ),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.check_circle,
+              size: 18, color: Color(0xFF2E7D43)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: const Color(0xFF2E7D43),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
