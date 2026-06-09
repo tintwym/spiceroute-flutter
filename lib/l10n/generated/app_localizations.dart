@@ -1461,6 +1461,30 @@ abstract class AppL10n {
   /// **'Something went wrong with sign-in.'**
   String get authErrorGeneric;
 
+  /// No description provided for @authErrorProviderDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Google sign-in isn\'t enabled for this app yet. Ask the operator to enable it in Firebase Console → Authentication → Sign-in method.'**
+  String get authErrorProviderDisabled;
+
+  /// No description provided for @authErrorUnauthorizedDomain.
+  ///
+  /// In en, this message translates to:
+  /// **'This domain isn\'t authorized for Google sign-in. Add it in Firebase Console → Authentication → Settings → Authorized domains.'**
+  String get authErrorUnauthorizedDomain;
+
+  /// No description provided for @authErrorPopupBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Your browser blocked the sign-in popup. Allow popups for this site and try again.'**
+  String get authErrorPopupBlocked;
+
+  /// No description provided for @authErrorAccountExists.
+  ///
+  /// In en, this message translates to:
+  /// **'An account with this email already exists using a different sign-in method. Try signing in with email + password instead.'**
+  String get authErrorAccountExists;
+
   /// No description provided for @authSuccessSignIn.
   ///
   /// In en, this message translates to:

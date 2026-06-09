@@ -769,6 +769,22 @@ class AppL10nEn extends AppL10n {
   String get authErrorGeneric => 'Something went wrong with sign-in.';
 
   @override
+  String get authErrorProviderDisabled =>
+      'Google sign-in isn\'t enabled for this app yet. Ask the operator to enable it in Firebase Console → Authentication → Sign-in method.';
+
+  @override
+  String get authErrorUnauthorizedDomain =>
+      'This domain isn\'t authorized for Google sign-in. Add it in Firebase Console → Authentication → Settings → Authorized domains.';
+
+  @override
+  String get authErrorPopupBlocked =>
+      'Your browser blocked the sign-in popup. Allow popups for this site and try again.';
+
+  @override
+  String get authErrorAccountExists =>
+      'An account with this email already exists using a different sign-in method. Try signing in with email + password instead.';
+
+  @override
   String get authSuccessSignIn => 'Logged in successfully. Happy cooking!';
 
   @override

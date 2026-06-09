@@ -738,6 +738,22 @@ class AppL10nKo extends AppL10n {
   String get authErrorGeneric => '로그인 중 오류가 발생했어요.';
 
   @override
+  String get authErrorProviderDisabled =>
+      '이 앱에서 Google 로그인이 아직 활성화되지 않았습니다. 관리자에게 Firebase Console → Authentication → Sign-in method 에서 활성화하도록 요청하세요.';
+
+  @override
+  String get authErrorUnauthorizedDomain =>
+      '이 도메인은 Google 로그인을 위해 승인되지 않았습니다. Firebase Console → Authentication → Settings → Authorized domains 에서 추가하세요.';
+
+  @override
+  String get authErrorPopupBlocked =>
+      '브라우저가 로그인 팝업을 차단했습니다. 이 사이트의 팝업을 허용하고 다시 시도하세요.';
+
+  @override
+  String get authErrorAccountExists =>
+      '이 이메일은 다른 로그인 방식으로 이미 등록되어 있습니다. 이메일과 비밀번호로 로그인해 보세요.';
+
+  @override
   String get authSuccessSignIn => '로그인되었습니다. 즐거운 요리 되세요!';
 
   @override

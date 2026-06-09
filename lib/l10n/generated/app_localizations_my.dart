@@ -772,6 +772,22 @@ class AppL10nMy extends AppL10n {
       'ဝင်ရောက်မှုတွင် တစ်စုံတစ်ရာ မှားယွင်းသွားသည်။';
 
   @override
+  String get authErrorProviderDisabled =>
+      'ဤအက်ပ်တွင် Google ဝင်ရောက်မှု မဖွင့်ထားသေးပါ။ စီမံခန့်ခွဲသူသည် Firebase Console → Authentication → Sign-in method တွင် ဖွင့်ပေးပါ။';
+
+  @override
+  String get authErrorUnauthorizedDomain =>
+      'ဤဒိုမိန်းသည် Google ဝင်ရောက်ရန် ခွင့်ပြုထားခြင်း မရှိပါ။ Firebase Console → Authentication → Settings → Authorized domains တွင် ထည့်ပါ။';
+
+  @override
+  String get authErrorPopupBlocked =>
+      'သင်၏ဘရောက်ဇာသည် ဝင်ရောက်ရန် ပေါ်လာသော ဝင်းဒိုးကို ပိတ်ဆို့ထားသည်။ ဤဆိုက်အတွက် ပေါ်လာသော ဝင်းဒိုးများကို ခွင့်ပြုပြီး ထပ်စမ်းကြည့်ပါ။';
+
+  @override
+  String get authErrorAccountExists =>
+      'ဤအီးမေးလ်ဖြင့် အကောင့်ကို အခြားနည်းလမ်းတစ်ခုဖြင့် မှတ်ပုံတင်ထားပြီးဖြစ်သည်။ အီးမေးလ်နှင့် စကားဝှက်ဖြင့် ဝင်ရောက်ပါ။';
+
+  @override
   String get authSuccessSignIn =>
       'အောင်မြင်စွာ ဝင်ရောက်ပြီးပါပြီ။ ပျော်ရွှင်စွာ ချက်ပြုတ်ပါ!';
 

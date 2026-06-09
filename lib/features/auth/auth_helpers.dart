@@ -4,6 +4,13 @@ import '../../l10n/generated/app_localizations.dart';
 
 /// Map a Firebase error code to a localized message. Anything we don't
 /// recognize falls back to the generic copy.
+///
+/// Social sign-in (Google) failure codes deserve specific copy: the
+/// most common cause of "Google sign-in just shows an error" in the
+/// wild is the operator forgetting to enable the Google provider in
+/// the Firebase Console, NOT a client bug — the localized strings
+/// for `operation-not-allowed` and `unauthorized-domain` point the
+/// user (or the developer reading the screenshot) at the exact fix.
 String localizeAuthError(AppL10n l, String? code) {
   switch (code) {
     case null:
@@ -11,6 +18,9 @@ String localizeAuthError(AppL10n l, String? code) {
     case 'firebase-not-configured':
       return l.authNotConfigured;
     case 'cancelled':
+    case 'popup-closed-by-user':
+    case 'cancelled-popup-request':
+    case 'web-context-canceled':
       return l.commonCancel;
     case 'invalid-credential':
     case 'invalid-email':
@@ -24,6 +34,15 @@ String localizeAuthError(AppL10n l, String? code) {
       return l.authErrorWeakPassword;
     case 'network-request-failed':
       return l.authErrorNetwork;
+    case 'operation-not-allowed':
+    case 'configuration-not-found':
+      return l.authErrorProviderDisabled;
+    case 'unauthorized-domain':
+      return l.authErrorUnauthorizedDomain;
+    case 'popup-blocked':
+      return l.authErrorPopupBlocked;
+    case 'account-exists-with-different-credential':
+      return l.authErrorAccountExists;
     default:
       return l.authErrorGeneric;
   }

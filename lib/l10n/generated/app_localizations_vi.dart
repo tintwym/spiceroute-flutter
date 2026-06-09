@@ -755,6 +755,22 @@ class AppL10nVi extends AppL10n {
   String get authErrorGeneric => 'Đã xảy ra lỗi khi đăng nhập.';
 
   @override
+  String get authErrorProviderDisabled =>
+      'Đăng nhập Google chưa được bật cho ứng dụng này. Vui lòng yêu cầu quản trị viên bật trong Firebase Console → Authentication → Sign-in method.';
+
+  @override
+  String get authErrorUnauthorizedDomain =>
+      'Tên miền này chưa được ủy quyền cho đăng nhập Google. Thêm vào trong Firebase Console → Authentication → Settings → Authorized domains.';
+
+  @override
+  String get authErrorPopupBlocked =>
+      'Trình duyệt đã chặn cửa sổ đăng nhập. Cho phép cửa sổ bật lên cho trang này rồi thử lại.';
+
+  @override
+  String get authErrorAccountExists =>
+      'Email này đã được đăng ký bằng phương thức đăng nhập khác. Vui lòng đăng nhập bằng email và mật khẩu.';
+
+  @override
   String get authSuccessSignIn => 'Đăng nhập thành công. Chúc nấu ăn vui vẻ!';
 
   @override

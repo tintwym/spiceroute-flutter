@@ -62,6 +62,14 @@ class AuthController extends StateNotifier<AppUser?> {
         state = _toAppUser(u);
         _initialized = true;
       });
+      // Complete any in-flight redirect-based sign-in (Safari/Firefox
+      // popup fallback in [signInWithGoogle]). On the way back from
+      // accounts.google.com, the redirect result lands here and flips
+      // the authStateChanges stream — without this call the redirect
+      // appears to have done nothing.
+      if (kIsWeb) {
+        _consumeRedirectResult();
+      }
     } else {
       // No Firebase wired up — there's nothing to restore asynchronously.
       _initialized = true;
@@ -69,6 +77,16 @@ class AuthController extends StateNotifier<AppUser?> {
         // Restore the stored dev user (if any) so refreshes don't sign you out.
         _restoreDevUser();
       }
+    }
+  }
+
+  Future<void> _consumeRedirectResult() async {
+    final auth = _auth;
+    if (auth == null) return;
+    try {
+      await auth.getRedirectResult();
+    } catch (e) {
+      debugPrint('getRedirectResult failed: $e');
     }
   }
 
@@ -210,7 +228,30 @@ class AuthController extends StateNotifier<AppUser?> {
     try {
       if (kIsWeb) {
         final provider = fb.GoogleAuthProvider();
-        await auth.signInWithPopup(provider);
+        try {
+          await auth.signInWithPopup(provider);
+        } on fb.FirebaseAuthException catch (e) {
+          // Browsers (especially Safari + Firefox) block third-party
+          // popups by default. Fall back to a full-page redirect so
+          // sign-in still completes — `getRedirectResult()` is called
+          // from [AuthController.<init>] to finish the round trip on
+          // the way back. Without this fallback the user sees a vague
+          // "popup blocked" message and has no path forward.
+          if (e.code == 'popup-blocked' ||
+              e.code == 'popup-closed-by-user' ||
+              e.code == 'cancelled-popup-request' ||
+              e.code == 'operation-not-supported-in-this-environment') {
+            debugPrint(
+              'Google popup sign-in failed (${e.code}); '
+              'falling back to redirect.',
+            );
+            await auth.signInWithRedirect(provider);
+            // Redirect navigates away; this code path is only reached
+            // when the redirect itself fails (rare).
+            return const AuthResult.ok();
+          }
+          rethrow;
+        }
       } else {
         final google = GoogleSignIn();
         final account = await google.signIn();
@@ -224,8 +265,13 @@ class AuthController extends StateNotifier<AppUser?> {
       }
       return const AuthResult.ok();
     } on fb.FirebaseAuthException catch (e) {
+      // Print the raw code in dev so failures are diagnosable from
+      // the browser console. `e.code` is the actionable handle the
+      // UI snackbar uses to pick the localized copy.
+      debugPrint('Google sign-in FirebaseAuthException: ${e.code} ${e.message}');
       return AuthResult.err(e.code);
     } catch (e) {
+      debugPrint('Google sign-in failed: $e');
       return AuthResult.err(e.toString());
     }
   }

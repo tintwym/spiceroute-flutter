@@ -735,6 +735,20 @@ class AppL10nZh extends AppL10n {
   String get authErrorGeneric => '登录时出错。';
 
   @override
+  String get authErrorProviderDisabled =>
+      '此应用尚未启用 Google 登录。请管理员在 Firebase Console → Authentication → Sign-in method 中启用。';
+
+  @override
+  String get authErrorUnauthorizedDomain =>
+      '此域名未授权用于 Google 登录。请在 Firebase Console → Authentication → Settings → Authorized domains 中添加。';
+
+  @override
+  String get authErrorPopupBlocked => '浏览器拦截了登录弹窗。请允许此站点的弹出窗口后重试。';
+
+  @override
+  String get authErrorAccountExists => '此邮箱已使用其他登录方式注册。请改用邮箱和密码登录。';
+
+  @override
   String get authSuccessSignIn => '登录成功,愿你做菜愉快!';
 
   @override

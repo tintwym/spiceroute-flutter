@@ -738,6 +738,22 @@ class AppL10nJa extends AppL10n {
   String get authErrorGeneric => 'ログイン中にエラーが発生しました。';
 
   @override
+  String get authErrorProviderDisabled =>
+      'このアプリでは Google ログインがまだ有効になっていません。管理者に Firebase Console → Authentication → Sign-in method で有効化するよう依頼してください。';
+
+  @override
+  String get authErrorUnauthorizedDomain =>
+      'このドメインは Google ログイン用に承認されていません。Firebase Console → Authentication → Settings → Authorized domains に追加してください。';
+
+  @override
+  String get authErrorPopupBlocked =>
+      'ブラウザがログイン用のポップアップをブロックしました。このサイトのポップアップを許可してから再度お試しください。';
+
+  @override
+  String get authErrorAccountExists =>
+      'このメールアドレスは別のログイン方法で既に登録されています。メールとパスワードでログインしてみてください。';
+
+  @override
   String get authSuccessSignIn => 'ログインしました。良いお料理を!';
 
   @override

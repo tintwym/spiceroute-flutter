@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+import '../../shared/breakpoints.dart';
 import '../../shared/cuisine_pill_bar.dart';
 import '../../shared/nav_search_field.dart';
 import '../../shared/page_hero.dart';
@@ -43,6 +44,20 @@ class _SearchAndCount extends StatelessWidget {
       l.exploreResultCount(count, scope),
       style: theme.textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
     );
+
+    // Phone-shell AppBar already hosts a search pill (see
+    // `responsive_scaffold.dart`), bound to the SAME query state as
+    // this widget. Rendering both produced two visibly identical
+    // search inputs stacked vertically on the same screen — confusing
+    // and a waste of vertical space on the smallest viewport. On
+    // phones we keep just the result counter (which the AppBar
+    // version can't show) and let the AppBar input drive the query.
+    if (deviceClassOf(context).isPhone) {
+      return Align(
+        alignment: Alignment.centerLeft,
+        child: counter,
+      );
+    }
 
     return LayoutBuilder(builder: (context, constraints) {
       final wide = constraints.maxWidth >= 640;
