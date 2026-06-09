@@ -168,7 +168,7 @@ The repo ships with a ready-to-use Vercel config (`vercel.json` + `build.sh`):
 
 #### One-time Vercel setup
 
-1. **Pre-requisite: a deployed backend.** The Flutter app talks to `spiceroute-backend` for `/spice_routes` and `/ai/*`. Deploy that first — the backend repo ships a ready-to-use [Render Blueprint](../render.yaml) (see `spiceroute-backend/README.md` → Deployment → Render). Any HTTPS-reachable host works (Railway, Cloud Run, etc.) — just grab the URL.
+1. **Pre-requisite: a deployed backend.** The Flutter app talks to `spiceroute-backend` for `/spice_routes` and `/ai/*`. Deploy that first — the backend repo ships a ready-to-use Render Blueprint at its own root (see `spiceroute-backend/render.yaml` and the backend README's Deployment → Render section). Any HTTPS-reachable host works (Railway, Cloud Run, etc.) — just grab the URL.
 2. **Create a Vercel project** pointing at this repo. In _Project Settings → General_:
    - **Root Directory**: `spiceroute-flutter` (so Vercel finds `vercel.json` and `build.sh`)
    - **Framework Preset**: `Other` (already overridden by `vercel.json`)
