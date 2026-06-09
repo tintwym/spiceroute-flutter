@@ -84,10 +84,13 @@ class TopNavBar extends ConsumerWidget implements PreferredSizeWidget {
                     width: double.infinity,
                     child: Row(
                       children: [
-                        // Brand block: logo + serif wordmark.
-                        Flexible(
-                          child: _Brand(onTap: () => context.go('/')),
-                        ),
+                        // Brand block: logo + serif wordmark. Shrink-
+                        // wrapped (no Flexible), so the Spacer below is
+                        // the SINGLE elastic gap in the row — pills +
+                        // SIGN IN reliably anchor to the right edge no
+                        // matter how long the wordmark gets in any
+                        // locale.
+                        _Brand(onTap: () => context.go('/')),
                         const SizedBox(width: 16),
                         const Spacer(),
                         // Flag-only pills tucked tight against the

@@ -104,10 +104,18 @@ class AppShell extends ConsumerWidget {
     // actions (AccountChip + Settings IconButton + LanguagePickerButton).
     // Everything personal now lives behind the avatar — see
     // [AccountMenuButton].
-    final actions = const [
-      AccountMenuButton(),
-      SizedBox(width: 8),
-    ];
+    //
+    // NOTE: no trailing SizedBox here on tablet+. The header content
+    // frame already matches the body's `pagePadding` + `contentMaxWidth`
+    // envelope, and the body's right-most elements (filter dropdowns,
+    // recipe grid, MY SAVED RECIPES tab) sit flush with that frame's
+    // right edge. Adding a SizedBox after AccountMenuButton would inset
+    // SIGN IN / the avatar inward and break the right-edge alignment.
+    // Phone shell still gets the 8 px gutter because AppBar trims
+    // actions[] tight to the screen edge by default.
+    final actions = dc.isPhone
+        ? const [AccountMenuButton(), SizedBox(width: 8)]
+        : const [AccountMenuButton()];
 
     if (dc.isPhone) {
       return Scaffold(
