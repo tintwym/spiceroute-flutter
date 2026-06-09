@@ -40,7 +40,7 @@ class SavedRecipesScreen extends ConsumerWidget {
     // heading lives in the section header below the tab row.
     const hero = PageHero();
 
-    // Section heading: "My Saved Recipes (3)" + cloud-synced badge when
+    // Section heading: "Saved (3)" + cloud-synced badge when
     // signed in + the profile doc has been fetched + optional Clear-all
     // action on the right when there *is* something to clear.
     final user = ref.watch(authControllerProvider);

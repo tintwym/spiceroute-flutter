@@ -21,7 +21,7 @@ class AppL10nEn extends AppL10n {
   String get navAiCompanion => 'AI Companion';
 
   @override
-  String get navSaved => 'My Saved Recipes';
+  String get navSaved => 'Saved';
 
   @override
   String get languageEnglish => 'English';
@@ -412,7 +412,7 @@ class AppL10nEn extends AppL10n {
   String get detailBack => 'Back';
 
   @override
-  String get savedTitle => 'My Saved Recipes';
+  String get savedTitle => 'Saved';
 
   @override
   String get savedHeroSubtitle =>
@@ -420,7 +420,7 @@ class AppL10nEn extends AppL10n {
 
   @override
   String savedCountHeading(int count) {
-    return 'My Saved Recipes ($count)';
+    return 'Saved ($count)';
   }
 
   @override

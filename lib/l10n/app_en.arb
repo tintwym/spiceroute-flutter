@@ -5,7 +5,7 @@
   "navExplore": "Explore",
   "navAiCreator": "AI Creator",
   "navAiCompanion": "AI Companion",
-  "navSaved": "My Saved Recipes",
+  "navSaved": "Saved",
 
   "languageEnglish": "English",
   "languageChinese": "Chinese",
@@ -147,9 +147,9 @@
   "detailShare": "Share",
   "detailBack": "Back",
 
-  "savedTitle": "My Saved Recipes",
+  "savedTitle": "Saved",
   "savedHeroSubtitle": "Your personal cookbook. Bookmark dishes from any cuisine and they'll land here so you can revisit them anytime.",
-  "savedCountHeading": "My Saved Recipes ({count})",
+  "savedCountHeading": "Saved ({count})",
   "@savedCountHeading": { "placeholders": { "count": { "type": "int" } } },
   "savedEmptyTitle": "Nothing saved yet",
   "savedEmptySubtitle": "You haven't saved any recipes yet. Tap the bookmark icon on any recipe card to start building your personal cookbook!",

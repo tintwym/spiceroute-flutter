@@ -132,7 +132,7 @@ abstract class AppL10n {
   /// No description provided for @navSaved.
   ///
   /// In en, this message translates to:
-  /// **'My Saved Recipes'**
+  /// **'Saved'**
   String get navSaved;
 
   /// No description provided for @languageEnglish.
@@ -816,7 +816,7 @@ abstract class AppL10n {
   /// No description provided for @savedTitle.
   ///
   /// In en, this message translates to:
-  /// **'My Saved Recipes'**
+  /// **'Saved'**
   String get savedTitle;
 
   /// No description provided for @savedHeroSubtitle.
@@ -828,7 +828,7 @@ abstract class AppL10n {
   /// No description provided for @savedCountHeading.
   ///
   /// In en, this message translates to:
-  /// **'My Saved Recipes ({count})'**
+  /// **'Saved ({count})'**
   String savedCountHeading(int count);
 
   /// No description provided for @savedEmptyTitle.

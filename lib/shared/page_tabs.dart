@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../state/auth.dart';
+import 'breakpoints.dart';
 import 'responsive_scaffold.dart';
 
 /// Underlined-tab row that sits *below the hero* on each main page
@@ -15,6 +16,12 @@ import 'responsive_scaffold.dart';
 /// Primary destinations (Explore, AI Creator, AI Companion) cluster on
 /// the left; the "library" destinations (Saved, My Recipes) push to the
 /// far right, matching the screenshot.
+///
+/// Hidden on phone-width layouts: a 4-tab row on a sub-400 px screen
+/// produced overflow ellipses ("AI CREAT…") and competed visually with
+/// the bottom nav rail that [AppShell] already shows on mobile. The
+/// nav rail is the canonical destination switcher on phones; the
+/// in-body tabs only earn their keep on tablet+.
 class PageTabs extends ConsumerWidget {
   const PageTabs({super.key});
 
@@ -33,6 +40,15 @@ class PageTabs extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Phones get the bottom nav rail from [AppShell] — rendering the
+    // tab row on top of that is redundant and the 4 uppercase labels
+    // can't fit on a sub-400 px viewport without truncating
+    // ("AI CREAT…"). Collapse to nothing and let the page hero butt
+    // up against the body content.
+    if (deviceClassOf(context).isPhone) {
+      return const SizedBox.shrink();
+    }
+
     final l = AppL10n.of(context);
     final cs = Theme.of(context).colorScheme;
     final user = ref.watch(authControllerProvider);
