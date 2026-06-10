@@ -3,14 +3,14 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:savor_global/features/ai_companion/ai_companion_screen.dart';
-import 'package:savor_global/l10n/generated/app_localizations.dart';
-import 'package:savor_global/models/chat.dart';
-import 'package:savor_global/models/spice_route.dart';
-import 'package:savor_global/shared/theme.dart';
-import 'package:savor_global/state/chat.dart';
-import 'package:savor_global/api/api_client.dart';
-import 'package:savor_global/state/explore.dart';
+import 'package:spiceroute/features/ai_companion/ai_companion_screen.dart';
+import 'package:spiceroute/l10n/generated/app_localizations.dart';
+import 'package:spiceroute/models/chat.dart';
+import 'package:spiceroute/models/spice_route.dart';
+import 'package:spiceroute/shared/theme.dart';
+import 'package:spiceroute/state/chat.dart';
+import 'package:spiceroute/api/api_client.dart';
+import 'package:spiceroute/state/explore.dart';
 
 /// Chat controller stub — lets each test pre-seed `state.messages` and
 /// `state.streaming` without going through the real `send()` path

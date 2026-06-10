@@ -3,10 +3,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:savor_global/features/ai_creator/ai_creator_screen.dart';
-import 'package:savor_global/l10n/generated/app_localizations.dart';
-import 'package:savor_global/shared/theme.dart';
-import 'package:savor_global/state/ai_recipe.dart';
+import 'package:spiceroute/features/ai_creator/ai_creator_screen.dart';
+import 'package:spiceroute/l10n/generated/app_localizations.dart';
+import 'package:spiceroute/shared/theme.dart';
+import 'package:spiceroute/state/ai_recipe.dart';
 
 /// AiRecipeController stub whose state is forced into the "generating"
 /// branch from the moment Riverpod constructs it — lets the widget tree

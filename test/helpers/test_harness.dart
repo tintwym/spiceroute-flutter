@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:savor_global/l10n/generated/app_localizations.dart';
-import 'package:savor_global/shared/theme.dart';
+import 'package:spiceroute/l10n/generated/app_localizations.dart';
+import 'package:spiceroute/shared/theme.dart';
 
 /// Wraps a widget under test in the minimum scaffolding it needs to build:
 /// a [ProviderScope] (with optional overrides), the same theme + l10n setup

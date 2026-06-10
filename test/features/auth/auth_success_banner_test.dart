@@ -3,10 +3,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:savor_global/features/auth/sign_in_screen.dart';
-import 'package:savor_global/l10n/generated/app_localizations.dart';
-import 'package:savor_global/shared/theme.dart';
-import 'package:savor_global/state/auth.dart';
+import 'package:spiceroute/features/auth/sign_in_screen.dart';
+import 'package:spiceroute/l10n/generated/app_localizations.dart';
+import 'package:spiceroute/shared/theme.dart';
+import 'package:spiceroute/state/auth.dart';
 
 /// Auth controller stub — resolves any sign-in attempt to a success
 /// without touching Firebase. The real "dev mode" path on

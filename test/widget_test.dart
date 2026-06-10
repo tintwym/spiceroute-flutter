@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:savor_global/l10n/generated/app_localizations.dart';
-import 'package:savor_global/shared/theme.dart';
+import 'package:spiceroute/l10n/generated/app_localizations.dart';
+import 'package:spiceroute/shared/theme.dart';
 
 void main() {
   testWidgets('theme + l10n builds without errors', (tester) async {

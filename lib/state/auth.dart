@@ -40,6 +40,12 @@ class AuthResult {
   bool get ok => error == null;
 }
 
+// Storage key for the dev-auth stub session. The `savor_` prefix is
+// LEGACY (from when the app was named SavorGlobal); DO NOT rename it
+// without a migration shim or every existing dev user gets logged out
+// on next deploy. Same story for the `savor_saved_recipe_ids`,
+// `savor_locale`, `savor_theme_mode`, and `savor_settings` keys
+// elsewhere in `state/`.
 const _kDevUserKey = 'savor_dev_user';
 const _kStorageOpts = AndroidOptions(encryptedSharedPreferences: true);
 

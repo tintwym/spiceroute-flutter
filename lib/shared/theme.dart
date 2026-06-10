@@ -9,8 +9,13 @@ import 'package:flutter/material.dart';
 ///   surface  cream     #FAF9F6 (pages) / #F5F2ED (raised)
 ///   borders  lineSoft  #E5E1D8
 ///   muted    stone     #8C887D
-class SavorPalette {
-  SavorPalette._();
+///
+/// (Class was previously `SavorPalette` — kept as `SpiceRoutePalette`
+/// to align with the product name. Storage keys in `state/*.dart` are
+/// intentionally still `savor_*` to avoid wiping existing users' data
+/// on the rename deploy.)
+class SpiceRoutePalette {
+  SpiceRoutePalette._();
 
   static const cream = Color(0xFFFAF9F6);
   static const cream2 = Color(0xFFF5F2ED);
@@ -72,7 +77,7 @@ TextStyle emojiTextStyle({double fontSize = 16, double height = 1.0}) {
 ThemeData buildTheme(Brightness brightness) {
   final isDark = brightness == Brightness.dark;
   final base = ColorScheme.fromSeed(
-    seedColor: SavorPalette.olive,
+    seedColor: SpiceRoutePalette.olive,
     brightness: brightness,
   );
 
@@ -85,13 +90,13 @@ ThemeData buildTheme(Brightness brightness) {
           surfaceContainerHighest: const Color(0xFF272C1F),
         )
       : base.copyWith(
-          primary: SavorPalette.olive,
-          onPrimary: SavorPalette.cream,
-          secondary: SavorPalette.terracotta,
-          surface: SavorPalette.cream,
-          onSurface: SavorPalette.charcoal,
-          surfaceContainerHighest: SavorPalette.cream2,
-          outlineVariant: SavorPalette.lineSoft,
+          primary: SpiceRoutePalette.olive,
+          onPrimary: SpiceRoutePalette.cream,
+          secondary: SpiceRoutePalette.terracotta,
+          surface: SpiceRoutePalette.cream,
+          onSurface: SpiceRoutePalette.charcoal,
+          surfaceContainerHighest: SpiceRoutePalette.cream2,
+          outlineVariant: SpiceRoutePalette.lineSoft,
         );
 
   final textTheme = _buildTextTheme(colorScheme.onSurface);

@@ -139,10 +139,10 @@ Defaults to `http://10.0.2.2:8000` (Android emulator's alias for the host).
 Pass `API_BASE_URL` at build time:
 
 ```bash
-flutter run --dart-define=API_BASE_URL=https://api.example.com -d chrome
-flutter build web --release --dart-define=API_BASE_URL=https://api.example.com
-flutter build apk --release --dart-define=API_BASE_URL=https://api.example.com
-flutter build ios --release --dart-define=API_BASE_URL=https://api.example.com
+flutter run --dart-define=API_BASE_URL=https://spiceroute-backend-ggu5.onrender.com -d chrome
+flutter build web --release --dart-define=API_BASE_URL=https://spiceroute-backend-ggu5.onrender.com
+flutter build apk --release --dart-define=API_BASE_URL=https://spiceroute-backend-ggu5.onrender.com
+flutter build ios --release --dart-define=API_BASE_URL=https://spiceroute-backend-ggu5.onrender.com
 ```
 
 See [`lib/shared/config.dart`](./lib/shared/config.dart) for the resolution order.
@@ -177,11 +177,11 @@ The repo ships with a ready-to-use Vercel config (`vercel.json` + `build.sh`):
 
    | Name | Value | Notes |
    |---|---|---|
-   | `API_BASE_URL` | `https://your-backend.example.com` | **Required.** Without it the build warns and the app falls back to `http://localhost:8000`. |
+   | `API_BASE_URL` | `https://spiceroute-backend-ggu5.onrender.com` (this project's live backend) | **Required.** Without it the build warns and the app falls back to `http://localhost:8000`. Swap for your own backend URL if you're forking. |
    | `FLUTTER_VERSION` | e.g. `3.27.1` | Optional. Defaults to `stable`. Pin to a tag for reproducible builds. |
 
-4. **Backend CORS** — add your Vercel preview + production domains to `CORS_ORIGINS` in the backend `.env` (`https://your-app.vercel.app,https://your-app-*.vercel.app`).
-5. **Firebase Auth authorized domains** — in [Firebase Console → Authentication → Settings → Authorized domains](https://console.firebase.google.com), add `your-app.vercel.app` (and any custom domain). Without this, Google Sign-In popups will fail in production.
+4. **Backend CORS** — add your Vercel preview + production domains to `CORS_ORIGINS` in the backend's Render Environment tab. For this project that's `https://spiceroute-recipe.vercel.app`; the preview-deploy wildcard is handled by `CORS_ORIGIN_REGEX=^https://([a-z0-9-]+\.)*vercel\.app$` in `spiceroute-backend/render.yaml`.
+5. **Firebase Auth authorized domains** — in [Firebase Console → Authentication → Settings → Authorized domains](https://console.firebase.google.com/project/profound-campus-ff4nj/authentication/settings), add `spiceroute-recipe.vercel.app` (and any custom domain). Without this, Google Sign-In popups will fail in production with `auth/unauthorized-domain`.
 6. **Firestore rules** — deploy from the repo root with `firebase deploy --only firestore:rules` (rules live at `../firestore.rules`).
 7. **First deploy**: push to your default branch, or run `vercel --prod` from inside `spiceroute-flutter/`.
 
@@ -191,12 +191,12 @@ Before the first deploy, sanity-check the build locally:
 
 ```bash
 cd spiceroute-flutter
-API_BASE_URL=https://your-backend.example.com bash build.sh
+API_BASE_URL=https://spiceroute-backend-ggu5.onrender.com bash build.sh
 # Then preview:
 cd build/web && python3 -m http.server 8080
 ```
 
-Open <http://localhost:8080>. If the page loads, hot-tap a few routes (cuisine pills, recipe modal, sign-in), and the network tab shows requests against `https://your-backend.example.com` — you're good to ship.
+Open <http://localhost:8080>. If the page loads, hot-tap a few routes (cuisine pills, recipe modal, sign-in), and the network tab shows requests against `https://spiceroute-backend-ggu5.onrender.com` — you're good to ship.
 
 ### Mobile
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:network_image_mock/network_image_mock.dart';
-import 'package:savor_global/models/spice_route.dart';
-import 'package:savor_global/shared/widgets.dart';
+import 'package:spiceroute/models/spice_route.dart';
+import 'package:spiceroute/shared/widgets.dart';
 
 import '../helpers/test_harness.dart';
 

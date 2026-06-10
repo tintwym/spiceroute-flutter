@@ -30,11 +30,11 @@ Future<void> main() async {
       debugPrint('Firebase init failed: $e\n$st');
     }
   }
-  runApp(const ProviderScope(child: SavorApp()));
+  runApp(const ProviderScope(child: SpiceRouteApp()));
 }
 
-class SavorApp extends ConsumerWidget {
-  const SavorApp({super.key});
+class SpiceRouteApp extends ConsumerWidget {
+  const SpiceRouteApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

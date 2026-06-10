@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:savor_global/features/recipes/recipe_reviews.dart';
-import 'package:savor_global/models/spice_route.dart';
-import 'package:savor_global/state/recipe_reviews.dart';
+import 'package:spiceroute/features/recipes/recipe_reviews.dart';
+import 'package:spiceroute/models/spice_route.dart';
+import 'package:spiceroute/state/recipe_reviews.dart';
 
 import '../../helpers/test_harness.dart';
 
