@@ -78,6 +78,21 @@ class AppL10nZh extends AppL10n {
   String get cuisineFrench => '法国菜';
 
   @override
+  String get cuisineGreek => '希腊菜';
+
+  @override
+  String get cuisineSpanish => '西班牙菜';
+
+  @override
+  String get cuisineMalaysian => '马来西亚菜';
+
+  @override
+  String get cuisineGerman => '德国菜';
+
+  @override
+  String get cuisineIndonesian => '印度尼西亚菜';
+
+  @override
   String get exploreSearchHint => '搜索食谱、食材或标签';
 
   @override
@@ -258,13 +273,46 @@ class AppL10nZh extends AppL10n {
   String get filterAllDietary => '所有偏好';
 
   @override
+  String get courseGroupEarlyDay => '晨光时段';
+
+  @override
+  String get courseGroupDaytimeCasual => '白天 / 轻食';
+
+  @override
+  String get courseGroupBeforeMain => '主菜之前';
+
+  @override
+  String get courseGroupMainEvent => '主菜登场';
+
+  @override
+  String get courseGroupSweetEnding => '甜蜜收尾';
+
+  @override
+  String get courseGroupAfterHours => '深夜时光';
+
+  @override
+  String get courseGroupLiquids => '饮品';
+
+  @override
   String get courseBreakfast => '早餐与早午餐';
 
   @override
-  String get courseLunch => '午餐 / 便当';
+  String get courseHighTea => '下午茶与高茶';
+
+  @override
+  String get courseLunch => '午餐与便当';
+
+  @override
+  String get courseSoupsSaladsBowls => '汤品、清汤与沙拉';
 
   @override
   String get courseAppetizer => '开胃菜、前菜与小食';
+
+  @override
+  String get courseSharingBoards => '分享拼盘、冷盘与熟食拼盘';
+
+  @override
+  String get courseMainCourse => '高蛋白主菜';
 
   @override
   String get courseSideDish => '配菜';
@@ -276,7 +324,10 @@ class AppL10nZh extends AppL10n {
   String get courseSnack => '零食与夜宵';
 
   @override
-  String get courseDrinks => '饮品与鸡尾酒';
+  String get courseAlcoholicDrinks => '酒类饮品与鸡尾酒';
+
+  @override
+  String get courseZeroProofDrinks => '无酒精饮品';
 
   @override
   String get dietaryVegan => '纯素';
@@ -736,7 +787,7 @@ class AppL10nZh extends AppL10n {
 
   @override
   String get authErrorProviderDisabled =>
-      '此应用尚未启用 Google 登录。请管理员在 Firebase Console → Authentication → Sign-in method 中启用。';
+      '此应用尚未启用此登录方式。请管理员在 Firebase Console → Authentication → Sign-in method 中启用。';
 
   @override
   String get authErrorUnauthorizedDomain =>

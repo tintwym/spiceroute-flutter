@@ -78,6 +78,21 @@ class AppL10nKo extends AppL10n {
   String get cuisineFrench => '프렌치';
 
   @override
+  String get cuisineGreek => '그리스';
+
+  @override
+  String get cuisineSpanish => '스페인';
+
+  @override
+  String get cuisineMalaysian => '말레이시아';
+
+  @override
+  String get cuisineGerman => '독일';
+
+  @override
+  String get cuisineIndonesian => '인도네시아';
+
+  @override
   String get exploreSearchHint => '레시피, 재료, 태그 검색';
 
   @override
@@ -260,13 +275,46 @@ class AppL10nKo extends AppL10n {
   String get filterAllDietary => '모든 조건';
 
   @override
+  String get courseGroupEarlyDay => '이른 하루';
+
+  @override
+  String get courseGroupDaytimeCasual => '낮 / 가벼운 식사';
+
+  @override
+  String get courseGroupBeforeMain => '메인 전에';
+
+  @override
+  String get courseGroupMainEvent => '메인 코스';
+
+  @override
+  String get courseGroupSweetEnding => '달콤한 마무리';
+
+  @override
+  String get courseGroupAfterHours => '야간 시간';
+
+  @override
+  String get courseGroupLiquids => '음료';
+
+  @override
   String get courseBreakfast => '아침 & 브런치';
 
   @override
-  String get courseLunch => '점심 / 도시락';
+  String get courseHighTea => '하이 티 & 애프터눈 티';
+
+  @override
+  String get courseLunch => '점심 & 도시락';
+
+  @override
+  String get courseSoupsSaladsBowls => '수프, 브로스 & 샐러드';
 
   @override
   String get courseAppetizer => '전채, 스타터 & 핑거푸드';
+
+  @override
+  String get courseSharingBoards => '셰어링 플래터, 보드 & 샤퀴테리';
+
+  @override
+  String get courseMainCourse => '고단백 메인 코스';
 
   @override
   String get courseSideDish => '사이드 디시';
@@ -278,7 +326,10 @@ class AppL10nKo extends AppL10n {
   String get courseSnack => '간식 & 야식';
 
   @override
-  String get courseDrinks => '음료 & 칵테일';
+  String get courseAlcoholicDrinks => '주류 & 칵테일';
+
+  @override
+  String get courseZeroProofDrinks => '무알코올 음료';
 
   @override
   String get dietaryVegan => '비건';
@@ -739,7 +790,7 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get authErrorProviderDisabled =>
-      '이 앱에서 Google 로그인이 아직 활성화되지 않았습니다. 관리자에게 Firebase Console → Authentication → Sign-in method 에서 활성화하도록 요청하세요.';
+      '이 앱에서 이 로그인 방법이 아직 활성화되지 않았습니다. 관리자에게 Firebase Console → Authentication → Sign-in method 에서 활성화하도록 요청하세요.';
 
   @override
   String get authErrorUnauthorizedDomain =>

@@ -78,6 +78,21 @@ class AppL10nMy extends AppL10n {
   String get cuisineFrench => 'ပြင်သစ်';
 
   @override
+  String get cuisineGreek => 'ဂရိ';
+
+  @override
+  String get cuisineSpanish => 'စပိန်';
+
+  @override
+  String get cuisineMalaysian => 'မလေးရှား';
+
+  @override
+  String get cuisineGerman => 'ဂျာမနီ';
+
+  @override
+  String get cuisineIndonesian => 'အင်ဒိုနီးရှား';
+
+  @override
   String get exploreSearchHint =>
       'ချက်ပြုတ်နည်း၊ ပါဝင်ပစ္စည်း သို့မဟုတ် တဂ်များကို ရှာပါ';
 
@@ -267,14 +282,48 @@ class AppL10nMy extends AppL10n {
   String get filterAllDietary => 'တောင်းဆိုမှုအားလုံး';
 
   @override
+  String get courseGroupEarlyDay => 'မနက်စောစော';
+
+  @override
+  String get courseGroupDaytimeCasual => 'နေ့လည် / ပေါ့ပါးသော အစားအစာ';
+
+  @override
+  String get courseGroupBeforeMain => 'ပင်မဟင်းမတိုင်မီ';
+
+  @override
+  String get courseGroupMainEvent => 'ပင်မဟင်း';
+
+  @override
+  String get courseGroupSweetEnding => 'အချိုဖြင့် နိဂုံး';
+
+  @override
+  String get courseGroupAfterHours => 'ည အချိန်';
+
+  @override
+  String get courseGroupLiquids => 'သောက်စရာများ';
+
+  @override
   String get courseBreakfast => 'မနက်စာ နှင့် နံနက်စာ';
 
   @override
-  String get courseLunch => 'နေ့လည်စာ / ထမင်းဘူး';
+  String get courseHighTea => 'မွန်းလွဲ လက်ဖက်ရည် နှင့် High Tea';
+
+  @override
+  String get courseLunch => 'နေ့လည်စာ နှင့် ထမင်းဘူး';
+
+  @override
+  String get courseSoupsSaladsBowls => 'ဟင်းရည်၊ ဟင်းချို နှင့် အသုပ်';
 
   @override
   String get courseAppetizer =>
       'ဟင်းပွဲ၊ နှုတ်ဆက်ပွဲ နှင့် လက်ဖြင့်စားသော အစားအစာများ';
+
+  @override
+  String get courseSharingBoards =>
+      'မျှဝေဖို့ ပန်းကန်များ၊ ဘုတ်များ နှင့် Charcuterie';
+
+  @override
+  String get courseMainCourse => 'ပရိုတင်းမြင့် ပင်မဟင်းများ';
 
   @override
   String get courseSideDish => 'ဟင်းခွဲများ';
@@ -286,7 +335,10 @@ class AppL10nMy extends AppL10n {
   String get courseSnack => 'သရေစာ နှင့် ညညဥ့်စာ';
 
   @override
-  String get courseDrinks => 'သောက်စရာ နှင့် ကော့ထယ်';
+  String get courseAlcoholicDrinks => 'အရက်ပါသော သောက်စရာ နှင့် ကော့ထယ်';
+
+  @override
+  String get courseZeroProofDrinks => 'အရက်မပါသော သောက်စရာများ';
 
   @override
   String get dietaryVegan => 'ဗီဂန်';
@@ -773,7 +825,7 @@ class AppL10nMy extends AppL10n {
 
   @override
   String get authErrorProviderDisabled =>
-      'ဤအက်ပ်တွင် Google ဝင်ရောက်မှု မဖွင့်ထားသေးပါ။ စီမံခန့်ခွဲသူသည် Firebase Console → Authentication → Sign-in method တွင် ဖွင့်ပေးပါ။';
+      'ဤဝင်ရောက်မှုနည်းလမ်းကို အက်ပ်တွင် မဖွင့်ထားသေးပါ။ စီမံခန့်ခွဲသူသည် Firebase Console → Authentication → Sign-in method တွင် ဖွင့်ပေးပါ။';
 
   @override
   String get authErrorUnauthorizedDomain =>

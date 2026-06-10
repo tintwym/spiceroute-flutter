@@ -78,6 +78,21 @@ class AppL10nJa extends AppL10n {
   String get cuisineFrench => 'フレンチ';
 
   @override
+  String get cuisineGreek => 'ギリシャ';
+
+  @override
+  String get cuisineSpanish => 'スペイン';
+
+  @override
+  String get cuisineMalaysian => 'マレーシア';
+
+  @override
+  String get cuisineGerman => 'ドイツ';
+
+  @override
+  String get cuisineIndonesian => 'インドネシア';
+
+  @override
   String get exploreSearchHint => 'レシピ・食材・タグを検索';
 
   @override
@@ -259,13 +274,46 @@ class AppL10nJa extends AppL10n {
   String get filterAllDietary => 'すべての条件';
 
   @override
+  String get courseGroupEarlyDay => '朝の時間';
+
+  @override
+  String get courseGroupDaytimeCasual => '昼間 / カジュアル';
+
+  @override
+  String get courseGroupBeforeMain => 'メインの前に';
+
+  @override
+  String get courseGroupMainEvent => 'メインイベント';
+
+  @override
+  String get courseGroupSweetEnding => '甘い締めくくり';
+
+  @override
+  String get courseGroupAfterHours => 'アフターアワー';
+
+  @override
+  String get courseGroupLiquids => 'ドリンク';
+
+  @override
   String get courseBreakfast => '朝食 & ブランチ';
 
   @override
-  String get courseLunch => '昼食 / 弁当';
+  String get courseHighTea => 'ハイティー & アフタヌーンティー';
+
+  @override
+  String get courseLunch => '昼食 & 弁当';
+
+  @override
+  String get courseSoupsSaladsBowls => 'スープ・ブロス & サラダ';
 
   @override
   String get courseAppetizer => '前菜・オードブル・フィンガーフード';
+
+  @override
+  String get courseSharingBoards => 'シェアプラッター・ボード & シャルキュトリ';
+
+  @override
+  String get courseMainCourse => '高タンパクメインディッシュ';
 
   @override
   String get courseSideDish => '副菜';
@@ -277,7 +325,10 @@ class AppL10nJa extends AppL10n {
   String get courseSnack => 'おやつ & 夜食';
 
   @override
-  String get courseDrinks => 'ドリンク & カクテル';
+  String get courseAlcoholicDrinks => 'アルコールドリンク & カクテル';
+
+  @override
+  String get courseZeroProofDrinks => 'ノンアルコール飲料';
 
   @override
   String get dietaryVegan => 'ヴィーガン';
@@ -739,7 +790,7 @@ class AppL10nJa extends AppL10n {
 
   @override
   String get authErrorProviderDisabled =>
-      'このアプリでは Google ログインがまだ有効になっていません。管理者に Firebase Console → Authentication → Sign-in method で有効化するよう依頼してください。';
+      'このアプリではこのログイン方法がまだ有効になっていません。管理者に Firebase Console → Authentication → Sign-in method で有効化するよう依頼してください。';
 
   @override
   String get authErrorUnauthorizedDomain =>

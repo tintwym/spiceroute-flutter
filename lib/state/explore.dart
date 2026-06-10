@@ -52,8 +52,7 @@ class ExploreState {
 
   bool _matchesCourse(SpiceRouteSummary r) {
     if (course == null) return true;
-    final needle = course!.tagName.toLowerCase();
-    return r.tags.any((t) => t.name.toLowerCase() == needle);
+    return course!.matches(r.tags);
   }
 
   bool _matchesDietary(SpiceRouteSummary r) {

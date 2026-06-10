@@ -220,10 +220,18 @@ class _StoryTile extends StatelessWidget {
     switch (c) {
       case Course.breakfast:
         return '🍳';
+      case Course.highTea:
+        return '🫖';
       case Course.lunch:
         return '🥗';
+      case Course.soupsSaladsBowls:
+        return '🥣';
       case Course.appetizer:
         return '🍢';
+      case Course.sharingBoards:
+        return '🧀';
+      case Course.mainCourse:
+        return '🍽️';
       case Course.sideDish:
         return '🥢';
       case Course.dessert:
@@ -231,7 +239,9 @@ class _StoryTile extends StatelessWidget {
       case Course.snack:
         return '🍿';
       case Course.drinks:
-        return '🍹';
+        return '🍸';
+      case Course.zeroProofDrinks:
+        return '🥤';
     }
   }
 
@@ -239,10 +249,18 @@ class _StoryTile extends StatelessWidget {
     switch (c) {
       case Course.breakfast:
         return l.courseBreakfast;
+      case Course.highTea:
+        return l.courseHighTea;
       case Course.lunch:
         return l.courseLunch;
+      case Course.soupsSaladsBowls:
+        return l.courseSoupsSaladsBowls;
       case Course.appetizer:
         return l.courseAppetizer;
+      case Course.sharingBoards:
+        return l.courseSharingBoards;
+      case Course.mainCourse:
+        return l.courseMainCourse;
       case Course.sideDish:
         return l.courseSideDish;
       case Course.dessert:
@@ -250,7 +268,9 @@ class _StoryTile extends StatelessWidget {
       case Course.snack:
         return l.courseSnack;
       case Course.drinks:
-        return l.courseDrinks;
+        return l.courseAlcoholicDrinks;
+      case Course.zeroProofDrinks:
+        return l.courseZeroProofDrinks;
     }
   }
 }

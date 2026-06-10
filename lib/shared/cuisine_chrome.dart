@@ -31,6 +31,16 @@ String cuisineLabel(AppL10n l, Cuisine c) {
       return l.cuisineMexican;
     case Cuisine.french:
       return l.cuisineFrench;
+    case Cuisine.greek:
+      return l.cuisineGreek;
+    case Cuisine.spanish:
+      return l.cuisineSpanish;
+    case Cuisine.malaysian:
+      return l.cuisineMalaysian;
+    case Cuisine.german:
+      return l.cuisineGerman;
+    case Cuisine.indonesian:
+      return l.cuisineIndonesian;
   }
 }
 
@@ -60,5 +70,15 @@ String cuisineFlag(Cuisine c) {
       return '🇲🇽';
     case Cuisine.french:
       return '🇫🇷';
+    case Cuisine.greek:
+      return '🇬🇷';
+    case Cuisine.spanish:
+      return '🇪🇸';
+    case Cuisine.malaysian:
+      return '🇲🇾';
+    case Cuisine.german:
+      return '🇩🇪';
+    case Cuisine.indonesian:
+      return '🇮🇩';
   }
 }

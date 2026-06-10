@@ -78,6 +78,21 @@ class AppL10nEn extends AppL10n {
   String get cuisineFrench => 'French';
 
   @override
+  String get cuisineGreek => 'Greek';
+
+  @override
+  String get cuisineSpanish => 'Spanish';
+
+  @override
+  String get cuisineMalaysian => 'Malaysian';
+
+  @override
+  String get cuisineGerman => 'German';
+
+  @override
+  String get cuisineIndonesian => 'Indonesian';
+
+  @override
   String get exploreSearchHint => 'Search recipes, ingredients, tags';
 
   @override
@@ -265,13 +280,46 @@ class AppL10nEn extends AppL10n {
   String get filterAllDietary => 'All Requests';
 
   @override
+  String get courseGroupEarlyDay => 'Early Day';
+
+  @override
+  String get courseGroupDaytimeCasual => 'Daytime / Casual';
+
+  @override
+  String get courseGroupBeforeMain => 'Before the Main';
+
+  @override
+  String get courseGroupMainEvent => 'The Main Event';
+
+  @override
+  String get courseGroupSweetEnding => 'Sweet Ending';
+
+  @override
+  String get courseGroupAfterHours => 'After Hours';
+
+  @override
+  String get courseGroupLiquids => 'Liquids';
+
+  @override
   String get courseBreakfast => 'Breakfast & Brunch';
 
   @override
-  String get courseLunch => 'Lunch / Box Lunch';
+  String get courseHighTea => 'High Tea & Afternoon Tea';
+
+  @override
+  String get courseLunch => 'Lunch & Box Lunch';
+
+  @override
+  String get courseSoupsSaladsBowls => 'Soups, Broths & Salads';
 
   @override
   String get courseAppetizer => 'Appetizers, Starters & Finger Foods';
+
+  @override
+  String get courseSharingBoards => 'Sharing Platters, Boards & Charcuterie';
+
+  @override
+  String get courseMainCourse => 'High-Protein Main Courses';
 
   @override
   String get courseSideDish => 'Side Dishes';
@@ -283,7 +331,10 @@ class AppL10nEn extends AppL10n {
   String get courseSnack => 'Snacks & Late-Night Bites';
 
   @override
-  String get courseDrinks => 'Drinks & Cocktails';
+  String get courseAlcoholicDrinks => 'Alcoholic Drinks & Cocktails';
+
+  @override
+  String get courseZeroProofDrinks => 'Non-Alcoholic Beverages';
 
   @override
   String get dietaryVegan => 'Vegan';
@@ -770,7 +821,7 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get authErrorProviderDisabled =>
-      'Google sign-in isn\'t enabled for this app yet. Ask the operator to enable it in Firebase Console → Authentication → Sign-in method.';
+      'This sign-in method isn\'t enabled for this app yet. Ask the operator to enable it in Firebase Console → Authentication → Sign-in method.';
 
   @override
   String get authErrorUnauthorizedDomain =>

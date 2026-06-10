@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../models/spice_route.dart';
 
-/// Horizontal pill bar listing the 9 cuisines + an "All" pill.
+/// Horizontal pill bar listing the 16 cuisines + an "All" pill.
 class CuisinePillBar extends StatelessWidget {
   const CuisinePillBar({
     super.key,
@@ -41,6 +41,16 @@ class CuisinePillBar extends StatelessWidget {
         return '🇲🇽';
       case Cuisine.french:
         return '🇫🇷';
+      case Cuisine.greek:
+        return '🇬🇷';
+      case Cuisine.spanish:
+        return '🇪🇸';
+      case Cuisine.malaysian:
+        return '🇲🇾';
+      case Cuisine.german:
+        return '🇩🇪';
+      case Cuisine.indonesian:
+        return '🇮🇩';
     }
   }
 
@@ -72,6 +82,16 @@ class CuisinePillBar extends StatelessWidget {
         return '🌮';
       case Cuisine.french:
         return '🥐';
+      case Cuisine.greek:
+        return '🥙';
+      case Cuisine.spanish:
+        return '🥘';
+      case Cuisine.malaysian:
+        return '🍢';
+      case Cuisine.german:
+        return '🥨';
+      case Cuisine.indonesian:
+        return '🍚';
     }
   }
 
@@ -99,6 +119,16 @@ class CuisinePillBar extends StatelessWidget {
         return l.cuisineMexican;
       case Cuisine.french:
         return l.cuisineFrench;
+      case Cuisine.greek:
+        return l.cuisineGreek;
+      case Cuisine.spanish:
+        return l.cuisineSpanish;
+      case Cuisine.malaysian:
+        return l.cuisineMalaysian;
+      case Cuisine.german:
+        return l.cuisineGerman;
+      case Cuisine.indonesian:
+        return l.cuisineIndonesian;
     }
   }
 

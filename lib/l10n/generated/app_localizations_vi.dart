@@ -78,6 +78,21 @@ class AppL10nVi extends AppL10n {
   String get cuisineFrench => 'Pháp';
 
   @override
+  String get cuisineGreek => 'Hy Lạp';
+
+  @override
+  String get cuisineSpanish => 'Tây Ban Nha';
+
+  @override
+  String get cuisineMalaysian => 'Malaysia';
+
+  @override
+  String get cuisineGerman => 'Đức';
+
+  @override
+  String get cuisineIndonesian => 'Indonesia';
+
+  @override
   String get exploreSearchHint => 'Tìm công thức, nguyên liệu, thẻ';
 
   @override
@@ -263,13 +278,46 @@ class AppL10nVi extends AppL10n {
   String get filterAllDietary => 'Tất cả yêu cầu';
 
   @override
+  String get courseGroupEarlyDay => 'Đầu ngày';
+
+  @override
+  String get courseGroupDaytimeCasual => 'Ban ngày / Bữa nhẹ';
+
+  @override
+  String get courseGroupBeforeMain => 'Trước món chính';
+
+  @override
+  String get courseGroupMainEvent => 'Món chính';
+
+  @override
+  String get courseGroupSweetEnding => 'Kết thúc ngọt ngào';
+
+  @override
+  String get courseGroupAfterHours => 'Khuya';
+
+  @override
+  String get courseGroupLiquids => 'Đồ uống';
+
+  @override
   String get courseBreakfast => 'Bữa sáng & Bữa xế';
 
   @override
-  String get courseLunch => 'Bữa trưa / Cơm hộp';
+  String get courseHighTea => 'Trà chiều & Tiệc trà';
+
+  @override
+  String get courseLunch => 'Bữa trưa & Cơm hộp';
+
+  @override
+  String get courseSoupsSaladsBowls => 'Súp, Nước dùng & Salad';
 
   @override
   String get courseAppetizer => 'Khai vị, Món mở đầu & Đồ ăn tay';
+
+  @override
+  String get courseSharingBoards => 'Khay chia sẻ, Đĩa & Charcuterie';
+
+  @override
+  String get courseMainCourse => 'Món chính giàu đạm';
 
   @override
   String get courseSideDish => 'Món phụ';
@@ -281,7 +329,10 @@ class AppL10nVi extends AppL10n {
   String get courseSnack => 'Ăn vặt & Bữa khuya';
 
   @override
-  String get courseDrinks => 'Đồ uống & Cocktail';
+  String get courseAlcoholicDrinks => 'Đồ uống có cồn & Cocktail';
+
+  @override
+  String get courseZeroProofDrinks => 'Đồ uống không cồn';
 
   @override
   String get dietaryVegan => 'Thuần chay';
@@ -756,7 +807,7 @@ class AppL10nVi extends AppL10n {
 
   @override
   String get authErrorProviderDisabled =>
-      'Đăng nhập Google chưa được bật cho ứng dụng này. Vui lòng yêu cầu quản trị viên bật trong Firebase Console → Authentication → Sign-in method.';
+      'Phương thức đăng nhập này chưa được bật cho ứng dụng. Vui lòng yêu cầu quản trị viên bật trong Firebase Console → Authentication → Sign-in method.';
 
   @override
   String get authErrorUnauthorizedDomain =>

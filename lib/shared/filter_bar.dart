@@ -69,19 +69,7 @@ class FilterBar extends StatelessWidget {
       value: course,
       hintEmoji: _allCoursesEmoji,
       hintText: l.filterAllCourses,
-      items: [
-        _FilterItem(
-          value: null,
-          label: l.filterAllCourses,
-          emoji: _allCoursesEmoji,
-        ),
-        for (final c in Course.values)
-          _FilterItem(
-            value: c,
-            label: _courseLabel(l, c),
-            emoji: _courseEmoji(c),
-          ),
-      ],
+      items: _buildCourseItems(l),
       onChanged: onCourseChanged,
     );
 
@@ -221,15 +209,32 @@ class _FilterColumn<T> extends StatelessWidget {
 /// `emoji` is rendered as text (e.g. "🇰🇷", "🥞", "🌶️"). Using emojis
 /// instead of [IconData] lets us match the design reference exactly
 /// without bundling a custom icon font.
+///
+/// Set [isHeader] to render a non-selectable section header instead of a
+/// regular row. Headers are used to group [Course] items (Early Day,
+/// Daytime / Casual, …) inside an otherwise-flat dropdown.
 class _FilterItem<T> {
   const _FilterItem({
     required this.value,
     required this.label,
     required this.emoji,
+    this.isHeader = false,
   });
+
+  /// Convenience constructor for a non-selectable section header. The
+  /// header inherits the dropdown's value type but never matches the
+  /// active selection, so it always renders in its inactive style.
+  const _FilterItem.header({
+    required T sentinel,
+    required this.label,
+  })  : value = sentinel,
+        emoji = '',
+        isHeader = true;
+
   final T value;
   final String label;
   final String emoji;
+  final bool isHeader;
 }
 
 // -- Custom glass dropdown ----------------------------------------------------
@@ -297,6 +302,7 @@ class _GlassDropdownState<T> extends State<_GlassDropdown<T>> {
 
     _FilterItem<T>? selected;
     for (final item in widget.items) {
+      if (item.isHeader) continue;
       if (item.value == widget.value) {
         selected = item;
         break;
@@ -400,8 +406,10 @@ class _GlassMenuRoute<T> extends PopupRoute<_MenuResult<T>> {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
   ) {
-    // Cap the menu height so an 11-item cuisine list (or wider screen
-    // viewports) still leaves breathing room top + bottom.
+    // Cap the menu height so the longest list (the grouped Course
+    // column has 1 "All" row + 7 headers + 12 courses ≈ 20 rows; the
+    // Cuisine column has 17 rows) still leaves breathing room top
+    // and bottom. Anything longer scrolls inside the menu.
     final maxMenuHeight = viewportSize.height - origin.dy - triggerSize.height - 24;
     return Stack(
       children: [
@@ -516,17 +524,50 @@ class _GlassMenu<T> extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     for (final item in items)
-                      _GlassMenuItem<T>(
-                        item: item,
-                        selected: item.value == selectedValue,
-                        onTap: () => onSelected(item.value),
-                        textColor: cs.onSurface,
-                      ),
+                      if (item.isHeader)
+                        _GlassMenuHeader(label: item.label)
+                      else
+                        _GlassMenuItem<T>(
+                          item: item,
+                          selected: item.value == selectedValue,
+                          onTap: () => onSelected(item.value),
+                          textColor: cs.onSurface,
+                        ),
                   ],
                 ),
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Non-interactive section header rendered between groups of items in
+/// the glass menu (e.g. "EARLY DAY", "DAYTIME / CASUAL", "LIQUIDS"
+/// above the course dropdown items).
+///
+/// Visually distinct from a regular row: small uppercase label, muted
+/// color, no leading emoji or check slot. Skipped by the trigger pill's
+/// "find selected" lookup and by the tap handler in `_GlassMenu`.
+class _GlassMenuHeader extends StatelessWidget {
+  const _GlassMenuHeader({required this.label});
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(22, 14, 14, 6),
+      child: Text(
+        label.toUpperCase(),
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: cs.onSurfaceVariant,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 1.4,
+          height: 1.2,
         ),
       ),
     );
@@ -672,6 +713,16 @@ String _cuisineEmoji(Cuisine c) {
       return '🇲🇽';
     case Cuisine.french:
       return '🇫🇷';
+    case Cuisine.greek:
+      return '🇬🇷';
+    case Cuisine.spanish:
+      return '🇪🇸';
+    case Cuisine.malaysian:
+      return '🇲🇾';
+    case Cuisine.german:
+      return '🇩🇪';
+    case Cuisine.indonesian:
+      return '🇮🇩';
   }
 }
 
@@ -679,10 +730,18 @@ String _courseLabel(AppL10n l, Course c) {
   switch (c) {
     case Course.breakfast:
       return l.courseBreakfast;
+    case Course.highTea:
+      return l.courseHighTea;
     case Course.lunch:
       return l.courseLunch;
+    case Course.soupsSaladsBowls:
+      return l.courseSoupsSaladsBowls;
     case Course.appetizer:
       return l.courseAppetizer;
+    case Course.sharingBoards:
+      return l.courseSharingBoards;
+    case Course.mainCourse:
+      return l.courseMainCourse;
     case Course.sideDish:
       return l.courseSideDish;
     case Course.dessert:
@@ -690,7 +749,9 @@ String _courseLabel(AppL10n l, Course c) {
     case Course.snack:
       return l.courseSnack;
     case Course.drinks:
-      return l.courseDrinks;
+      return l.courseAlcoholicDrinks;
+    case Course.zeroProofDrinks:
+      return l.courseZeroProofDrinks;
   }
 }
 
@@ -698,10 +759,18 @@ String _courseEmoji(Course c) {
   switch (c) {
     case Course.breakfast:
       return '🥞';
+    case Course.highTea:
+      return '🫖';
     case Course.lunch:
       return '🍱';
+    case Course.soupsSaladsBowls:
+      return '🥣';
     case Course.appetizer:
       return '🥟';
+    case Course.sharingBoards:
+      return '🧀';
+    case Course.mainCourse:
+      return '🍽️';
     case Course.sideDish:
       return '🥗';
     case Course.dessert:
@@ -709,8 +778,58 @@ String _courseEmoji(Course c) {
     case Course.snack:
       return '🍿';
     case Course.drinks:
-      return '🍹';
+      return '🍸';
+    case Course.zeroProofDrinks:
+      return '🥤';
   }
+}
+
+String _courseGroupLabel(AppL10n l, CourseGroup g) {
+  switch (g) {
+    case CourseGroup.earlyDay:
+      return l.courseGroupEarlyDay;
+    case CourseGroup.daytimeCasual:
+      return l.courseGroupDaytimeCasual;
+    case CourseGroup.beforeMain:
+      return l.courseGroupBeforeMain;
+    case CourseGroup.mainEvent:
+      return l.courseGroupMainEvent;
+    case CourseGroup.sweetEnding:
+      return l.courseGroupSweetEnding;
+    case CourseGroup.afterHours:
+      return l.courseGroupAfterHours;
+    case CourseGroup.liquids:
+      return l.courseGroupLiquids;
+  }
+}
+
+/// Build the dropdown list for the Course column. Walks [Course.values]
+/// in declared order (which is already grouped) and emits a section
+/// header every time the group changes.
+List<_FilterItem<Course?>> _buildCourseItems(AppL10n l) {
+  final out = <_FilterItem<Course?>>[
+    _FilterItem<Course?>(
+      value: null,
+      label: l.filterAllCourses,
+      emoji: _allCoursesEmoji,
+    ),
+  ];
+  CourseGroup? lastGroup;
+  for (final c in Course.values) {
+    if (c.group != lastGroup) {
+      out.add(_FilterItem<Course?>.header(
+        sentinel: null,
+        label: _courseGroupLabel(l, c.group),
+      ));
+      lastGroup = c.group;
+    }
+    out.add(_FilterItem<Course?>(
+      value: c,
+      label: _courseLabel(l, c),
+      emoji: _courseEmoji(c),
+    ));
+  }
+  return out;
 }
 
 String _dietaryLabel(AppL10n l, Dietary d) {

@@ -243,6 +243,36 @@ abstract class AppL10n {
   /// **'French'**
   String get cuisineFrench;
 
+  /// No description provided for @cuisineGreek.
+  ///
+  /// In en, this message translates to:
+  /// **'Greek'**
+  String get cuisineGreek;
+
+  /// No description provided for @cuisineSpanish.
+  ///
+  /// In en, this message translates to:
+  /// **'Spanish'**
+  String get cuisineSpanish;
+
+  /// No description provided for @cuisineMalaysian.
+  ///
+  /// In en, this message translates to:
+  /// **'Malaysian'**
+  String get cuisineMalaysian;
+
+  /// No description provided for @cuisineGerman.
+  ///
+  /// In en, this message translates to:
+  /// **'German'**
+  String get cuisineGerman;
+
+  /// No description provided for @cuisineIndonesian.
+  ///
+  /// In en, this message translates to:
+  /// **'Indonesian'**
+  String get cuisineIndonesian;
+
   /// No description provided for @exploreSearchHint.
   ///
   /// In en, this message translates to:
@@ -555,23 +585,89 @@ abstract class AppL10n {
   /// **'All Requests'**
   String get filterAllDietary;
 
+  /// No description provided for @courseGroupEarlyDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Early Day'**
+  String get courseGroupEarlyDay;
+
+  /// No description provided for @courseGroupDaytimeCasual.
+  ///
+  /// In en, this message translates to:
+  /// **'Daytime / Casual'**
+  String get courseGroupDaytimeCasual;
+
+  /// No description provided for @courseGroupBeforeMain.
+  ///
+  /// In en, this message translates to:
+  /// **'Before the Main'**
+  String get courseGroupBeforeMain;
+
+  /// No description provided for @courseGroupMainEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'The Main Event'**
+  String get courseGroupMainEvent;
+
+  /// No description provided for @courseGroupSweetEnding.
+  ///
+  /// In en, this message translates to:
+  /// **'Sweet Ending'**
+  String get courseGroupSweetEnding;
+
+  /// No description provided for @courseGroupAfterHours.
+  ///
+  /// In en, this message translates to:
+  /// **'After Hours'**
+  String get courseGroupAfterHours;
+
+  /// No description provided for @courseGroupLiquids.
+  ///
+  /// In en, this message translates to:
+  /// **'Liquids'**
+  String get courseGroupLiquids;
+
   /// No description provided for @courseBreakfast.
   ///
   /// In en, this message translates to:
   /// **'Breakfast & Brunch'**
   String get courseBreakfast;
 
+  /// No description provided for @courseHighTea.
+  ///
+  /// In en, this message translates to:
+  /// **'High Tea & Afternoon Tea'**
+  String get courseHighTea;
+
   /// No description provided for @courseLunch.
   ///
   /// In en, this message translates to:
-  /// **'Lunch / Box Lunch'**
+  /// **'Lunch & Box Lunch'**
   String get courseLunch;
+
+  /// No description provided for @courseSoupsSaladsBowls.
+  ///
+  /// In en, this message translates to:
+  /// **'Soups, Broths & Salads'**
+  String get courseSoupsSaladsBowls;
 
   /// No description provided for @courseAppetizer.
   ///
   /// In en, this message translates to:
   /// **'Appetizers, Starters & Finger Foods'**
   String get courseAppetizer;
+
+  /// No description provided for @courseSharingBoards.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing Platters, Boards & Charcuterie'**
+  String get courseSharingBoards;
+
+  /// No description provided for @courseMainCourse.
+  ///
+  /// In en, this message translates to:
+  /// **'High-Protein Main Courses'**
+  String get courseMainCourse;
 
   /// No description provided for @courseSideDish.
   ///
@@ -591,11 +687,17 @@ abstract class AppL10n {
   /// **'Snacks & Late-Night Bites'**
   String get courseSnack;
 
-  /// No description provided for @courseDrinks.
+  /// No description provided for @courseAlcoholicDrinks.
   ///
   /// In en, this message translates to:
-  /// **'Drinks & Cocktails'**
-  String get courseDrinks;
+  /// **'Alcoholic Drinks & Cocktails'**
+  String get courseAlcoholicDrinks;
+
+  /// No description provided for @courseZeroProofDrinks.
+  ///
+  /// In en, this message translates to:
+  /// **'Non-Alcoholic Beverages'**
+  String get courseZeroProofDrinks;
 
   /// No description provided for @dietaryVegan.
   ///
@@ -1464,7 +1566,7 @@ abstract class AppL10n {
   /// No description provided for @authErrorProviderDisabled.
   ///
   /// In en, this message translates to:
-  /// **'Google sign-in isn\'t enabled for this app yet. Ask the operator to enable it in Firebase Console → Authentication → Sign-in method.'**
+  /// **'This sign-in method isn\'t enabled for this app yet. Ask the operator to enable it in Firebase Console → Authentication → Sign-in method.'**
   String get authErrorProviderDisabled;
 
   /// No description provided for @authErrorUnauthorizedDomain.

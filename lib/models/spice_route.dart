@@ -1,12 +1,13 @@
 import 'package:flutter/foundation.dart';
 
-/// One of the 11 cuisines surfaced by Explore. Keep these strings in sync
-/// with the backend `cuisine_type` enum.
+/// One of the 16 cuisines surfaced by Explore. Keep these strings in sync
+/// with the backend `Cuisine` StrEnum in `app/models/cuisine.py` and the
+/// Gemini structured-output schema enum in `app/services/ai/prompts.py`.
 ///
-/// Order matches the v2 design reference: Vietnamese sits at the end of
-/// the list so the first 10 spots stay aligned with the original launch
-/// catalog (the page-1 muscle memory for users who were here before the
-/// Vietnamese + French additions).
+/// Order is append-only — DO NOT reorder. Vietnamese was appended after
+/// the original launch catalog (page-1 muscle memory for early users),
+/// French + Vietnamese pre-date the v3 catalog expansion, and the last
+/// five (Greek, Spanish, Malaysian, German, Indonesian) ship with v3.
 enum Cuisine {
   korean('korean'),
   japanese('japanese'),
@@ -18,7 +19,12 @@ enum Cuisine {
   americanWestern('american_western'),
   mexican('mexican'),
   french('french'),
-  vietnamese('vietnamese');
+  vietnamese('vietnamese'),
+  greek('greek'),
+  spanish('spanish'),
+  malaysian('malaysian'),
+  german('german'),
+  indonesian('indonesian');
 
   const Cuisine(this.wire);
   final String wire;
@@ -42,30 +48,105 @@ class Tag {
       Tag(id: json['id'] as String, name: json['name'] as String);
 }
 
+/// Course-group header shown above [Course] items in the filter dropdown.
+///
+/// Groups are presentation-only: the recipe match still happens at the
+/// [Course] level. Each course knows which group it belongs to via
+/// [Course.group], and the filter UI renders one non-clickable header
+/// per group above its members.
+enum CourseGroup {
+  earlyDay,
+  daytimeCasual,
+  beforeMain,
+  mainEvent,
+  sweetEnding,
+  afterHours,
+  liquids,
+}
+
 /// Meal course / role on the plate. Used as a *client-side* filter on the
 /// Explore screen — matched against each recipe's `tags` list by tag name
 /// (e.g. a recipe tagged "dessert" matches `Course.dessert`). The backend
 /// stores no first-class `course` column today; surfacing it via tags lets
 /// us ship the filter UI without a migration.
 ///
-/// v2 taxonomy (mirrors the reference design): the labels users see are
-/// more descriptive ("Breakfast & Brunch", "Snacks & Late-Night Bites",
-/// "Drinks & Cocktails") but the underlying `tagName` stays the simple
-/// lowercase noun so existing seed data keeps matching.
+/// v3 taxonomy: expanded from 7 → 12 items organized into 7 groups (Early
+/// Day, Daytime / Casual, …). Order matches the user-facing grouping so
+/// `Course.values` iteration is already in display order. Each course
+/// matches against a list of lowercase tag names so a recipe tagged
+/// "brunch" still resolves to `Course.breakfast`, "main" to
+/// `Course.mainCourse`, "cocktail" to `Course.drinks`, etc.
+///
+/// The 7 original values (breakfast / lunch / appetizer / sideDish /
+/// dessert / snack / drinks) are preserved on purpose so the existing
+/// `crossCulturalStories` data and any persisted client state keep
+/// working without a migration.
 enum Course {
-  breakfast('breakfast'),
-  lunch('lunch'),
-  appetizer('appetizer'),
-  sideDish('side dish'),
-  dessert('dessert'),
-  snack('snack'),
-  drinks('drinks');
+  // Early Day
+  breakfast(CourseGroup.earlyDay, ['breakfast', 'brunch']),
+  highTea(CourseGroup.earlyDay, ['high tea', 'afternoon tea']),
+  // Daytime / Casual
+  lunch(CourseGroup.daytimeCasual, ['lunch', 'box lunch', 'bento']),
+  // `soupsSaladsBowls` is the legacy enum identifier — kept stable so
+  // any persisted client state / git history still resolves. The
+  // user-facing label is now "Soups, Broths & Salads"; tag aliases
+  // include both the new (`broth`) and old (`healthy bowl`,
+  // `grain bowl`) vocabulary so older seed data keeps matching.
+  soupsSaladsBowls(CourseGroup.daytimeCasual,
+      ['soup', 'broth', 'salad', 'healthy bowl', 'grain bowl']),
+  // Before the Main
+  appetizer(CourseGroup.beforeMain,
+      ['appetizer', 'starter', 'finger food']),
+  // Legacy enum identifier; label is "Sharing Platters, Boards &
+  // Charcuterie". `sharing platter` is the new canonical, the rest are
+  // backwards-compat aliases.
+  sharingBoards(CourseGroup.beforeMain,
+      ['sharing platter', 'sharing board', 'charcuterie', 'platter']),
+  // The Main Event — label is "High-Protein Main Courses". The
+  // `high-protein` tag is honoured so wellness-tagged recipes show
+  // up here even if they aren't separately tagged "main course".
+  mainCourse(CourseGroup.mainEvent,
+      ['main course', 'main', 'entrée', 'high-protein']),
+  sideDish(CourseGroup.mainEvent, ['side dish', 'side']),
+  // Sweet Ending
+  dessert(CourseGroup.sweetEnding, ['dessert', 'sweet']),
+  // After Hours
+  snack(CourseGroup.afterHours, ['snack', 'late-night']),
+  // Liquids
+  drinks(CourseGroup.liquids,
+      ['alcoholic drinks', 'cocktail', 'drinks']),
+  // Legacy enum identifier; label is "Non-Alcoholic Beverages". Both
+  // the new (`non-alcoholic`) and old (`zero-proof`, `mocktail`,
+  // `specialty beverage`) tag vocabularies resolve here.
+  zeroProofDrinks(CourseGroup.liquids, [
+    'non-alcoholic',
+    'zero-proof',
+    'mocktail',
+    'specialty beverage',
+  ]);
 
-  const Course(this.tagName);
+  const Course(this.group, this.tagNames);
 
-  /// The exact lowercase tag name we look for in `SpiceRouteSummary.tags`.
-  /// Compared case-insensitively to be forgiving of upstream casing drift.
-  final String tagName;
+  /// Visual group the dropdown places this course under.
+  final CourseGroup group;
+
+  /// Lowercase tag names that should resolve to this course. Matched
+  /// case-insensitively against `SpiceRouteSummary.tags` — a recipe is
+  /// "in" this course if any of its tags appears in this list. The first
+  /// entry is the canonical tag for new content; the others are
+  /// backwards-compatibility aliases so older seed data keeps matching.
+  final List<String> tagNames;
+
+  /// True when any tag in [tags] matches one of this course's [tagNames].
+  bool matches(Iterable<Tag> tags) {
+    for (final t in tags) {
+      final needle = t.name.toLowerCase();
+      for (final name in tagNames) {
+        if (name == needle) return true;
+      }
+    }
+    return false;
+  }
 }
 
 /// Dietary / lifestyle / format constraint a recipe satisfies. Same
