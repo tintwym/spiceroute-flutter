@@ -145,12 +145,10 @@ class AuthController extends StateNotifier<AppUser?> {
     final cleanEmail = email.trim();
     final cleanName = name.trim();
     final uid = cleanEmail
-            .toLowerCase()
-            .replaceAll(RegExp(r'[^a-z0-9]'), '_')
-            .replaceAll(RegExp(r'_+'), '_')
-            .replaceAll(RegExp(r'^_|_$'), '')
-        // Firebase UIDs are typically 28 chars; we mimic a sane bound.
-        ;
+        .toLowerCase()
+        .replaceAll(RegExp(r'[^a-z0-9]'), '_')
+        .replaceAll(RegExp(r'_+'), '_')
+        .replaceAll(RegExp(r'^_|_$'), '');
     final finalUid = uid.isEmpty ? 'dev_user' : uid;
     final finalEmail = cleanEmail.isEmpty ? null : cleanEmail;
     final finalName = cleanName.isEmpty ? cleanEmail : cleanName;
@@ -310,12 +308,29 @@ class AuthController extends StateNotifier<AppUser?> {
 
   /// Returns a token the backend will accept. Real Firebase ID token in
   /// production; a `dev:<uid>:<email>:<name>` stub in dev mode.
+  ///
+  /// Returns `null` (rather than throwing) when Firebase fails to mint
+  /// a token — typical causes are a transient network blip during
+  /// refresh, a revoked user, or a missing-app-credential rare path.
+  /// Without this guard, the exception propagates into the Dio request
+  /// interceptor and surfaces as a confusing "Couldn't reach the server"
+  /// message; with it, the request goes out unauthenticated and the
+  /// backend responds with a clean 401 that triggers the normal
+  /// re-auth flow.
   Future<String?> getIdToken({bool forceRefresh = false}) async {
     final auth = _auth;
     if (auth != null) {
       final u = auth.currentUser;
       if (u == null) return null;
-      return u.getIdToken(forceRefresh);
+      try {
+        return await u.getIdToken(forceRefresh);
+      } on fb.FirebaseAuthException catch (e) {
+        debugPrint('getIdToken FirebaseAuthException: ${e.code} ${e.message}');
+        return null;
+      } catch (e) {
+        debugPrint('getIdToken failed: $e');
+        return null;
+      }
     }
     if (devMode) {
       final user = state;

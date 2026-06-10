@@ -2,13 +2,20 @@ import 'package:flutter/material.dart';
 
 /// Color tokens for SpiceRoute — calm, editorial, warm.
 ///
-/// Aligned with the AI-Studio reference prototype:
-///   primary olive   #5A5A40
-///   accent terracotta #D4A373
-///   text     charcoal  #423F3B
-///   surface  cream     #FAF9F6 (pages) / #F5F2ED (raised)
-///   borders  lineSoft  #E5E1D8
-///   muted    stone     #8C887D
+/// The seven "Natural" tokens are the canonical design-system palette.
+/// Each role and its hex value MUST stay in lockstep with the
+/// design-system doc; if you need a new color, add it to the doc
+/// first, then mirror it here.
+///
+/// | Token              | HEX       | Role                                                                  |
+/// |--------------------|-----------|-----------------------------------------------------------------------|
+/// | naturalBackground  | #FAF9F6   | Page surface (the warm cream the whole app sits on)                   |
+/// | naturalSage        | #5A5A40   | Primary buttons, active nav, focal headers, focus rings               |
+/// | naturalOchre       | #D4A373   | Specialty badges, hover states, active course/category indicators     |
+/// | naturalCharcoal    | #423F3B   | High-contrast text — titles, body, bold headers                       |
+/// | naturalMuted       | #8C887D   | Secondary text, subheadings, decorative icons, input placeholders     |
+/// | naturalBorder      | #E5E1D8   | Dividers, input + dropdown boundaries, table frames                   |
+/// | naturalSurface     | #F5F2ED   | Inner surfaces — dropdown items, table headers, card details          |
 ///
 /// (Class was previously `SavorPalette` — kept as `SpiceRoutePalette`
 /// to align with the product name. Storage keys in `state/*.dart` are
@@ -17,14 +24,13 @@ import 'package:flutter/material.dart';
 class SpiceRoutePalette {
   SpiceRoutePalette._();
 
-  static const cream = Color(0xFFFAF9F6);
-  static const cream2 = Color(0xFFF5F2ED);
-  static const olive = Color(0xFF5A5A40);
-  static const oliveDeep = Color(0xFF3F3F2C);
-  static const terracotta = Color(0xFFD4A373);
-  static const charcoal = Color(0xFF423F3B);
-  static const stone = Color(0xFF8C887D);
-  static const lineSoft = Color(0xFFE5E1D8);
+  static const naturalBackground = Color(0xFFFAF9F6);
+  static const naturalSurface = Color(0xFFF5F2ED);
+  static const naturalSage = Color(0xFF5A5A40);
+  static const naturalOchre = Color(0xFFD4A373);
+  static const naturalCharcoal = Color(0xFF423F3B);
+  static const naturalMuted = Color(0xFF8C887D);
+  static const naturalBorder = Color(0xFFE5E1D8);
 }
 
 /// Font names to fall back to for emoji + flag glyphs.
@@ -77,10 +83,19 @@ TextStyle emojiTextStyle({double fontSize = 16, double height = 1.0}) {
 ThemeData buildTheme(Brightness brightness) {
   final isDark = brightness == Brightness.dark;
   final base = ColorScheme.fromSeed(
-    seedColor: SpiceRoutePalette.olive,
+    seedColor: SpiceRoutePalette.naturalSage,
     brightness: brightness,
   );
 
+  // Light mode wires every Natural token explicitly so the ColorScheme
+  // mirrors the design-system doc 1:1 (rather than letting Material's
+  // `fromSeed` derive surface variants from the olive seed and ending
+  // up with subtly off-palette browns for placeholders / dividers).
+  //
+  // Dark mode keeps the desaturated, higher-contrast values it already
+  // had — the "Natural" tokens are tuned for the cream-on-charcoal
+  // light reading experience and look murky inverted. Re-derive a dark
+  // palette later if/when we ship a true dark theme.
   final colorScheme = isDark
       ? base.copyWith(
           primary: const Color(0xFF8FA46A),
@@ -90,16 +105,37 @@ ThemeData buildTheme(Brightness brightness) {
           surfaceContainerHighest: const Color(0xFF272C1F),
         )
       : base.copyWith(
-          primary: SpiceRoutePalette.olive,
-          onPrimary: SpiceRoutePalette.cream,
-          secondary: SpiceRoutePalette.terracotta,
-          surface: SpiceRoutePalette.cream,
-          onSurface: SpiceRoutePalette.charcoal,
-          surfaceContainerHighest: SpiceRoutePalette.cream2,
-          outlineVariant: SpiceRoutePalette.lineSoft,
+          primary: SpiceRoutePalette.naturalSage,
+          onPrimary: SpiceRoutePalette.naturalBackground,
+          secondary: SpiceRoutePalette.naturalOchre,
+          onSecondary: SpiceRoutePalette.naturalCharcoal,
+          surface: SpiceRoutePalette.naturalBackground,
+          onSurface: SpiceRoutePalette.naturalCharcoal,
+          // Inner surfaces (dropdown items, table headers, card
+          // details) use the slightly raised cream so they stand
+          // out a hair from the page background.
+          surfaceContainerHighest: SpiceRoutePalette.naturalSurface,
+          // Borders + dividers. `outlineVariant` is what
+          // Material's Divider / OutlineInputBorder pick up by
+          // default, so wiring it here means we don't have to
+          // pass `color: ...` at every Divider callsite.
+          outlineVariant: SpiceRoutePalette.naturalBorder,
+          // Stronger outline used by [OutlinedButton] etc. — slightly
+          // darker than `naturalBorder` so a clickable outline still
+          // reads as a clickable target.
+          outline: SpiceRoutePalette.naturalMuted,
+          // CRITICAL: this is what M3 widgets pull for "secondary
+          // text" — subheadings, helper text, input hint text, the
+          // muted timestamp under a card title, etc. Without this
+          // explicit wire, `fromSeed` derived a brownish ~#79… from
+          // the olive seed and our placeholders looked sepia.
+          onSurfaceVariant: SpiceRoutePalette.naturalMuted,
         );
 
-  final textTheme = _buildTextTheme(colorScheme.onSurface);
+  final textTheme = _buildTextTheme(
+    onSurface: colorScheme.onSurface,
+    muted: colorScheme.onSurfaceVariant,
+  );
 
   return ThemeData(
     colorScheme: colorScheme,
@@ -233,7 +269,7 @@ ThemeData buildTheme(Brightness brightness) {
   );
 }
 
-TextTheme _buildTextTheme(Color onSurface) {
+TextTheme _buildTextTheme({required Color onSurface, required Color muted}) {
   // Editorial pairing matching the reference design:
   //   - Display + headline + title  -> Playfair Display (high-contrast serif)
   //     for the magazine-y "SpiceRoute" headline, section titles,
@@ -355,7 +391,14 @@ TextTheme _buildTextTheme(Color onSurface) {
       fontFamilyFallback: fallback,
       fontSize: 12.5,
       height: 1.4,
-      color: onSurface.withValues(alpha: 0.7),
+      // Use the explicit "Natural Muted" token rather than alpha-
+      // blending onSurface. The blend approximated the muted color
+      // but landed at ~#797773 over the cream background, which is
+      // a couple of points darker than the canonical #8C887D. The
+      // explicit color also reads correctly when this text is
+      // placed over `naturalSurface` (raised cream) where the
+      // alpha blend would have produced a slightly different shade.
+      color: muted,
     ),
     labelLarge: TextStyle(
       fontFamilyFallback: fallback,

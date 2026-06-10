@@ -12,6 +12,10 @@ const supportedLocales = <Locale>[
   Locale('vi'),
 ];
 
+// LEGACY storage-key names — see `lib/state/auth.dart::_kDevUserKey`
+// for why these `savor_*` prefixes must NOT be renamed without a
+// migration. Renaming would silently reset every user's selected
+// language on the next deploy.
 const _localeKey = 'savor_locale';
 const _storage = FlutterSecureStorage(
   webOptions: WebOptions(dbName: 'savor_settings'),

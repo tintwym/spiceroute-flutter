@@ -6,6 +6,7 @@ import '../l10n/generated/app_localizations.dart';
 import '../state/auth.dart';
 import 'account_menu.dart';
 import 'breakpoints.dart';
+import 'language_flag_pills.dart';
 import 'nav_search_field.dart';
 import 'top_nav_bar.dart';
 
@@ -105,6 +106,15 @@ class AppShell extends ConsumerWidget {
     // Everything personal now lives behind the avatar — see
     // [AccountMenuButton].
     //
+    // PHONE GETS AN EXTRA LANGUAGE BUTTON. The desktop top nav renders
+    // [LanguageFlagPills] inline so language switching is always one
+    // tap away. The phone app bar can't fit those pills — language
+    // used to live ONLY behind the avatar menu, which is gated on
+    // being signed in. That left signed-out mobile visitors with no
+    // way to change language at all. [LanguageMenuButton] is the
+    // mobile-only fix: a compact globe + flag pill that opens a
+    // popup with all six locales, regardless of auth state.
+    //
     // NOTE: no trailing SizedBox here on tablet+. The header content
     // frame already matches the body's `pagePadding` + `contentMaxWidth`
     // envelope, and the body's right-most elements (filter dropdowns,
@@ -114,7 +124,12 @@ class AppShell extends ConsumerWidget {
     // Phone shell still gets the 8 px gutter because AppBar trims
     // actions[] tight to the screen edge by default.
     final actions = dc.isPhone
-        ? const [AccountMenuButton(), SizedBox(width: 8)]
+        ? const [
+            LanguageMenuButton(),
+            SizedBox(width: 6),
+            AccountMenuButton(),
+            SizedBox(width: 8),
+          ]
         : const [AccountMenuButton()];
 
     if (dc.isPhone) {

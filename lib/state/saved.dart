@@ -11,6 +11,11 @@ import 'auth.dart';
 import 'providers.dart';
 import 'user_profile.dart';
 
+// LEGACY storage-key names. The `savor_*` prefixes are from when the
+// app was named SavorGlobal; renaming them now would silently wipe
+// every existing user's saved-recipe list AND IndexedDB store on the
+// next deploy. Keep as-is until we ship a migration shim. See
+// `lib/state/auth.dart::_kDevUserKey` for the full justification.
 const _savedKey = 'savor_saved_recipe_ids';
 const _storage = FlutterSecureStorage(
   webOptions: WebOptions(dbName: 'savor_settings'),

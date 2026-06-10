@@ -7,6 +7,11 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 /// Persists to secure storage so the choice survives reloads on web and
 /// app restarts on mobile. Defaults to [ThemeMode.system] which simply
 /// follows the OS preference.
+///
+/// LEGACY storage-key names — see `lib/state/auth.dart::_kDevUserKey`
+/// for why these `savor_*` prefixes must NOT be renamed without a
+/// migration. Renaming would silently reset every user's theme
+/// preference on the next deploy.
 const _themeKey = 'savor_theme_mode';
 const _storage = FlutterSecureStorage(
   webOptions: WebOptions(dbName: 'savor_settings'),
