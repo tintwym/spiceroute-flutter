@@ -292,9 +292,25 @@ class RecipeCard extends ConsumerWidget {
 /// Clean footer row: time · servings · calories on the left, a soft
 /// difficulty pill pinned to the far right.
 ///
-/// Cards are very narrow at 4-up (~190-210 px usable width), so this
-/// uses a [LayoutBuilder] to drop the kcal unit (and, if needed, the
-/// kcal item entirely) before any [Row] children overflow.
+/// Two render modes, picked by [LayoutBuilder] from the footer width:
+///
+/// **Roomy mode** (footer ≥ 230 dp — phone single-column, tablet
+/// 2-up, recipe-detail modal). CSS analogue:
+///   - `display: flex; align-items: center;`
+///   - uniform `gap: 24px` between metric blocks (`16px` on the
+///     tighter end of the band so things still fit)
+///   - metrics are `flex-shrink: 0` so "1 h 15 min" is never
+///     ellipsized — previously the time was wrapped in [Flexible]
+///     and lost the fight for space against the [Spacer] + kcal
+///     block, truncating to "1 h 15 ...".
+///   - difficulty pill uses `margin-left: auto` (= [Spacer]) to
+///     pin to the far right.
+///
+/// **Narrow mode** (footer < 230 dp — desktop 4-up grid cells run
+/// 190-220 dp). flex-shrink:0 mathematically cannot fit time + pill
+/// + difficulty here in worst-case locales, so we fall back to the
+/// legacy layout: tight 8-dp gaps and a [Flexible]-wrapped time
+/// that ellipsizes gracefully rather than overflowing the cell.
 class _CardFooter extends StatelessWidget {
   const _CardFooter({required this.recipe});
   final SpiceRouteSummary recipe;
@@ -304,36 +320,83 @@ class _CardFooter extends StatelessWidget {
     final l = AppL10n.of(context);
     final difficulty =
         recipeDifficultyLabel(l, totalMinutes: recipe.totalMinutes);
+    final timeText = formatRecipeDuration(l, recipe.totalMinutes);
 
     return LayoutBuilder(builder: (context, c) {
       final w = c.maxWidth;
-      final compactKcal = w < 240; // strip the " kcal" suffix
-      final hideKcal = w < 175; // not enough room at all
-
       final kcal = recipe.caloriesPerServing;
+
+      // -----------------------------------------------------------
+      // Narrow mode (4-up desktop grid). Keep the original layout
+      // here — flex-shrink:0 is genuinely impossible at <190 dp
+      // when "1 h 15 min" alone wants ~90 dp.
+      // -----------------------------------------------------------
+      if (w < 230) {
+        final compactKcal = w < 190;
+        final hideKcal = w < 150;
+        final kcalText = kcal == null
+            ? null
+            : (compactKcal ? '$kcal' : l.recipeKcal(kcal));
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Flexible(child: _MetaItem(icon: Icons.schedule, text: timeText)),
+            const SizedBox(width: 8),
+            _MetaItem(
+                icon: Icons.person_outline, text: '${recipe.servings}'),
+            if (kcalText != null && !hideKcal) ...[
+              const SizedBox(width: 8),
+              Flexible(
+                child: _MetaItem(
+                  icon: Icons.local_fire_department_outlined,
+                  text: kcalText,
+                ),
+              ),
+            ],
+            const Spacer(),
+            _DifficultyPill(label: difficulty),
+          ],
+        );
+      }
+
+      // -----------------------------------------------------------
+      // Roomy mode — the user-requested layout. Thresholds chosen
+      // for the worst-case glyph budget:
+      //   - "1 h 15 min" + icon ≈ 90 dp in English at fontSize 11,
+      //     up to ~125 dp under wide-glyph fonts (verbose locales,
+      //     Ahem test font).
+      //   - "MEDIUM" pill ≈ 70 dp (label + pill padding).
+      //   - "620 kcal" + icon ≈ 80 dp; "620" alone ≈ 35 dp.
+      // -----------------------------------------------------------
+      final gap = w < 300 ? 16.0 : 24.0;
+      final compactKcal = w < 380;
+      final hideKcal = w < 290;
       final kcalText = kcal == null
           ? null
           : (compactKcal ? '$kcal' : l.recipeKcal(kcal));
 
       return Row(
+        // align-items: center. Default for Row is already center, but
+        // make it explicit — the icons (12 dp) and text (~14 dp)
+        // have different intrinsic heights, and the difficulty pill
+        // is taller still (~24 dp). Without an explicit alignment
+        // the pill would baseline-drift on locales with tall scripts.
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Flexible(
-            child: _MetaItem(
-              icon: Icons.schedule,
-              text: formatRecipeDuration(l, recipe.totalMinutes),
-            ),
-          ),
-          const SizedBox(width: 8),
+          // No outer Flexible: each _MetaItem keeps its intrinsic
+          // width (flex-shrink: 0). This is the core of the fix.
+          _MetaItem(icon: Icons.schedule, text: timeText),
+          SizedBox(width: gap),
           _MetaItem(icon: Icons.person_outline, text: '${recipe.servings}'),
           if (kcalText != null && !hideKcal) ...[
-            const SizedBox(width: 8),
-            Flexible(
-              child: _MetaItem(
-                icon: Icons.local_fire_department_outlined,
-                text: kcalText,
-              ),
+            SizedBox(width: gap),
+            _MetaItem(
+              icon: Icons.local_fire_department_outlined,
+              text: kcalText,
             ),
           ],
+          // margin-left: auto — pushes the difficulty pill to the
+          // far right and absorbs whatever slack remains.
           const Spacer(),
           _DifficultyPill(label: difficulty),
         ],

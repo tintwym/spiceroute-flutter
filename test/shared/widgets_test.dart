@@ -33,7 +33,11 @@ SpiceRouteSummary _sample({
 }
 
 void main() {
-  Future<void> pumpCard(WidgetTester tester, SpiceRouteSummary recipe) async {
+  Future<void> pumpCard(
+    WidgetTester tester,
+    SpiceRouteSummary recipe, {
+    double width = 320,
+  }) async {
     // `network_image_mock` intercepts CachedNetworkImage so we don't
     // hit example.com (which would 404 in CI). For the null-imageUrl
     // case the card never builds an Image at all, so the mock is a
@@ -44,11 +48,15 @@ void main() {
     // failure (secure storage isn't wired up in unit tests) is caught
     // silently, leaving the card in the "unsaved" state — which is
     // exactly what these tests want.
+    //
+    // `width` is the rendered card width. The default 320 matches a
+    // narrow card; pass a larger value to test phone-class
+    // single-column layouts where the card stretches edge-to-edge.
     await mockNetworkImagesFor(() async {
       await tester.pumpWidget(
         wrapWithApp(
           child: SizedBox(
-            width: 320,
+            width: width,
             child: RecipeCard(recipe: recipe),
           ),
         ),
@@ -97,4 +105,80 @@ void main() {
     expect(find.byType(Image), findsNothing,
         reason: 'no <Image> should render when imageUrl is null');
   });
+
+  testWidgets(
+    'card footer renders time fully on phone-width cards (no ellipsis)',
+    (tester) async {
+      // Regression: before the flex-shrink fix, the time text was
+      // wrapped in Flexible and got squeezed by the Spacer + kcal
+      // Flexible, ellipsizing to "1 h 15 ..." even on perfectly
+      // roomy phone-width cards. With flex-shrink:0 the full string
+      // must render verbatim.
+      //
+      // 75 minutes → "1 h 15 min" via formatRecipeDuration's
+      // recipeHoursMinutesShort. We assert on the *substring* so
+      // this still passes if the formatter ever adds a thin space.
+      //
+      // Width 420 ≈ a typical 6.1" phone card (343 dp page width plus
+      // safe-area room). Flutter's test harness uses the Ahem font
+      // (one em per glyph), so text measures noticeably wider in
+      // tests than in production — picking a generous width here
+      // lets the row exercise the "show kcal in full" branch without
+      // overflowing because of the test font.
+      final long = SpiceRouteSummary(
+        id: 'r-long',
+        title: 'Long-cook stew',
+        description: 'Slow and steady.',
+        prepMinutes: 15,
+        cookMinutes: 60,
+        servings: 6,
+        imageUrl: 'https://example.com/stew.jpg',
+        cuisine: Cuisine.italian,
+        caloriesPerServing: 620,
+      );
+      await pumpCard(tester, long, width: 420);
+
+      // The full duration string must be present and not truncated.
+      // textContaining so we don't trip on minor format variations
+      // (e.g. localized "min" vs "m" or a thin space around the h).
+      expect(
+        find.textContaining('15'),
+        findsWidgets,
+        reason: 'time text must render fully, not as "1 h 15 ..."',
+      );
+      expect(
+        find.textContaining('…'),
+        findsNothing,
+        reason: 'no ellipsis should appear in the metadata row',
+      );
+      // No RenderFlex overflow either — the LayoutBuilder thresholds
+      // should pick a gap + kcal mode that keeps the row in bounds.
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'card footer survives narrow 4-up grid cards without overflow',
+    (tester) async {
+      // The 4-up desktop grid lands around 220-260 dp per card. The
+      // LayoutBuilder is supposed to compact then drop the kcal
+      // block to keep the row in bounds at those sizes. Test it
+      // explicitly at 240 dp so any future change to thresholds
+      // that pushes the layout over the edge is caught here, not
+      // in production with yellow-and-black stripes.
+      final long = SpiceRouteSummary(
+        id: 'r-narrow',
+        title: 'Slow braise',
+        description: 'Tight footer.',
+        prepMinutes: 15,
+        cookMinutes: 60,
+        servings: 6,
+        imageUrl: 'https://example.com/braise.jpg',
+        cuisine: Cuisine.italian,
+        caloriesPerServing: 620,
+      );
+      await pumpCard(tester, long, width: 240);
+      expect(tester.takeException(), isNull);
+    },
+  );
 }

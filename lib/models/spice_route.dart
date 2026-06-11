@@ -160,17 +160,32 @@ enum Course {
 /// seed script attaches to qualifying recipes (see
 /// `_EXTRA_TAGS_BY_TITLE` in `scripts/seed_curated_recipes.py`).
 enum Dietary {
-  vegan('vegan'),
-  vegetarian('vegetarian'),
-  mealPrep('meal prep'),
-  quickEasy('quick'),
-  pastaSoup('pasta soup'),
-  bloodSugarBalanced('blood sugar balanced'),
-  swicy('swicy'),
-  antiInflammatory('anti-inflammatory');
+  vegan('vegan', DietaryGroup.dietaryRestrictions),
+  vegetarian('vegetarian', DietaryGroup.dietaryRestrictions),
+  mealPrep('meal prep', DietaryGroup.cookingFormats),
+  quickEasy('quick', DietaryGroup.cookingFormats),
+  pastaSoup('pasta soup', DietaryGroup.cookingFormats),
+  bloodSugarBalanced('blood sugar balanced', DietaryGroup.wellness),
+  swicy('swicy', DietaryGroup.wellness),
+  antiInflammatory('anti-inflammatory', DietaryGroup.wellness);
 
-  const Dietary(this.tagName);
+  const Dietary(this.tagName, this.group);
   final String tagName;
+
+  /// Visual subcategory the accordion filter buckets this item under.
+  /// Mirrors [CourseGroup] for [Course] so the dietary dropdown can
+  /// render the same "group pill + selected label" trigger UI.
+  final DietaryGroup group;
+}
+
+/// Subcategory groups shown as collapsible accordion sections inside
+/// the dietary filter dropdown. Order here is the order rendered in
+/// the menu (dietary restrictions first because they're the most
+/// commonly-applied filters, then wellness, then format).
+enum DietaryGroup {
+  dietaryRestrictions,
+  wellness,
+  cookingFormats,
 }
 
 @immutable

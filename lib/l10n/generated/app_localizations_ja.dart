@@ -274,6 +274,33 @@ class AppL10nJa extends AppL10n {
   String get filterAllDietary => 'すべての条件';
 
   @override
+  String get exploreByRegion => '地域から探す';
+
+  @override
+  String get selectCuisineTradition => '料理の伝統を選択';
+
+  @override
+  String get regionEastAsia => '東アジア諸国';
+
+  @override
+  String get regionMainlandSoutheastAsia => '東南アジア大陸部';
+
+  @override
+  String get regionMaritimeSoutheastAsia => '海洋東南アジア';
+
+  @override
+  String get regionSouthAsia => '南アジア';
+
+  @override
+  String get regionEurope => 'ヨーロッパ';
+
+  @override
+  String get regionAmericas => 'アメリカ大陸';
+
+  @override
+  String get regionMiddleEastAfrica => '中東・アフリカ';
+
+  @override
   String get courseGroupEarlyDay => '朝の時間';
 
   @override
@@ -353,6 +380,41 @@ class AppL10nJa extends AppL10n {
 
   @override
   String get dietaryAntiInflammatory => '抗炎症 & 長寿';
+
+  @override
+  String get dietaryGroupRestrictions => '食事制限';
+
+  @override
+  String get dietaryGroupWellness => '健康・ライフスタイル';
+
+  @override
+  String get dietaryGroupCookingFormats => '調理スタイル';
+
+  @override
+  String get filterSearchCourses => 'コースを検索（例：デザート、メイン…）';
+
+  @override
+  String get filterSearchDietary => '食事制限を検索（例：グルテンフリー、ビーガン…）';
+
+  @override
+  String filterChoicesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count件',
+      one: '1件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get filterExpandAll => 'すべて展開';
+
+  @override
+  String get filterCollapseAll => 'すべて閉じる';
+
+  @override
+  String get filterNoMatches => '該当なし';
 
   @override
   String recipeMinutesShort(int minutes) {
@@ -848,6 +910,84 @@ class AppL10nJa extends AppL10n {
 
   @override
   String get detailDeletedToast => 'レシピを削除しました。';
+
+  @override
+  String get detailStartCooking => '調理を開始';
+
+  @override
+  String get cookExit => '調理を終了';
+
+  @override
+  String cookStepOf(int current, int total) {
+    return 'ステップ $current / $total';
+  }
+
+  @override
+  String get cookPrev => '前へ';
+
+  @override
+  String get cookNext => '次へ';
+
+  @override
+  String get cookFinish => '調理を完了';
+
+  @override
+  String get cookFinishShort => '完了';
+
+  @override
+  String get cookStepDone => '完了にする';
+
+  @override
+  String get cookStepUndo => '未完了に戻す';
+
+  @override
+  String get cookIngredients => '材料';
+
+  @override
+  String cookIngredientsCount(int count) {
+    return '材料（$count）';
+  }
+
+  @override
+  String cookServingsLabel(int count) {
+    return '$count 人前';
+  }
+
+  @override
+  String get cookServingsIncrease => '人数を増やす';
+
+  @override
+  String get cookServingsDecrease => '人数を減らす';
+
+  @override
+  String get cookUnitsOriginal => '原文';
+
+  @override
+  String get cookUnitsMetric => 'メートル法';
+
+  @override
+  String get cookUnitsImperial => 'ヤード・ポンド';
+
+  @override
+  String get cookFinishedTitle => '完成しました！';
+
+  @override
+  String get cookFinishedBody => 'すべてのステップが完了しました。召し上がれ！';
+
+  @override
+  String get cookFinishedStay => 'レシピを開いたまま';
+
+  @override
+  String get cookFinishedExit => '調理を終了';
+
+  @override
+  String get cookNoStepsTitle => 'ステップがありません';
+
+  @override
+  String get cookNoStepsBody => 'このレシピにはまだ手順が登録されていません。';
+
+  @override
+  String get cookBackToRecipe => 'レシピに戻る';
 
   @override
   String get reviewsTitle => 'コミュニティ・ギャラリーとレビュー';

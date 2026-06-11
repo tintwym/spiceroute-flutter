@@ -585,6 +585,60 @@ abstract class AppL10n {
   /// **'All Requests'**
   String get filterAllDietary;
 
+  /// No description provided for @exploreByRegion.
+  ///
+  /// In en, this message translates to:
+  /// **'EXPLORE BY GEOGRAPHIC REGION'**
+  String get exploreByRegion;
+
+  /// No description provided for @selectCuisineTradition.
+  ///
+  /// In en, this message translates to:
+  /// **'SELECT CUISINE TRADITION'**
+  String get selectCuisineTradition;
+
+  /// No description provided for @regionEastAsia.
+  ///
+  /// In en, this message translates to:
+  /// **'East Asian Countries'**
+  String get regionEastAsia;
+
+  /// No description provided for @regionMainlandSoutheastAsia.
+  ///
+  /// In en, this message translates to:
+  /// **'Mainland Southeast Asia'**
+  String get regionMainlandSoutheastAsia;
+
+  /// No description provided for @regionMaritimeSoutheastAsia.
+  ///
+  /// In en, this message translates to:
+  /// **'Maritime Southeast Asia'**
+  String get regionMaritimeSoutheastAsia;
+
+  /// No description provided for @regionSouthAsia.
+  ///
+  /// In en, this message translates to:
+  /// **'South Asian'**
+  String get regionSouthAsia;
+
+  /// No description provided for @regionEurope.
+  ///
+  /// In en, this message translates to:
+  /// **'European'**
+  String get regionEurope;
+
+  /// No description provided for @regionAmericas.
+  ///
+  /// In en, this message translates to:
+  /// **'Americas'**
+  String get regionAmericas;
+
+  /// No description provided for @regionMiddleEastAfrica.
+  ///
+  /// In en, this message translates to:
+  /// **'Middle Eastern & African'**
+  String get regionMiddleEastAfrica;
+
   /// No description provided for @courseGroupEarlyDay.
   ///
   /// In en, this message translates to:
@@ -746,6 +800,60 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Anti-Inflammatory & Longevity'**
   String get dietaryAntiInflammatory;
+
+  /// No description provided for @dietaryGroupRestrictions.
+  ///
+  /// In en, this message translates to:
+  /// **'Dietary Restrictions'**
+  String get dietaryGroupRestrictions;
+
+  /// No description provided for @dietaryGroupWellness.
+  ///
+  /// In en, this message translates to:
+  /// **'Wellness & Lifestyles'**
+  String get dietaryGroupWellness;
+
+  /// No description provided for @dietaryGroupCookingFormats.
+  ///
+  /// In en, this message translates to:
+  /// **'Cooking Formats'**
+  String get dietaryGroupCookingFormats;
+
+  /// No description provided for @filterSearchCourses.
+  ///
+  /// In en, this message translates to:
+  /// **'Search courses (e.g. Dessert, Main…)'**
+  String get filterSearchCourses;
+
+  /// No description provided for @filterSearchDietary.
+  ///
+  /// In en, this message translates to:
+  /// **'Search diets (e.g. Gluten-Free, Vegan…)'**
+  String get filterSearchDietary;
+
+  /// No description provided for @filterChoicesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 choice} other{{count} choices}}'**
+  String filterChoicesCount(int count);
+
+  /// No description provided for @filterExpandAll.
+  ///
+  /// In en, this message translates to:
+  /// **'EXPAND ALL'**
+  String get filterExpandAll;
+
+  /// No description provided for @filterCollapseAll.
+  ///
+  /// In en, this message translates to:
+  /// **'COLLAPSE ALL'**
+  String get filterCollapseAll;
+
+  /// No description provided for @filterNoMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'No matches'**
+  String get filterNoMatches;
 
   /// No description provided for @recipeMinutesShort.
   ///
@@ -1670,6 +1778,150 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'Recipe deleted.'**
   String get detailDeletedToast;
+
+  /// No description provided for @detailStartCooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Start cooking'**
+  String get detailStartCooking;
+
+  /// No description provided for @cookExit.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit cooking'**
+  String get cookExit;
+
+  /// No description provided for @cookStepOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total}'**
+  String cookStepOf(int current, int total);
+
+  /// No description provided for @cookPrev.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get cookPrev;
+
+  /// No description provided for @cookNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get cookNext;
+
+  /// No description provided for @cookFinish.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish cooking'**
+  String get cookFinish;
+
+  /// No description provided for @cookFinishShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish'**
+  String get cookFinishShort;
+
+  /// No description provided for @cookStepDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark step done'**
+  String get cookStepDone;
+
+  /// No description provided for @cookStepUndo.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as not done'**
+  String get cookStepUndo;
+
+  /// No description provided for @cookIngredients.
+  ///
+  /// In en, this message translates to:
+  /// **'Ingredients'**
+  String get cookIngredients;
+
+  /// No description provided for @cookIngredientsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Ingredients ({count})'**
+  String cookIngredientsCount(int count);
+
+  /// No description provided for @cookServingsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 serving} other{{count} servings}}'**
+  String cookServingsLabel(int count);
+
+  /// No description provided for @cookServingsIncrease.
+  ///
+  /// In en, this message translates to:
+  /// **'More servings'**
+  String get cookServingsIncrease;
+
+  /// No description provided for @cookServingsDecrease.
+  ///
+  /// In en, this message translates to:
+  /// **'Fewer servings'**
+  String get cookServingsDecrease;
+
+  /// No description provided for @cookUnitsOriginal.
+  ///
+  /// In en, this message translates to:
+  /// **'Original'**
+  String get cookUnitsOriginal;
+
+  /// No description provided for @cookUnitsMetric.
+  ///
+  /// In en, this message translates to:
+  /// **'Metric'**
+  String get cookUnitsMetric;
+
+  /// No description provided for @cookUnitsImperial.
+  ///
+  /// In en, this message translates to:
+  /// **'Imperial'**
+  String get cookUnitsImperial;
+
+  /// No description provided for @cookFinishedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All done!'**
+  String get cookFinishedTitle;
+
+  /// No description provided for @cookFinishedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You finished every step. Bon appétit!'**
+  String get cookFinishedBody;
+
+  /// No description provided for @cookFinishedStay.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep recipe open'**
+  String get cookFinishedStay;
+
+  /// No description provided for @cookFinishedExit.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit cooking'**
+  String get cookFinishedExit;
+
+  /// No description provided for @cookNoStepsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No steps yet'**
+  String get cookNoStepsTitle;
+
+  /// No description provided for @cookNoStepsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This recipe doesn\'t have step-by-step instructions to cook through.'**
+  String get cookNoStepsBody;
+
+  /// No description provided for @cookBackToRecipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to recipe'**
+  String get cookBackToRecipe;
 
   /// No description provided for @reviewsTitle.
   ///

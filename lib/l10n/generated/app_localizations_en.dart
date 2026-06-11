@@ -280,6 +280,33 @@ class AppL10nEn extends AppL10n {
   String get filterAllDietary => 'All Requests';
 
   @override
+  String get exploreByRegion => 'EXPLORE BY GEOGRAPHIC REGION';
+
+  @override
+  String get selectCuisineTradition => 'SELECT CUISINE TRADITION';
+
+  @override
+  String get regionEastAsia => 'East Asian Countries';
+
+  @override
+  String get regionMainlandSoutheastAsia => 'Mainland Southeast Asia';
+
+  @override
+  String get regionMaritimeSoutheastAsia => 'Maritime Southeast Asia';
+
+  @override
+  String get regionSouthAsia => 'South Asian';
+
+  @override
+  String get regionEurope => 'European';
+
+  @override
+  String get regionAmericas => 'Americas';
+
+  @override
+  String get regionMiddleEastAfrica => 'Middle Eastern & African';
+
+  @override
   String get courseGroupEarlyDay => 'Early Day';
 
   @override
@@ -359,6 +386,41 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get dietaryAntiInflammatory => 'Anti-Inflammatory & Longevity';
+
+  @override
+  String get dietaryGroupRestrictions => 'Dietary Restrictions';
+
+  @override
+  String get dietaryGroupWellness => 'Wellness & Lifestyles';
+
+  @override
+  String get dietaryGroupCookingFormats => 'Cooking Formats';
+
+  @override
+  String get filterSearchCourses => 'Search courses (e.g. Dessert, Main…)';
+
+  @override
+  String get filterSearchDietary => 'Search diets (e.g. Gluten-Free, Vegan…)';
+
+  @override
+  String filterChoicesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count choices',
+      one: '1 choice',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get filterExpandAll => 'EXPAND ALL';
+
+  @override
+  String get filterCollapseAll => 'COLLAPSE ALL';
+
+  @override
+  String get filterNoMatches => 'No matches';
 
   @override
   String recipeMinutesShort(int minutes) {
@@ -880,6 +942,91 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get detailDeletedToast => 'Recipe deleted.';
+
+  @override
+  String get detailStartCooking => 'Start cooking';
+
+  @override
+  String get cookExit => 'Exit cooking';
+
+  @override
+  String cookStepOf(int current, int total) {
+    return 'Step $current of $total';
+  }
+
+  @override
+  String get cookPrev => 'Back';
+
+  @override
+  String get cookNext => 'Next';
+
+  @override
+  String get cookFinish => 'Finish cooking';
+
+  @override
+  String get cookFinishShort => 'Finish';
+
+  @override
+  String get cookStepDone => 'Mark step done';
+
+  @override
+  String get cookStepUndo => 'Mark as not done';
+
+  @override
+  String get cookIngredients => 'Ingredients';
+
+  @override
+  String cookIngredientsCount(int count) {
+    return 'Ingredients ($count)';
+  }
+
+  @override
+  String cookServingsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count servings',
+      one: '1 serving',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cookServingsIncrease => 'More servings';
+
+  @override
+  String get cookServingsDecrease => 'Fewer servings';
+
+  @override
+  String get cookUnitsOriginal => 'Original';
+
+  @override
+  String get cookUnitsMetric => 'Metric';
+
+  @override
+  String get cookUnitsImperial => 'Imperial';
+
+  @override
+  String get cookFinishedTitle => 'All done!';
+
+  @override
+  String get cookFinishedBody => 'You finished every step. Bon appétit!';
+
+  @override
+  String get cookFinishedStay => 'Keep recipe open';
+
+  @override
+  String get cookFinishedExit => 'Exit cooking';
+
+  @override
+  String get cookNoStepsTitle => 'No steps yet';
+
+  @override
+  String get cookNoStepsBody =>
+      'This recipe doesn\'t have step-by-step instructions to cook through.';
+
+  @override
+  String get cookBackToRecipe => 'Back to recipe';
 
   @override
   String get reviewsTitle => 'Community Gallery & Reviews';

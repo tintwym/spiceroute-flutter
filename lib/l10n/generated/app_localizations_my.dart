@@ -282,6 +282,33 @@ class AppL10nMy extends AppL10n {
   String get filterAllDietary => 'တောင်းဆိုမှုအားလုံး';
 
   @override
+  String get exploreByRegion => 'ဒေသအလိုက် ရှာဖွေပါ';
+
+  @override
+  String get selectCuisineTradition => 'ဟင်းအတိုင်အရှည် ရွေးပါ';
+
+  @override
+  String get regionEastAsia => 'အရှေ့အာရှ နိုင်ငံများ';
+
+  @override
+  String get regionMainlandSoutheastAsia => 'အရှေ့တောင်အာရှ ကုန်းတွင်း';
+
+  @override
+  String get regionMaritimeSoutheastAsia => 'အရှေ့တောင်အာရှ ပင်လယ်ပြင်';
+
+  @override
+  String get regionSouthAsia => 'တောင်အာရှ';
+
+  @override
+  String get regionEurope => 'ဥရောပ';
+
+  @override
+  String get regionAmericas => 'အမေရိကတိုက်';
+
+  @override
+  String get regionMiddleEastAfrica => 'အရှေ့အလယ်ပိုင်း နှင့် အာဖရိက';
+
+  @override
   String get courseGroupEarlyDay => 'မနက်စောစော';
 
   @override
@@ -363,6 +390,43 @@ class AppL10nMy extends AppL10n {
 
   @override
   String get dietaryAntiInflammatory => 'ရောင်ရမ်းမှု ဆန့်ကျင် နှင့် အသက်ရှည်';
+
+  @override
+  String get dietaryGroupRestrictions => 'အစားအသောက် ကန့်သတ်ချက်များ';
+
+  @override
+  String get dietaryGroupWellness => 'ကျန်းမာရေး နှင့် ဘဝနေထိုင်မှု';
+
+  @override
+  String get dietaryGroupCookingFormats => 'ချက်ပြုတ်ပုံ စတိုင်';
+
+  @override
+  String get filterSearchCourses =>
+      'ဟင်းပွဲများ ရှာဖွေပါ (ဥပမာ အချို၊ ပင်မဟင်း…)';
+
+  @override
+  String get filterSearchDietary =>
+      'အစားအသောက် ရှာဖွေပါ (ဥပမာ Gluten-Free, Vegan…)';
+
+  @override
+  String filterChoicesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ခု',
+      one: '1 ခု',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get filterExpandAll => 'အားလုံး ဖွင့်ပါ';
+
+  @override
+  String get filterCollapseAll => 'အားလုံး ပိတ်ပါ';
+
+  @override
+  String get filterNoMatches => 'ကိုက်ညီသည် မရှိ';
 
   @override
   String recipeMinutesShort(int minutes) {
@@ -887,6 +951,85 @@ class AppL10nMy extends AppL10n {
 
   @override
   String get detailDeletedToast => 'ချက်ပြုတ်နည်း ဖျက်ပြီးပါပြီ။';
+
+  @override
+  String get detailStartCooking => 'ချက်ပြုတ်ရန် စတင်ပါ';
+
+  @override
+  String get cookExit => 'ချက်ပြုတ်မှု ထွက်ရန်';
+
+  @override
+  String cookStepOf(int current, int total) {
+    return 'အဆင့် $current / $total';
+  }
+
+  @override
+  String get cookPrev => 'နောက်သို့';
+
+  @override
+  String get cookNext => 'ရှေ့သို့';
+
+  @override
+  String get cookFinish => 'ချက်ပြုတ်မှု ပြီးပြီ';
+
+  @override
+  String get cookFinishShort => 'ပြီးပြီ';
+
+  @override
+  String get cookStepDone => 'ပြီးပြီဟု မှတ်ပါ';
+
+  @override
+  String get cookStepUndo => 'မပြီးသေးပါ';
+
+  @override
+  String get cookIngredients => 'ပါဝင်ပစ္စည်းများ';
+
+  @override
+  String cookIngredientsCount(int count) {
+    return 'ပါဝင်ပစ္စည်းများ ($count)';
+  }
+
+  @override
+  String cookServingsLabel(int count) {
+    return '$count ပန်းကန်';
+  }
+
+  @override
+  String get cookServingsIncrease => 'ပမာဏ တိုးပါ';
+
+  @override
+  String get cookServingsDecrease => 'ပမာဏ လျှော့ပါ';
+
+  @override
+  String get cookUnitsOriginal => 'မူရင်း';
+
+  @override
+  String get cookUnitsMetric => 'မက်ထရစ်';
+
+  @override
+  String get cookUnitsImperial => 'အင်ပါယာ';
+
+  @override
+  String get cookFinishedTitle => 'အားလုံး ပြီးပါပြီ!';
+
+  @override
+  String get cookFinishedBody => 'အဆင့်အားလုံး ပြီးပါပြီ။ စားသုံးနိုင်ပါပြီ!';
+
+  @override
+  String get cookFinishedStay => 'ချက်ပြုတ်နည်း ဆက်ဖွင့်ပါ';
+
+  @override
+  String get cookFinishedExit => 'ချက်ပြုတ်မှု ထွက်ရန်';
+
+  @override
+  String get cookNoStepsTitle => 'အဆင့်များ မရှိသေးပါ';
+
+  @override
+  String get cookNoStepsBody =>
+      'ဤချက်ပြုတ်နည်းတွင် အဆင့်ဆင့် ညွှန်ကြားချက်များ မရှိသေးပါ။';
+
+  @override
+  String get cookBackToRecipe => 'ချက်ပြုတ်နည်းသို့ ပြန်ပါ';
 
   @override
   String get reviewsTitle => 'အသိုက်အဝန်း ပုံတင်နှင့် သုံးသပ်ချက်များ';

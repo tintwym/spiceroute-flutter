@@ -4,36 +4,38 @@ import 'package:flutter/material.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../models/spice_route.dart';
-import '../shared/cuisine_pill_bar.dart';
 import '../shared/theme.dart';
 
-/// Three-column filter bar shown above the Explore grid:
-///   [ SELECT CUISINE ]   [ SELECT COURSE ]   [ DIETARY, LIFESTYLE & FORMAT ]
+/// Two-column filter bar shown above the Explore grid:
+///   [ SELECT COURSE ]   [ DIETARY, LIFESTYLE & FORMAT ]
 ///
-/// Each option uses an emoji glyph as its icon (flag emojis for cuisines,
-/// food/lifestyle emojis for courses + dietary) to match the design
-/// reference exactly. Emojis ship for free with the OS — no asset
-/// bundling or icon-font wrangling required.
+/// The cuisine selector used to live here as a third column but moved
+/// to the dedicated [RegionFilterBar] above this widget — the
+/// region-grouped pill UI is more discoverable than a flat dropdown
+/// of 16 country flags.
 ///
-/// The dropdown menus are rendered as glassmorphic overlays (translucent
-/// frosted-glass surface, vibrant blue selected state, soft drop shadow).
-/// On screens narrower than ~720px the columns stack vertically so each
-/// dropdown gets full width.
+/// Each option uses an emoji glyph as its icon (food/lifestyle
+/// emojis) to match the design reference exactly. Emojis ship for
+/// free with the OS — no asset bundling or icon-font wrangling
+/// required.
+///
+/// The dropdown menus are rendered as glassmorphic overlays
+/// (translucent frosted-glass surface, vibrant blue selected state,
+/// soft drop shadow). On screens narrower than ~560px the columns
+/// stack vertically so each dropdown gets full width. (Was 720px
+/// when this had three columns; the cuisine column moving to
+/// [RegionFilterBar] freed the horizontal budget.)
 class FilterBar extends StatelessWidget {
   const FilterBar({
     super.key,
-    required this.cuisine,
     required this.course,
     required this.dietary,
-    required this.onCuisineChanged,
     required this.onCourseChanged,
     required this.onDietaryChanged,
   });
 
-  final Cuisine? cuisine;
   final Course? course;
   final Dietary? dietary;
-  final ValueChanged<Cuisine?> onCuisineChanged;
   final ValueChanged<Course?> onCourseChanged;
   final ValueChanged<Dietary?> onDietaryChanged;
 
@@ -41,35 +43,27 @@ class FilterBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppL10n.of(context);
 
-    final cuisineCol = _FilterColumn<Cuisine?>(
-      label: l.filterCuisineLabel,
-      labelIcon: Icons.public_outlined,
-      value: cuisine,
-      hintEmoji: _allCuisinesEmoji,
-      hintText: l.filterAllCuisines,
-      items: [
-        _FilterItem(
-          value: null,
-          label: l.filterAllCuisines,
-          emoji: _allCuisinesEmoji,
-        ),
-        for (final c in Cuisine.values)
-          _FilterItem(
-            value: c,
-            label: CuisinePillBar.labelFor(l, c),
-            emoji: _cuisineEmoji(c),
-          ),
-      ],
-      onChanged: onCuisineChanged,
-    );
-
     final courseCol = _FilterColumn<Course?>(
       label: l.filterCourseLabel,
       labelIcon: Icons.schedule,
       value: course,
       hintEmoji: _allCoursesEmoji,
       hintText: l.filterAllCourses,
-      items: _buildCourseItems(l),
+      // Same accordion treatment as Dietary: search field, collapsible
+      // CourseGroup sections (Early Day, Daytime / Casual, …), and an
+      // EXPAND ALL / COLLAPSE ALL toggle. `items` only carries the
+      // "All Courses" sentinel — the accordion reads its real options
+      // from `groups` and the trigger pill resolves the active value
+      // against the flattened group items.
+      items: [
+        _FilterItem<Course?>(
+          value: null,
+          label: l.filterAllCourses,
+          emoji: _allCoursesEmoji,
+        ),
+      ],
+      groups: _buildCourseGroups(l),
+      searchHint: l.filterSearchCourses,
       onChanged: onCourseChanged,
     );
 
@@ -79,34 +73,32 @@ class FilterBar extends StatelessWidget {
       value: dietary,
       hintEmoji: _allDietaryEmoji,
       hintText: l.filterAllDietary,
+      // Flat `items` only carries the "All Requests" sentinel — the
+      // accordion menu reads its real options from `groups`. The
+      // sentinel still appears in `items` so the trigger pill knows
+      // how to render the cleared state (hint emoji + hint text).
       items: [
         _FilterItem(
           value: null,
           label: l.filterAllDietary,
           emoji: _allDietaryEmoji,
         ),
-        for (final d in Dietary.values)
-          _FilterItem(
-            value: d,
-            label: _dietaryLabel(l, d),
-            emoji: _dietaryEmoji(d),
-          ),
       ],
+      groups: _buildDietaryGroups(l),
+      searchHint: l.filterSearchDietary,
       onChanged: onDietaryChanged,
     );
 
     return LayoutBuilder(builder: (context, constraints) {
-      // Below ~720px the three pills next to each other get too cramped
-      // (especially the third label "DIETARY, LIFESTYLE & FORMAT
-      // RESTRICTIONS" which is long). Stack vertically on narrow screens
-      // so each column gets the full width.
-      final stacked = constraints.maxWidth < 720;
+      // Below ~560px the two pills next to each other get cramped
+      // (especially the second label "DIETARY, LIFESTYLE & FORMAT
+      // RESTRICTIONS" which is long). Stack vertically on narrow
+      // screens so each column gets the full width.
+      final stacked = constraints.maxWidth < 560;
       if (stacked) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            cuisineCol,
-            const SizedBox(height: 12),
             courseCol,
             const SizedBox(height: 12),
             dietaryCol,
@@ -116,8 +108,6 @@ class FilterBar extends StatelessWidget {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(child: cuisineCol),
-          const SizedBox(width: 16),
           Expanded(child: courseCol),
           const SizedBox(width: 16),
           Expanded(child: dietaryCol),
@@ -139,6 +129,8 @@ class _FilterColumn<T> extends StatelessWidget {
     required this.hintText,
     required this.items,
     required this.onChanged,
+    this.groups,
+    this.searchHint,
   });
 
   final String label;
@@ -148,6 +140,20 @@ class _FilterColumn<T> extends StatelessWidget {
   final String hintText;
   final List<_FilterItem<T>> items;
   final ValueChanged<T> onChanged;
+
+  /// When non-null the dropdown opens the *accordion* menu variant
+  /// (search input + collapsible subcategory cards + expand-all
+  /// toggle) instead of the flat scrolling list. Used by the dietary
+  /// column to organise 8 items into 3 user-meaningful buckets.
+  ///
+  /// `items` still drives the trigger pill's "selected" lookup —
+  /// flatten every group's items into `items` if you want them
+  /// resolvable from the closed state.
+  final List<_FilterGroup<T>>? groups;
+
+  /// Placeholder shown inside the accordion menu's search input.
+  /// Required when `groups` is non-null; ignored otherwise.
+  final String? searchHint;
 
   @override
   Widget build(BuildContext context) {
@@ -196,12 +202,51 @@ class _FilterColumn<T> extends StatelessWidget {
           value: value,
           hintEmoji: hintEmoji,
           hintText: hintText,
-          items: items,
+          items: _withGroupAwareTriggerLabels(items, groups),
           onChanged: onChanged,
+          groups: groups,
+          searchHint: searchHint,
         ),
       ],
     );
   }
+}
+
+/// Returns `items` augmented so each item knows the [_FilterGroup.label]
+/// it belongs to (if any). The trigger pill reads this to render the
+/// `Group · Selection` two-tier closed state. We resolve the group
+/// lazily here rather than baking the label into every call site
+/// because the same `_FilterItem` ought to render in both the flat
+/// `items` list and the accordion `groups`.
+List<_FilterItem<T>> _withGroupAwareTriggerLabels<T>(
+  List<_FilterItem<T>> items,
+  List<_FilterGroup<T>>? groups,
+) {
+  if (groups == null || groups.isEmpty) return items;
+  final groupByValue = <T, String>{};
+  for (final g in groups) {
+    for (final it in g.items) {
+      if (it.isHeader) continue;
+      groupByValue[it.value] = g.label;
+    }
+  }
+  // Walk the flat trigger-resolution list and overlay group labels.
+  // We don't mutate any existing items — _FilterItem is immutable
+  // and may be shared across columns / tests.
+  return [
+    for (final it in items)
+      if (it.isHeader || groupByValue[it.value] == null)
+        it
+      else
+        it.copyWith(triggerGroupLabel: groupByValue[it.value]),
+    // Plus every group's items, in case `items` only carries the
+    // "All" sentinel (the dietary column ships items=[all] for
+    // brevity and lets the accordion do the heavy lifting).
+    for (final g in groups)
+      for (final it in g.items)
+        if (!it.isHeader)
+          it.copyWith(triggerGroupLabel: g.label),
+  ];
 }
 
 /// One option in a filter dropdown. `value == null` represents "All …".
@@ -213,28 +258,53 @@ class _FilterColumn<T> extends StatelessWidget {
 /// Set [isHeader] to render a non-selectable section header instead of a
 /// regular row. Headers are used to group [Course] items (Early Day,
 /// Daytime / Casual, …) inside an otherwise-flat dropdown.
+///
+/// [triggerGroupLabel] is the subcategory pill text rendered in the
+/// closed dropdown trigger when this item is the active selection.
+/// E.g. selecting `Dietary.quickEasy` renders `[Cooking Formats]
+/// Quick & Easy` in the trigger. Null → no pill, just the label.
 class _FilterItem<T> {
   const _FilterItem({
     required this.value,
     required this.label,
     required this.emoji,
     this.isHeader = false,
+    this.triggerGroupLabel,
   });
 
-  /// Convenience constructor for a non-selectable section header. The
-  /// header inherits the dropdown's value type but never matches the
-  /// active selection, so it always renders in its inactive style.
-  const _FilterItem.header({
-    required T sentinel,
-    required this.label,
-  })  : value = sentinel,
-        emoji = '',
-        isHeader = true;
+  // Note: there used to be a `_FilterItem.header` named constructor
+  // used by the flat-menu Course builder to emit inline section
+  // headers ("EARLY DAY", "DAYTIME / CASUAL", …) between rows.
+  // Course now uses the accordion variant — each [CourseGroup] is
+  // its own collapsible section — so inline headers are no longer
+  // produced. The `isHeader` flag is kept for the still-mounted
+  // [_GlassMenu] flat menu in case future filters need it.
 
   final T value;
   final String label;
   final String emoji;
   final bool isHeader;
+  final String? triggerGroupLabel;
+
+  _FilterItem<T> copyWith({String? triggerGroupLabel}) => _FilterItem<T>(
+        value: value,
+        label: label,
+        emoji: emoji,
+        isHeader: isHeader,
+        triggerGroupLabel: triggerGroupLabel ?? this.triggerGroupLabel,
+      );
+}
+
+/// One accordion bucket in the searchable dropdown menu (e.g. "Dietary
+/// Restrictions", "Wellness & Lifestyles", "Cooking Formats").
+///
+/// `items` should be the *selectable* options only — section headers
+/// aren't supported inside accordion groups since the group itself is
+/// the grouping mechanism.
+class _FilterGroup<T> {
+  const _FilterGroup({required this.label, required this.items});
+  final String label;
+  final List<_FilterItem<T>> items;
 }
 
 // -- Custom glass dropdown ----------------------------------------------------
@@ -254,6 +324,8 @@ class _GlassDropdown<T> extends StatefulWidget {
     required this.hintText,
     required this.items,
     required this.onChanged,
+    this.groups,
+    this.searchHint,
   });
 
   final T value;
@@ -261,6 +333,11 @@ class _GlassDropdown<T> extends StatefulWidget {
   final String hintText;
   final List<_FilterItem<T>> items;
   final ValueChanged<T> onChanged;
+
+  /// See [_FilterColumn.groups]. When non-null the trigger opens the
+  /// accordion menu variant instead of the flat list.
+  final List<_FilterGroup<T>>? groups;
+  final String? searchHint;
 
   @override
   State<_GlassDropdown<T>> createState() => _GlassDropdownState<T>();
@@ -281,15 +358,31 @@ class _GlassDropdownState<T> extends State<_GlassDropdown<T>> {
     final origin = triggerBox.localToGlobal(Offset.zero, ancestor: overlay);
     final triggerSize = triggerBox.size;
 
-    final result = await Navigator.of(context).push<_MenuResult<T>>(
-      _GlassMenuRoute<T>(
-        origin: origin,
-        triggerSize: triggerSize,
-        viewportSize: overlay.size,
-        items: widget.items,
-        selectedValue: widget.value,
-      ),
-    );
+    final groups = widget.groups;
+    final route = groups == null
+        ? _GlassMenuRoute<T>(
+            origin: origin,
+            triggerSize: triggerSize,
+            viewportSize: overlay.size,
+            items: widget.items,
+            selectedValue: widget.value,
+          )
+        : _AccordionMenuRoute<T>(
+            origin: origin,
+            triggerSize: triggerSize,
+            viewportSize: overlay.size,
+            groups: groups,
+            selectedValue: widget.value,
+            searchHint: widget.searchHint ?? '',
+            // The accordion menu doesn't render any group "all"
+            // sentinel by default — we surface the items[0] entry
+            // (e.g. "All Courses") as a pinned reset row at the top
+            // so users have a discoverable way to clear the filter.
+            // If `items` is empty or its head doesn't represent the
+            // cleared state we just skip the row.
+            clearItem: widget.items.isEmpty ? null : widget.items.first,
+          );
+    final result = await Navigator.of(context).push<_MenuResult<T>>(route);
     if (result != null) {
       widget.onChanged(result.value);
     }
@@ -310,6 +403,10 @@ class _GlassDropdownState<T> extends State<_GlassDropdown<T>> {
     }
     final displayEmoji = selected?.emoji ?? widget.hintEmoji;
     final displayText = selected?.label ?? widget.hintText;
+    // Only show the subcategory pill when we have an active selection
+    // *and* it knows its group. Hint state (selected==null) keeps the
+    // existing "All Requests" presentation.
+    final groupPill = selected?.triggerGroupLabel;
 
     return Material(
       color: Colors.transparent,
@@ -340,19 +437,88 @@ class _GlassDropdownState<T> extends State<_GlassDropdown<T>> {
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Text(
-                  displayText,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: cs.onSurface,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  overflow: TextOverflow.ellipsis,
+                child: Row(
+                  children: [
+                    if (groupPill != null) ...[
+                      // Stadium-shaped subcategory chip — cream fill
+                      // so it reads as secondary to the selection
+                      // label that follows. Capped at ~50% of the
+                      // expanded Row's allocation so a verbose
+                      // localized label (e.g. Burmese "အစားအသောက်
+                      // ကန့်သတ်ချက်များ") can't eat the entire row
+                      // and push the selection text into overflow.
+                      // Inside the chip the text already ellipsizes,
+                      // so the cap is purely a width gate.
+                      Flexible(
+                        flex: 1,
+                        fit: FlexFit.loose,
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 160),
+                          child: _TriggerGroupChip(label: groupPill),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                    // 2:1 flex ratio with the chip keeps the actual
+                    // selection (the more important label) winning
+                    // the space contest whenever both compete.
+                    Flexible(
+                      flex: 2,
+                      child: Text(
+                        displayText,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: cs.onSurface,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Icon(Icons.keyboard_arrow_down,
                   size: 22, color: cs.onSurfaceVariant),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Small stadium-shaped chip used in the dropdown trigger to display
+/// the subcategory ("Cooking Formats", "Sweet Ending", …) the active
+/// selection belongs to. Visually subordinate to the actual selection
+/// label that follows it — fontSize 11, cream fill, no border.
+class _TriggerGroupChip extends StatelessWidget {
+  const _TriggerGroupChip({required this.label});
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        // Subtle cream/stone pill that recedes against the trigger's
+        // own surfaceContainerHighest fill. Border (not just a darker
+        // fill) keeps it visible when the trigger is on a busy page
+        // background.
+        color: cs.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: cs.outlineVariant, width: 0.5),
+      ),
+      child: Text(
+        label,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: cs.onSurfaceVariant,
+          fontWeight: FontWeight.w600,
+          fontSize: 11,
+          height: 1.1,
         ),
       ),
     );
@@ -668,12 +834,678 @@ class _GlassMenuItem<T> extends StatelessWidget {
   }
 }
 
-// --- emoji + label helpers ----------------------------------------------------
+// -- Accordion menu (searchable, expand-all, collapsible groups) -------------
 
-/// "All Cuisines" sentinel: a fried-egg glyph reads as the warm yellow
-/// disc shown in the reference design and pairs visually with the
-/// flag emojis below it (single-codepoint, brightly colored).
-const String _allCuisinesEmoji = '🍳';
+/// Modal route hosting the [_AccordionGlassMenu]. Shares the same
+/// anchor / sizing / fade-in conventions as [_GlassMenuRoute] so the
+/// trigger pill animates open identically regardless of which variant
+/// is mounted underneath.
+class _AccordionMenuRoute<T> extends PopupRoute<_MenuResult<T>> {
+  _AccordionMenuRoute({
+    required this.origin,
+    required this.triggerSize,
+    required this.viewportSize,
+    required this.groups,
+    required this.selectedValue,
+    required this.searchHint,
+    this.clearItem,
+  });
+
+  final Offset origin;
+  final Size triggerSize;
+  final Size viewportSize;
+  final List<_FilterGroup<T>> groups;
+  final T selectedValue;
+  final String searchHint;
+
+  /// Optional "All …" row pinned above the accordion sections. When
+  /// non-null, tapping it pops the menu with its [_FilterItem.value]
+  /// (usually `null`), which restores the dropdown's hint state.
+  final _FilterItem<T>? clearItem;
+
+  @override
+  Color? get barrierColor => null;
+
+  @override
+  bool get barrierDismissible => true;
+
+  @override
+  String? get barrierLabel => 'Dismiss menu';
+
+  @override
+  Duration get transitionDuration => const Duration(milliseconds: 180);
+
+  @override
+  Widget buildPage(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+  ) {
+    // Cap the menu height so the longest accordion (all groups
+    // expanded, all items visible) still leaves breathing room above
+    // and below. Anything taller scrolls inside the menu.
+    final maxMenuHeight =
+        viewportSize.height - origin.dy - triggerSize.height - 24;
+    return Stack(
+      children: [
+        Positioned(
+          left: origin.dx,
+          top: origin.dy + triggerSize.height + 8,
+          width: triggerSize.width,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: maxMenuHeight.clamp(220.0, 560.0),
+            ),
+            child: _AccordionGlassMenu<T>(
+              groups: groups,
+              selectedValue: selectedValue,
+              searchHint: searchHint,
+              clearItem: clearItem,
+              onSelected: (v) =>
+                  Navigator.of(context).pop(_MenuResult<T>(v)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget buildTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    final curved =
+        CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+    return FadeTransition(
+      opacity: curved,
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0, -0.04),
+          end: Offset.zero,
+        ).animate(curved),
+        child: child,
+      ),
+    );
+  }
+}
+
+/// Frosted-glass surface containing a search field, an expand-all
+/// toggle, and one collapsible section per [_FilterGroup].
+///
+/// Stateful because the open/closed state of each group, the current
+/// search query, and the implicit "all expanded?" flag all live
+/// locally and don't need to round-trip through the parent — the only
+/// thing the parent cares about is which value was tapped, which is
+/// reported via [onSelected].
+class _AccordionGlassMenu<T> extends StatefulWidget {
+  const _AccordionGlassMenu({
+    required this.groups,
+    required this.selectedValue,
+    required this.searchHint,
+    required this.onSelected,
+    this.clearItem,
+  });
+
+  final List<_FilterGroup<T>> groups;
+  final T selectedValue;
+  final String searchHint;
+  final ValueChanged<T> onSelected;
+
+  /// Optional "All …" row pinned above the accordion sections. See
+  /// [_AccordionMenuRoute.clearItem].
+  final _FilterItem<T>? clearItem;
+
+  @override
+  State<_AccordionGlassMenu<T>> createState() => _AccordionGlassMenuState<T>();
+}
+
+class _AccordionGlassMenuState<T> extends State<_AccordionGlassMenu<T>> {
+  late final TextEditingController _searchCtl;
+  String _query = '';
+
+  /// Indexes of expanded groups. We persist by index (not label) so
+  /// renaming a group's localized string doesn't desync the state.
+  final Set<int> _expanded = <int>{};
+
+  @override
+  void initState() {
+    super.initState();
+    _searchCtl = TextEditingController();
+    // On open, auto-expand the group containing the active selection
+    // so the user can see / re-tap it without having to hunt for it.
+    // If nothing is selected (T == null) every group starts collapsed,
+    // matching screenshot 2.
+    for (var i = 0; i < widget.groups.length; i++) {
+      final hasSelected = widget.groups[i].items
+          .any((it) => !it.isHeader && it.value == widget.selectedValue);
+      if (hasSelected) _expanded.add(i);
+    }
+  }
+
+  @override
+  void dispose() {
+    _searchCtl.dispose();
+    super.dispose();
+  }
+
+  bool get _allExpanded => _expanded.length == widget.groups.length;
+
+  void _toggleAll() {
+    setState(() {
+      if (_allExpanded) {
+        _expanded.clear();
+      } else {
+        _expanded
+          ..clear()
+          ..addAll(Iterable<int>.generate(widget.groups.length));
+      }
+    });
+  }
+
+  void _toggleGroup(int idx) {
+    setState(() {
+      if (_expanded.contains(idx)) {
+        _expanded.remove(idx);
+      } else {
+        _expanded.add(idx);
+      }
+    });
+  }
+
+  void _onSearchChanged(String q) {
+    setState(() {
+      _query = q;
+      final trimmed = q.trim();
+      if (trimmed.isEmpty) return;
+      // Auto-expand groups containing matches so the user sees them
+      // without having to drill into each section manually.
+      final lc = trimmed.toLowerCase();
+      for (var i = 0; i < widget.groups.length; i++) {
+        final hasMatch = widget.groups[i].items.any(
+          (it) => !it.isHeader && it.label.toLowerCase().contains(lc),
+        );
+        if (hasMatch) _expanded.add(i);
+      }
+    });
+  }
+
+  List<_FilterItem<T>> _visibleItems(_FilterGroup<T> g) {
+    final lc = _query.trim().toLowerCase();
+    if (lc.isEmpty) return g.items;
+    return g.items
+        .where((it) => !it.isHeader && it.label.toLowerCase().contains(lc))
+        .toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final l = AppL10n.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Same frosted-glass surface as [_GlassMenu] — keep both menus
+    // visually identical so swapping between flat / accordion never
+    // feels like landing in a different app.
+    final glassFill = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.white.withValues(alpha: 0.62);
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.12)
+        : Colors.white.withValues(alpha: 0.6);
+
+    // Memoize visibility per group. Without this we called
+    // `_visibleItems(g)` 2 + groups.length times per build (one for
+    // `hasAnyVisible`, one per section header for the count, one per
+    // section body for the items). Each call walks every item with a
+    // `.toLowerCase().contains()` test — cheap individually but noisy
+    // during fast typing in the search field.
+    final visibleByIdx = <List<_FilterItem<T>>>[
+      for (final g in widget.groups) _visibleItems(g),
+    ];
+    final hasAnyVisible = visibleByIdx.any((items) => items.isNotEmpty);
+
+    return Material(
+      type: MaterialType.transparency,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(22),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.55 : 0.18),
+              blurRadius: 28,
+              spreadRadius: 0,
+              offset: const Offset(0, 14),
+            ),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.08),
+              blurRadius: 6,
+              spreadRadius: 0,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(22),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+            child: Container(
+              decoration: BoxDecoration(
+                color: glassFill,
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: borderColor, width: 1),
+              ),
+              padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // -------------------------------------------------
+                  // Expand-all / Collapse-all toggle. Right-aligned so
+                  // the chrome doesn't crowd the search field below.
+                  // -------------------------------------------------
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: _ExpandAllToggle(
+                      expanded: _allExpanded,
+                      onTap: _toggleAll,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  // -------------------------------------------------
+                  // Search input. autofocus: false so the on-screen
+                  // keyboard doesn't pop the moment the menu opens —
+                  // many users open the menu just to browse.
+                  // -------------------------------------------------
+                  _AccordionSearchField(
+                    controller: _searchCtl,
+                    hint: widget.searchHint,
+                    onChanged: _onSearchChanged,
+                  ),
+                  const SizedBox(height: 10),
+                  // -------------------------------------------------
+                  // Scrollable column of accordion sections so the
+                  // menu height never exceeds the route's maxHeight.
+                  // The clear-row sits OUTSIDE the search/no-matches
+                  // filter — we always want it reachable even when
+                  // the user's query is "asdf" and nothing matches.
+                  // -------------------------------------------------
+                  Flexible(
+                    child: SingleChildScrollView(
+                      physics: const ClampingScrollPhysics(),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Pinned "All …" reset row + thin divider
+                          // separating it from the accordion sections
+                          // below. Distinct from category rows since
+                          // the user explicitly opted into the
+                          // "filter-off" presentation.
+                          if (widget.clearItem != null) ...[
+                            _GlassMenuItem<T>(
+                              item: widget.clearItem!,
+                              selected: widget.clearItem!.value ==
+                                  widget.selectedValue,
+                              onTap: () =>
+                                  widget.onSelected(widget.clearItem!.value),
+                              textColor: cs.onSurface,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              child: Divider(
+                                height: 1,
+                                color: cs.outlineVariant,
+                              ),
+                            ),
+                          ],
+                          if (!hasAnyVisible)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 16, horizontal: 4),
+                              child: Text(
+                                l.filterNoMatches,
+                                textAlign: TextAlign.center,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: cs.onSurfaceVariant,
+                                ),
+                              ),
+                            )
+                          else
+                            for (var i = 0; i < widget.groups.length; i++)
+                              if (visibleByIdx[i].isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: _AccordionSection<T>(
+                                    label: widget.groups[i].label,
+                                    items: visibleByIdx[i],
+                                    selectedValue: widget.selectedValue,
+                                    expanded: _expanded.contains(i),
+                                    onToggle: () => _toggleGroup(i),
+                                    onSelected: widget.onSelected,
+                                  ),
+                                ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Right-aligned "EXPAND ALL ⊕ / COLLAPSE ALL ⊖" toggle button.
+/// Stateless — the parent owns the expanded/collapsed truth.
+class _ExpandAllToggle extends StatelessWidget {
+  const _ExpandAllToggle({required this.expanded, required this.onTap});
+  final bool expanded;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final l = AppL10n.of(context);
+    final label = expanded ? l.filterCollapseAll : l.filterExpandAll;
+    // unfold_more / unfold_less mirrors the screenshot's "⊕ / ⊖"
+    // affordance and stays glyph-consistent across platforms.
+    final icon = expanded ? Icons.unfold_less : Icons.unfold_more;
+    return Semantics(
+      button: true,
+      // toggled + value together let VoiceOver / TalkBack announce
+      // "expand all, button, collapsed" → "expand all, button,
+      // expanded" as the user taps. Without `toggled` the AT treats
+      // it as a plain push button and the user can't tell the
+      // current state without trying it.
+      toggled: expanded,
+      label: label,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: cs.onSurfaceVariant,
+                  letterSpacing: 1.2,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Icon(icon, size: 16, color: cs.onSurfaceVariant),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The accordion menu's search field. Pill-shaped to match the menu
+/// surface's rounded corners. Lazily rebuilds via [onChanged] so the
+/// filtered groups update as the user types.
+///
+/// Stateful only so the trailing "clear" affordance can rebuild on
+/// every keystroke (controller doesn't notify Listenable subscribers
+/// automatically without a listener).
+class _AccordionSearchField extends StatefulWidget {
+  const _AccordionSearchField({
+    required this.controller,
+    required this.hint,
+    required this.onChanged,
+  });
+
+  final TextEditingController controller;
+  final String hint;
+  final ValueChanged<String> onChanged;
+
+  @override
+  State<_AccordionSearchField> createState() => _AccordionSearchFieldState();
+}
+
+class _AccordionSearchFieldState extends State<_AccordionSearchField> {
+  @override
+  void initState() {
+    super.initState();
+    // Listen to the controller so we can toggle the trailing clear
+    // icon in/out as the user types. We pass the same controller
+    // through to the TextField — the field itself rebuilds on
+    // changes already; this listener is just for the suffix.
+    widget.controller.addListener(_onControllerChanged);
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_onControllerChanged);
+    super.dispose();
+  }
+
+  void _onControllerChanged() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final hasText = widget.controller.text.isNotEmpty;
+    return Container(
+      decoration: BoxDecoration(
+        color: cs.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: cs.outlineVariant, width: 1),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Row(
+        children: [
+          Icon(Icons.search, size: 18, color: cs.onSurfaceVariant),
+          const SizedBox(width: 8),
+          Expanded(
+            child: TextField(
+              controller: widget.controller,
+              onChanged: widget.onChanged,
+              // Hitting return on a hardware keyboard / soft-search
+              // closes the IME without dismissing the menu; the
+              // filter already reflects the typed query live.
+              textInputAction: TextInputAction.search,
+              decoration: InputDecoration(
+                hintText: widget.hint,
+                hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                  color: cs.onSurfaceVariant.withValues(alpha: 0.7),
+                ),
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: cs.onSurface,
+              ),
+            ),
+          ),
+          if (hasText)
+            // Compact 28x28 hit target — bigger than the icon glyph
+            // so quick taps don't miss but small enough not to
+            // distort the pill height.
+            Semantics(
+              button: true,
+              label: 'Clear search',
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                onTap: () {
+                  widget.controller.clear();
+                  widget.onChanged('');
+                },
+                child: SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: Icon(
+                    Icons.close,
+                    size: 16,
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// One collapsible category card inside the accordion menu.
+///
+/// Header row: folder icon + label + "X choices" + expand arrow.
+/// Body: nested choice rows, revealed via [AnimatedSize] when
+/// [expanded] flips true. The body uses the same [_GlassMenuItem]
+/// chrome as the flat menu so the active row gets the vibrant
+/// blue active treatment.
+class _AccordionSection<T> extends StatelessWidget {
+  const _AccordionSection({
+    required this.label,
+    required this.items,
+    required this.selectedValue,
+    required this.expanded,
+    required this.onToggle,
+    required this.onSelected,
+  });
+
+  final String label;
+  final List<_FilterItem<T>> items;
+  final T selectedValue;
+  final bool expanded;
+  final VoidCallback onToggle;
+  final ValueChanged<T> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final l = AppL10n.of(context);
+    final hasActive = items.any(
+      (it) => !it.isHeader && it.value == selectedValue,
+    );
+    return Container(
+      decoration: BoxDecoration(
+        color: cs.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          // Subtle olive highlight on the group containing the active
+          // pick so the user can see at a glance "this category is
+          // where my current selection lives" even when collapsed.
+          color: hasActive ? cs.primary.withValues(alpha: 0.45) : cs.outlineVariant,
+          width: hasActive ? 1.2 : 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // ---------------------------------------------------------
+          // Header row — the clickable toggle.
+          // ---------------------------------------------------------
+          Semantics(
+            button: true,
+            expanded: expanded,
+            label: label,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: onToggle,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.folder_outlined,
+                      size: 18,
+                      color: cs.secondary,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        label.toUpperCase(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: cs.secondary,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      l.filterChoicesCount(items.length),
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: cs.onSurfaceVariant,
+                        fontSize: 11,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    // Animate the arrow rotation rather than swap
+                    // icons — gives a smooth visual cue that the
+                    // section is opening / closing.
+                    AnimatedRotation(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeOut,
+                      turns: expanded ? 0.5 : 0.0,
+                      child: Icon(
+                        Icons.keyboard_arrow_down,
+                        size: 20,
+                        color: cs.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // ---------------------------------------------------------
+          // Body — animated reveal. ClipRect prevents the inner
+          // shadows / rows from peeking out during the size
+          // transition.
+          // ---------------------------------------------------------
+          ClipRect(
+            child: AnimatedSize(
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOutCubic,
+              alignment: Alignment.topCenter,
+              child: expanded
+                  ? Padding(
+                      padding: const EdgeInsets.fromLTRB(4, 0, 4, 6),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          for (final it in items)
+                            _GlassMenuItem<T>(
+                              item: it,
+                              selected: it.value == selectedValue,
+                              onTap: () => onSelected(it.value),
+                              textColor: cs.onSurface,
+                            ),
+                        ],
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// --- emoji + label helpers ----------------------------------------------------
 
 /// "All Courses" sentinel: clock matches the time-of-day framing that
 /// courses imply ("when do you eat this?"), and visually echoes the
@@ -683,48 +1515,6 @@ const String _allCoursesEmoji = '🕐';
 /// "All Requests" sentinel for the dietary column: the dart-and-target
 /// icon from the reference design.
 const String _allDietaryEmoji = '🎯';
-
-/// Flag-emoji per cuisine. Flag emojis are regional-indicator pairs and
-/// render natively on macOS, iOS, Android, ChromeOS, Linux (Twemoji),
-/// and Chrome on most desktop OSes. Windows falls back to plain letter
-/// pairs (e.g. "KR" instead of 🇰🇷) — by design, Microsoft chose not
-/// to ship flag glyphs in Segoe UI Emoji.
-String _cuisineEmoji(Cuisine c) {
-  switch (c) {
-    case Cuisine.korean:
-      return '🇰🇷';
-    case Cuisine.japanese:
-      return '🇯🇵';
-    case Cuisine.chinese:
-      return '🇨🇳';
-    case Cuisine.burmese:
-      return '🇲🇲';
-    case Cuisine.thai:
-      return '🇹🇭';
-    case Cuisine.vietnamese:
-      return '🇻🇳';
-    case Cuisine.indian:
-      return '🇮🇳';
-    case Cuisine.italian:
-      return '🇮🇹';
-    case Cuisine.americanWestern:
-      return '🇺🇸';
-    case Cuisine.mexican:
-      return '🇲🇽';
-    case Cuisine.french:
-      return '🇫🇷';
-    case Cuisine.greek:
-      return '🇬🇷';
-    case Cuisine.spanish:
-      return '🇪🇸';
-    case Cuisine.malaysian:
-      return '🇲🇾';
-    case Cuisine.german:
-      return '🇩🇪';
-    case Cuisine.indonesian:
-      return '🇮🇩';
-  }
-}
 
 String _courseLabel(AppL10n l, Course c) {
   switch (c) {
@@ -803,33 +1593,73 @@ String _courseGroupLabel(AppL10n l, CourseGroup g) {
   }
 }
 
-/// Build the dropdown list for the Course column. Walks [Course.values]
-/// in declared order (which is already grouped) and emits a section
-/// header every time the group changes.
-List<_FilterItem<Course?>> _buildCourseItems(AppL10n l) {
-  final out = <_FilterItem<Course?>>[
-    _FilterItem<Course?>(
-      value: null,
-      label: l.filterAllCourses,
-      emoji: _allCoursesEmoji,
-    ),
-  ];
-  CourseGroup? lastGroup;
+/// Build accordion groups for the Course column. One group per
+/// [CourseGroup] value in enum-declaration order (Early Day → … →
+/// Liquids — already the order the design lays them out). Mirrors
+/// [_buildDietaryGroups] so both columns share the same plumbing.
+///
+/// Each item carries [triggerGroupLabel] so the closed trigger pill
+/// can render the "Sweet Ending · Desserts & Sweets" two-tier
+/// presentation when that course is the active selection.
+List<_FilterGroup<Course?>> _buildCourseGroups(AppL10n l) {
+  final byGroup = <CourseGroup, List<_FilterItem<Course?>>>{};
+  for (final g in CourseGroup.values) {
+    byGroup[g] = <_FilterItem<Course?>>[];
+  }
   for (final c in Course.values) {
-    if (c.group != lastGroup) {
-      out.add(_FilterItem<Course?>.header(
-        sentinel: null,
-        label: _courseGroupLabel(l, c.group),
-      ));
-      lastGroup = c.group;
-    }
-    out.add(_FilterItem<Course?>(
+    byGroup[c.group]!.add(_FilterItem<Course?>(
       value: c,
       label: _courseLabel(l, c),
       emoji: _courseEmoji(c),
+      triggerGroupLabel: _courseGroupLabel(l, c.group),
     ));
   }
-  return out;
+  return [
+    for (final g in CourseGroup.values)
+      _FilterGroup<Course?>(
+        label: _courseGroupLabel(l, g),
+        items: byGroup[g]!,
+      ),
+  ];
+}
+
+String _dietaryGroupLabel(AppL10n l, DietaryGroup g) {
+  switch (g) {
+    case DietaryGroup.dietaryRestrictions:
+      return l.dietaryGroupRestrictions;
+    case DietaryGroup.wellness:
+      return l.dietaryGroupWellness;
+    case DietaryGroup.cookingFormats:
+      return l.dietaryGroupCookingFormats;
+  }
+}
+
+/// Build the accordion groups for the Dietary column. One group per
+/// [DietaryGroup] value, in enum-declaration order (restrictions →
+/// wellness → cooking formats). Each item carries its group label as
+/// the [_FilterItem.triggerGroupLabel] so the closed dropdown trigger
+/// can render the same "Cooking Formats · Quick & Easy" pattern that
+/// Course uses.
+List<_FilterGroup<Dietary?>> _buildDietaryGroups(AppL10n l) {
+  final byGroup = <DietaryGroup, List<_FilterItem<Dietary?>>>{};
+  for (final g in DietaryGroup.values) {
+    byGroup[g] = <_FilterItem<Dietary?>>[];
+  }
+  for (final d in Dietary.values) {
+    byGroup[d.group]!.add(_FilterItem<Dietary?>(
+      value: d,
+      label: _dietaryLabel(l, d),
+      emoji: _dietaryEmoji(d),
+      triggerGroupLabel: _dietaryGroupLabel(l, d.group),
+    ));
+  }
+  return [
+    for (final g in DietaryGroup.values)
+      _FilterGroup<Dietary?>(
+        label: _dietaryGroupLabel(l, g),
+        items: byGroup[g]!,
+      ),
+  ];
 }
 
 String _dietaryLabel(AppL10n l, Dietary d) {

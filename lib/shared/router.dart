@@ -6,6 +6,7 @@ import '../features/ai_companion/ai_companion_screen.dart';
 import '../features/ai_creator/ai_creator_screen.dart';
 import '../features/auth/register_screen.dart';
 import '../features/auth/sign_in_screen.dart';
+import '../features/cook/cook_mode_screen.dart';
 import '../features/explore/explore_screen.dart';
 import '../features/my_recipes/my_recipes_screen.dart';
 import '../features/recipes/recipe_detail_screen.dart';
@@ -108,6 +109,14 @@ final routerProvider = Provider<GoRouter>((ref) {
           key: st.pageKey,
           child: RecipeDetailScreen(recipeId: st.pathParameters['id']!),
         ),
+      ),
+      // Cook Mode is *not* a modal — it's a full-screen route. Cooking
+      // needs the entire viewport with no scrim and no chrome from the
+      // page underneath. Deep-link friendly: /recipes/<id>/cook can be
+      // bookmarked / shared.
+      GoRoute(
+        path: '/recipes/:id/cook',
+        builder: (_, st) => CookModeScreen(recipeId: st.pathParameters['id']!),
       ),
     ],
   );

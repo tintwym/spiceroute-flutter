@@ -278,6 +278,33 @@ class AppL10nVi extends AppL10n {
   String get filterAllDietary => 'Tất cả yêu cầu';
 
   @override
+  String get exploreByRegion => 'KHÁM PHÁ THEO KHU VỰC';
+
+  @override
+  String get selectCuisineTradition => 'CHỌN TRUYỀN THỐNG ẨM THỰC';
+
+  @override
+  String get regionEastAsia => 'Các nước Đông Á';
+
+  @override
+  String get regionMainlandSoutheastAsia => 'Đông Nam Á lục địa';
+
+  @override
+  String get regionMaritimeSoutheastAsia => 'Đông Nam Á hải đảo';
+
+  @override
+  String get regionSouthAsia => 'Nam Á';
+
+  @override
+  String get regionEurope => 'Châu Âu';
+
+  @override
+  String get regionAmericas => 'Châu Mỹ';
+
+  @override
+  String get regionMiddleEastAfrica => 'Trung Đông & Châu Phi';
+
+  @override
   String get courseGroupEarlyDay => 'Đầu ngày';
 
   @override
@@ -357,6 +384,42 @@ class AppL10nVi extends AppL10n {
 
   @override
   String get dietaryAntiInflammatory => 'Chống viêm & Trường thọ';
+
+  @override
+  String get dietaryGroupRestrictions => 'Hạn chế Ăn uống';
+
+  @override
+  String get dietaryGroupWellness => 'Sức khỏe & Lối sống';
+
+  @override
+  String get dietaryGroupCookingFormats => 'Cách nấu';
+
+  @override
+  String get filterSearchCourses => 'Tìm bữa ăn (vd: Tráng miệng, Món chính…)';
+
+  @override
+  String get filterSearchDietary =>
+      'Tìm chế độ ăn (vd: Không Gluten, Thuần chay…)';
+
+  @override
+  String filterChoicesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count lựa chọn',
+      one: '1 lựa chọn',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get filterExpandAll => 'MỞ TẤT CẢ';
+
+  @override
+  String get filterCollapseAll => 'ĐÓNG TẤT CẢ';
+
+  @override
+  String get filterNoMatches => 'Không tìm thấy';
 
   @override
   String recipeMinutesShort(int minutes) {
@@ -865,6 +928,86 @@ class AppL10nVi extends AppL10n {
 
   @override
   String get detailDeletedToast => 'Đã xóa công thức.';
+
+  @override
+  String get detailStartCooking => 'Bắt đầu nấu';
+
+  @override
+  String get cookExit => 'Thoát chế độ nấu';
+
+  @override
+  String cookStepOf(int current, int total) {
+    return 'Bước $current / $total';
+  }
+
+  @override
+  String get cookPrev => 'Trước';
+
+  @override
+  String get cookNext => 'Tiếp';
+
+  @override
+  String get cookFinish => 'Hoàn tất nấu';
+
+  @override
+  String get cookFinishShort => 'Xong';
+
+  @override
+  String get cookStepDone => 'Đánh dấu xong';
+
+  @override
+  String get cookStepUndo => 'Bỏ đánh dấu';
+
+  @override
+  String get cookIngredients => 'Nguyên liệu';
+
+  @override
+  String cookIngredientsCount(int count) {
+    return 'Nguyên liệu ($count)';
+  }
+
+  @override
+  String cookServingsLabel(int count) {
+    return '$count phần';
+  }
+
+  @override
+  String get cookServingsIncrease => 'Tăng khẩu phần';
+
+  @override
+  String get cookServingsDecrease => 'Giảm khẩu phần';
+
+  @override
+  String get cookUnitsOriginal => 'Gốc';
+
+  @override
+  String get cookUnitsMetric => 'Hệ mét';
+
+  @override
+  String get cookUnitsImperial => 'Hệ Anh';
+
+  @override
+  String get cookFinishedTitle => 'Hoàn thành!';
+
+  @override
+  String get cookFinishedBody =>
+      'Bạn đã hoàn thành tất cả các bước. Chúc ngon miệng!';
+
+  @override
+  String get cookFinishedStay => 'Giữ công thức';
+
+  @override
+  String get cookFinishedExit => 'Thoát chế độ nấu';
+
+  @override
+  String get cookNoStepsTitle => 'Chưa có bước nào';
+
+  @override
+  String get cookNoStepsBody =>
+      'Công thức này chưa có hướng dẫn từng bước để theo dõi.';
+
+  @override
+  String get cookBackToRecipe => 'Quay lại công thức';
 
   @override
   String get reviewsTitle => 'Thư viện cộng đồng & đánh giá';

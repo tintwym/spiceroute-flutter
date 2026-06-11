@@ -154,9 +154,10 @@ class AppShell extends ConsumerWidget {
       // behaviour comes from `NavigationDestination`'s internal Text
       // widget. With a small enough font size, wrap never triggers in
       // the first place — which is the cleanest outcome.
-      final navLabelStyle =
-          (Theme.of(context).textTheme.labelMedium ?? const TextStyle())
-              .copyWith(
+      final theme = Theme.of(context);
+      final cs = theme.colorScheme;
+      final baseLabelStyle =
+          (theme.textTheme.labelMedium ?? const TextStyle()).copyWith(
         fontSize: 12,
         height: 1.15,
         letterSpacing: 0.1,
@@ -164,8 +165,21 @@ class AppShell extends ConsumerWidget {
       return Scaffold(
         body: SafeArea(child: child),
         bottomNavigationBar: NavigationBarTheme(
+          // Resolve PER STATE so the M3 selected-vs-unselected hierarchy
+          // (selected = darker + slightly bolder) is preserved. A
+          // previous version used `WidgetStateProperty.all(baseLabelStyle)`
+          // which flattened both states to the same color/weight because
+          // `labelMedium` from the theme carries a single uniform color,
+          // making the active tab indistinguishable from the others
+          // except for the M3 icon pill behind the glyph.
           data: NavigationBarThemeData(
-            labelTextStyle: WidgetStateProperty.all(navLabelStyle),
+            labelTextStyle: WidgetStateProperty.resolveWith((states) {
+              final selected = states.contains(WidgetState.selected);
+              return baseLabelStyle.copyWith(
+                color: selected ? cs.onSurface : cs.onSurfaceVariant,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+              );
+            }),
           ),
           child: NavigationBar(
             selectedIndex: index.clamp(0, dests.length - 1),

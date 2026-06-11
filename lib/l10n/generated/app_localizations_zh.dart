@@ -273,6 +273,33 @@ class AppL10nZh extends AppL10n {
   String get filterAllDietary => '所有偏好';
 
   @override
+  String get exploreByRegion => '按地区探索';
+
+  @override
+  String get selectCuisineTradition => '选择菜系传统';
+
+  @override
+  String get regionEastAsia => '东亚国家';
+
+  @override
+  String get regionMainlandSoutheastAsia => '中南半岛';
+
+  @override
+  String get regionMaritimeSoutheastAsia => '海洋东南亚';
+
+  @override
+  String get regionSouthAsia => '南亚';
+
+  @override
+  String get regionEurope => '欧洲';
+
+  @override
+  String get regionAmericas => '美洲';
+
+  @override
+  String get regionMiddleEastAfrica => '中东与非洲';
+
+  @override
   String get courseGroupEarlyDay => '晨光时段';
 
   @override
@@ -352,6 +379,41 @@ class AppL10nZh extends AppL10n {
 
   @override
   String get dietaryAntiInflammatory => '抗炎与长寿';
+
+  @override
+  String get dietaryGroupRestrictions => '饮食限制';
+
+  @override
+  String get dietaryGroupWellness => '健康与生活方式';
+
+  @override
+  String get dietaryGroupCookingFormats => '烹饪方式';
+
+  @override
+  String get filterSearchCourses => '搜索餐式（如：甜点、主菜…）';
+
+  @override
+  String get filterSearchDietary => '搜索饮食偏好（如：无麸质、纯素…）';
+
+  @override
+  String filterChoicesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 项',
+      one: '1 项',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get filterExpandAll => '全部展开';
+
+  @override
+  String get filterCollapseAll => '全部收起';
+
+  @override
+  String get filterNoMatches => '无匹配项';
 
   @override
   String recipeMinutesShort(int minutes) {
@@ -842,6 +904,84 @@ class AppL10nZh extends AppL10n {
 
   @override
   String get detailDeletedToast => '食谱已删除。';
+
+  @override
+  String get detailStartCooking => '开始烹饪';
+
+  @override
+  String get cookExit => '退出烹饪';
+
+  @override
+  String cookStepOf(int current, int total) {
+    return '第 $current / $total 步';
+  }
+
+  @override
+  String get cookPrev => '上一步';
+
+  @override
+  String get cookNext => '下一步';
+
+  @override
+  String get cookFinish => '完成烹饪';
+
+  @override
+  String get cookFinishShort => '完成';
+
+  @override
+  String get cookStepDone => '标记完成';
+
+  @override
+  String get cookStepUndo => '撤销完成';
+
+  @override
+  String get cookIngredients => '食材';
+
+  @override
+  String cookIngredientsCount(int count) {
+    return '食材（$count）';
+  }
+
+  @override
+  String cookServingsLabel(int count) {
+    return '$count 人份';
+  }
+
+  @override
+  String get cookServingsIncrease => '增加份量';
+
+  @override
+  String get cookServingsDecrease => '减少份量';
+
+  @override
+  String get cookUnitsOriginal => '原文';
+
+  @override
+  String get cookUnitsMetric => '公制';
+
+  @override
+  String get cookUnitsImperial => '英制';
+
+  @override
+  String get cookFinishedTitle => '全部完成！';
+
+  @override
+  String get cookFinishedBody => '您已完成所有步骤。祝您用餐愉快！';
+
+  @override
+  String get cookFinishedStay => '保留食谱';
+
+  @override
+  String get cookFinishedExit => '退出烹饪';
+
+  @override
+  String get cookNoStepsTitle => '暂无步骤';
+
+  @override
+  String get cookNoStepsBody => '此食谱尚未提供分步说明。';
+
+  @override
+  String get cookBackToRecipe => '返回食谱';
 
   @override
   String get reviewsTitle => '美食社区相册与评价';

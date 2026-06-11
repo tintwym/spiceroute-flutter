@@ -275,6 +275,33 @@ class AppL10nKo extends AppL10n {
   String get filterAllDietary => '모든 조건';
 
   @override
+  String get exploreByRegion => '지역별로 탐색';
+
+  @override
+  String get selectCuisineTradition => '요리 전통 선택';
+
+  @override
+  String get regionEastAsia => '동아시아 국가';
+
+  @override
+  String get regionMainlandSoutheastAsia => '동남아시아 본토';
+
+  @override
+  String get regionMaritimeSoutheastAsia => '해양 동남아시아';
+
+  @override
+  String get regionSouthAsia => '남아시아';
+
+  @override
+  String get regionEurope => '유럽';
+
+  @override
+  String get regionAmericas => '아메리카';
+
+  @override
+  String get regionMiddleEastAfrica => '중동 및 아프리카';
+
+  @override
   String get courseGroupEarlyDay => '이른 하루';
 
   @override
@@ -354,6 +381,41 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get dietaryAntiInflammatory => '항염 & 장수';
+
+  @override
+  String get dietaryGroupRestrictions => '식단 제한';
+
+  @override
+  String get dietaryGroupWellness => '웰니스 & 라이프스타일';
+
+  @override
+  String get dietaryGroupCookingFormats => '조리 형식';
+
+  @override
+  String get filterSearchCourses => '코스 검색 (예: 디저트, 메인…)';
+
+  @override
+  String get filterSearchDietary => '식단 검색 (예: 글루텐프리, 비건…)';
+
+  @override
+  String filterChoicesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count개',
+      one: '1개',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get filterExpandAll => '모두 펼치기';
+
+  @override
+  String get filterCollapseAll => '모두 접기';
+
+  @override
+  String get filterNoMatches => '일치 항목 없음';
 
   @override
   String recipeMinutesShort(int minutes) {
@@ -848,6 +910,84 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get detailDeletedToast => '레시피를 삭제했어요.';
+
+  @override
+  String get detailStartCooking => '요리 시작';
+
+  @override
+  String get cookExit => '요리 종료';
+
+  @override
+  String cookStepOf(int current, int total) {
+    return '$total단계 중 $current단계';
+  }
+
+  @override
+  String get cookPrev => '이전';
+
+  @override
+  String get cookNext => '다음';
+
+  @override
+  String get cookFinish => '요리 완료';
+
+  @override
+  String get cookFinishShort => '완료';
+
+  @override
+  String get cookStepDone => '완료 표시';
+
+  @override
+  String get cookStepUndo => '완료 해제';
+
+  @override
+  String get cookIngredients => '재료';
+
+  @override
+  String cookIngredientsCount(int count) {
+    return '재료 ($count)';
+  }
+
+  @override
+  String cookServingsLabel(int count) {
+    return '$count인분';
+  }
+
+  @override
+  String get cookServingsIncrease => '분량 늘리기';
+
+  @override
+  String get cookServingsDecrease => '분량 줄이기';
+
+  @override
+  String get cookUnitsOriginal => '원본';
+
+  @override
+  String get cookUnitsMetric => '미터법';
+
+  @override
+  String get cookUnitsImperial => '야드파운드';
+
+  @override
+  String get cookFinishedTitle => '모두 완료!';
+
+  @override
+  String get cookFinishedBody => '모든 단계를 마쳤어요. 맛있게 드세요!';
+
+  @override
+  String get cookFinishedStay => '레시피 그대로 두기';
+
+  @override
+  String get cookFinishedExit => '요리 종료';
+
+  @override
+  String get cookNoStepsTitle => '단계가 없어요';
+
+  @override
+  String get cookNoStepsBody => '이 레시피에는 아직 단계별 설명이 없습니다.';
+
+  @override
+  String get cookBackToRecipe => '레시피로 돌아가기';
 
   @override
   String get reviewsTitle => '커뮤니티 갤러리 및 후기';

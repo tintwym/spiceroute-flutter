@@ -5,6 +5,7 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../shared/breakpoints.dart';
 import '../../shared/filter_bar.dart';
 import '../../shared/page_tabs.dart';
+import '../../shared/region_filter_bar.dart';
 import '../../shared/site_footer.dart';
 import '../../shared/widgets.dart';
 import '../../state/explore.dart';
@@ -57,15 +58,28 @@ class ExploreScreen extends ConsumerWidget {
           padding: pagePad.copyWith(top: 12, bottom: 0),
           sliver: SliverToBoxAdapter(child: framed(const PageTabs())),
         ),
+        // Visual cuisine picker — two-tier (region → cuisine) pill UI
+        // sits above the dropdown filter bar. This is the primary
+        // affordance for narrowing by cuisine; the dropdown's
+        // remaining course + dietary columns handle finer slicing.
         SliverPadding(
           padding: pagePad.copyWith(top: 20),
           sliver: SliverToBoxAdapter(
             child: framed(
-              FilterBar(
+              RegionFilterBar(
                 cuisine: state.cuisine,
+                onCuisineChanged: controller.setCuisine,
+              ),
+            ),
+          ),
+        ),
+        SliverPadding(
+          padding: pagePad.copyWith(top: 16),
+          sliver: SliverToBoxAdapter(
+            child: framed(
+              FilterBar(
                 course: state.course,
                 dietary: state.dietary,
-                onCuisineChanged: controller.setCuisine,
                 onCourseChanged: controller.setCourse,
                 onDietaryChanged: controller.setDietary,
               ),

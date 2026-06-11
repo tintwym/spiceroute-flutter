@@ -6,8 +6,8 @@ import 'package:go_router/go_router.dart';
 import '../../api/api_client.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../models/spice_route.dart';
+import '../../shared/brand.dart';
 import '../../shared/breakpoints.dart';
-import '../../shared/cuisine_pill_bar.dart';
 import '../../shared/format.dart';
 import '../../shared/widgets.dart';
 import '../../state/providers.dart';
@@ -326,14 +326,35 @@ class _LeftColumn extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton.icon(
-              onPressed: () =>
-                  ref.read(savedRecipesProvider.notifier).toggle(recipe),
-              icon: Icon(isSaved ? Icons.bookmark : Icons.bookmark_border),
-              label: Text(isSaved ? l.detailSaved : l.detailSave),
-            ),
+          // Two-button row: "Start cooking" is the primary CTA (it's
+          // the verb the page exists to enable). Save demotes to a
+          // square icon-only secondary so saving still feels reachable
+          // without competing with the main action. Tooltip + filled
+          // tonal background keeps the icon button discoverable.
+          Row(
+            children: [
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: recipe.steps.isEmpty
+                      ? null
+                      : () => _startCooking(context, recipe.id),
+                  icon: const Icon(Icons.local_fire_department),
+                  label: Text(l.detailStartCooking),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Tooltip(
+                message: isSaved ? l.detailUnsave : l.detailSave,
+                child: IconButton.filledTonal(
+                  iconSize: 22,
+                  onPressed: () =>
+                      ref.read(savedRecipesProvider.notifier).toggle(recipe),
+                  icon: Icon(
+                    isSaved ? Icons.bookmark : Icons.bookmark_border,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -361,6 +382,18 @@ class _LeftColumn extends ConsumerWidget {
 
   String _difficulty(AppL10n l, SpiceRouteDetail r) =>
       recipeDifficultyLabel(l, totalMinutes: r.totalMinutes, steps: r.steps.length);
+
+  /// Push the cook page on top of the detail modal so the back stack
+  /// looks like:  Explore -> recipe modal -> cook page. Exiting cook
+  /// mode then pops back to the recipe modal naturally.
+  ///
+  /// We use `push` (not `go`) on purpose — `go` would replace the
+  /// current location, destroying the recipe modal's state, and on
+  /// "exit cook mode" the user would be dumped back to Explore instead
+  /// of the page they came from.
+  void _startCooking(BuildContext context, String id) {
+    GoRouter.of(context).push('/recipes/$id/cook');
+  }
 }
 
 /// Right column: ingredients checklist + numbered cooking instructions +
@@ -378,48 +411,17 @@ class _RightColumn extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionHeader(text: l.detailIngredients),
+        BrandSectionHeader(text: l.detailIngredients),
         const SizedBox(height: 12),
         _IngredientChecklist(recipe: recipe),
         const SizedBox(height: 28),
-        _SectionHeader(text: l.detailCookingInstructions),
+        BrandSectionHeader(text: l.detailCookingInstructions),
         const SizedBox(height: 12),
         _InstructionChecklist(recipe: recipe),
         const SizedBox(height: 32),
         Divider(color: cs.outlineVariant, height: 1),
         const SizedBox(height: 24),
         RecipeReviewsSection(recipe: recipe),
-      ],
-    );
-  }
-}
-
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.text});
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final cs = theme.colorScheme;
-    return Row(
-      children: [
-        Container(
-          width: 4,
-          height: 18,
-          decoration: BoxDecoration(
-            color: cs.primary,
-            borderRadius: BorderRadius.circular(2),
-          ),
-        ),
-        const SizedBox(width: 10),
-        Text(
-          text.toUpperCase(),
-          style: theme.textTheme.titleMedium?.copyWith(
-            letterSpacing: 1.0,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
       ],
     );
   }
@@ -669,7 +671,6 @@ class _HeroImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = AppL10n.of(context);
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
     final dc = deviceClassOf(context);
@@ -706,20 +707,7 @@ class _HeroImage extends StatelessWidget {
             Positioned(
               left: 14,
               bottom: 14,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: cs.surface,
-                  borderRadius: BorderRadius.circular(40),
-                ),
-                child: Text(
-                  CuisinePillBar.labelFor(l, recipe.cuisine!).toUpperCase(),
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.6,
-                  ),
-                ),
-              ),
+              child: BrandCuisinePill(cuisine: recipe.cuisine!),
             ),
         ],
       ),
