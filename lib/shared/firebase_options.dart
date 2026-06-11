@@ -1,11 +1,15 @@
 // Firebase web configuration.
 //
 // These values are NOT secrets — Firebase web API keys are designed to be
-// public, with security enforced by Firebase Auth + Firestore Security Rules.
+// public, with security enforced by Firebase Auth + Firestore Security
+// Rules. The actually-secret credential is the service-account JSON used
+// by the backend (set on Render as FIREBASE_CREDENTIALS_JSON), NOT the
+// values below.
 //
-// Source: AI Studio-generated Firebase project. To swap to a project you
-// fully own, replace the values below with the ones from your Firebase
-// console -> Project settings -> Your apps -> Web app config.
+// Source: hand-registered web app inside the `spice-route-498610`
+// Firebase project. To swap to a different project (e.g. when promoting
+// from staging to prod), copy the values from your Firebase console ->
+// Project settings -> Your apps -> Web app config -> "Config" radio.
 
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -18,15 +22,16 @@ bool get firebaseConfigured =>
 
 const _placeholderApiKey = 'REPLACE_ME_API_KEY';
 
-/// Firestore database ID. The AI-Studio-provisioned project this app
-/// shares with the original React build uses a **named** database rather
-/// than the conventional `(default)` one — passing this to
-/// `FirebaseFirestore.instanceFor(databaseId: …)` is the only way to land
-/// reads/writes in the same DB as the React app, otherwise our docs go
-/// somewhere only we can see. Leave as an empty string to fall back to
-/// the default DB when wiring up your own Firebase project.
-const String firestoreDatabaseId =
-    'ai-studio-ff9edb73-3c2a-4a69-ba12-75ce74365135';
+/// Firestore database ID. The current Firebase project uses Firestore's
+/// conventional `(default)` database, so this is the empty string and we
+/// just use `FirebaseFirestore.instance` everywhere.
+///
+/// We keep this constant (instead of deleting it) because Firebase's web
+/// SDK supports multiple Firestore databases per project — if you ever
+/// need to point reads/writes at a non-default DB, set this to that DB's
+/// ID and the data layer will switch over via
+/// `FirebaseFirestore.instanceFor(databaseId: firestoreDatabaseId)`.
+const String firestoreDatabaseId = '';
 
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
@@ -39,11 +44,16 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyA_45AB1Xo6qty-9jftDPcJaSMpRiBuAHI',
+    apiKey: 'AIzaSyDnDWIyXY8KPhZj1mhHdR-8OGf6EqgxuDo',
     authDomain: 'spice-route-498610.firebaseapp.com',
     projectId: 'spice-route-498610',
     storageBucket: 'spice-route-498610.firebasestorage.app',
-    messagingSenderId: '125349390279',
-    appId: '1:125349390279:web:c40e305f346392b94f9be2',
+    messagingSenderId: '18975255561',
+    appId: '1:18975255561:web:58f998870436c7f8b59cd8',
+    // Google Analytics tag, present because Firebase auto-enabled it on
+    // the web app registration. Optional for Auth/Firestore — the web
+    // SDK only initializes Analytics when this is set AND you call
+    // `getAnalytics(app)`. Safe to remove if you disable Analytics.
+    measurementId: 'G-K5H17WSKND',
   );
 }
