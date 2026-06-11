@@ -15,13 +15,13 @@ class AppL10nMy extends AppL10n {
   String get navExplore => 'ရှာဖွေပါ';
 
   @override
-  String get navAiCreator => 'AI ဖန်တီးသူ';
+  String get navAiCreator => 'ဖန်တီးသူ';
 
   @override
-  String get navAiCompanion => 'AI လက်ထောက်';
+  String get navAiCompanion => 'လက်ထောက်';
 
   @override
-  String get navSaved => 'သိမ်းထားသော ချက်ပြုတ်နည်းများ';
+  String get navSaved => 'သိမ်းထား';
 
   @override
   String get languageEnglish => 'အင်္ဂလိပ်';

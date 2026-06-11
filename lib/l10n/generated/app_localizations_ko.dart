@@ -15,10 +15,10 @@ class AppL10nKo extends AppL10n {
   String get navExplore => '탐색';
 
   @override
-  String get navAiCreator => 'AI 만들기';
+  String get navAiCreator => '만들기';
 
   @override
-  String get navAiCompanion => 'AI 도우미';
+  String get navAiCompanion => '도우미';
 
   @override
   String get navSaved => '저장';

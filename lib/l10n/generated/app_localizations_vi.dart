@@ -15,10 +15,10 @@ class AppL10nVi extends AppL10n {
   String get navExplore => 'Khám phá';
 
   @override
-  String get navAiCreator => 'AI Sáng tạo';
+  String get navAiCreator => 'Sáng tạo';
 
   @override
-  String get navAiCompanion => 'AI Trợ lý';
+  String get navAiCompanion => 'Trợ lý';
 
   @override
   String get navSaved => 'Đã lưu';

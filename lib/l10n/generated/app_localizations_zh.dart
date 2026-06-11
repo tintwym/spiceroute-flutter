@@ -15,10 +15,10 @@ class AppL10nZh extends AppL10n {
   String get navExplore => '探索';
 
   @override
-  String get navAiCreator => 'AI 创作';
+  String get navAiCreator => '创作';
 
   @override
-  String get navAiCompanion => 'AI 帮手';
+  String get navAiCompanion => '帮手';
 
   @override
   String get navSaved => '收藏';

@@ -133,19 +133,52 @@ class AppShell extends ConsumerWidget {
         : const [AccountMenuButton()];
 
     if (dc.isPhone) {
+      // On a 360-414 px viewport, 5 nav slots get ~72-83 px each. The
+      // default Material 3 label style (labelMedium @ 14 sp) means a
+      // 10-12 char label like "AI Companion" wraps to two lines and
+      // shoves its icon up out of alignment with the rest of the row.
+      //
+      // Fix has two layers:
+      //   1. Copy: every locale's `navAiCreator` / `navAiCompanion`
+      //      labels were shortened (no "AI" prefix — the page hero and
+      //      route already establish the AI identity). That handles the
+      //      common case and prevents truncation entirely.
+      //   2. Theme: we still tighten the label style here as a defensive
+      //      safety net. A future translator could ship a long string
+      //      and we want the row to ellipsize cleanly rather than wrap.
+      //      `labelMedium` -> `labelSmall`-ish: 12 sp + tight height +
+      //      letterSpacing 0.1 saves enough horizontal room that even
+      //      a borderline string fits without wrap.
+      //
+      // Note: TextStyle has no `overflow` property; the actual ellipsis
+      // behaviour comes from `NavigationDestination`'s internal Text
+      // widget. With a small enough font size, wrap never triggers in
+      // the first place — which is the cleanest outcome.
+      final navLabelStyle =
+          (Theme.of(context).textTheme.labelMedium ?? const TextStyle())
+              .copyWith(
+        fontSize: 12,
+        height: 1.15,
+        letterSpacing: 0.1,
+      );
       return Scaffold(
         body: SafeArea(child: child),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: index.clamp(0, dests.length - 1),
-          onDestinationSelected: (i) => context.go(dests[i].path),
-          destinations: [
-            for (final d in dests)
-              NavigationDestination(
-                icon: Icon(d.icon),
-                selectedIcon: Icon(d.selectedIcon),
-                label: d.label,
-              ),
-          ],
+        bottomNavigationBar: NavigationBarTheme(
+          data: NavigationBarThemeData(
+            labelTextStyle: WidgetStateProperty.all(navLabelStyle),
+          ),
+          child: NavigationBar(
+            selectedIndex: index.clamp(0, dests.length - 1),
+            onDestinationSelected: (i) => context.go(dests[i].path),
+            destinations: [
+              for (final d in dests)
+                NavigationDestination(
+                  icon: Icon(d.icon),
+                  selectedIcon: Icon(d.selectedIcon),
+                  label: d.label,
+                ),
+            ],
+          ),
         ),
         appBar: AppBar(
           // On phone the brand title would crowd out search + actions in

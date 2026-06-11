@@ -120,13 +120,13 @@ abstract class AppL10n {
   /// No description provided for @navAiCreator.
   ///
   /// In en, this message translates to:
-  /// **'AI Creator'**
+  /// **'Creator'**
   String get navAiCreator;
 
   /// No description provided for @navAiCompanion.
   ///
   /// In en, this message translates to:
-  /// **'AI Companion'**
+  /// **'Companion'**
   String get navAiCompanion;
 
   /// No description provided for @navSaved.

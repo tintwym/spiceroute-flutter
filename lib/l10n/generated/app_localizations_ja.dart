@@ -15,10 +15,10 @@ class AppL10nJa extends AppL10n {
   String get navExplore => '探す';
 
   @override
-  String get navAiCreator => 'AI作成';
+  String get navAiCreator => '作成';
 
   @override
-  String get navAiCompanion => 'AIアシスタント';
+  String get navAiCompanion => 'アシスタント';
 
   @override
   String get navSaved => '保存';

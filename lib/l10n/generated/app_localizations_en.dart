@@ -15,10 +15,10 @@ class AppL10nEn extends AppL10n {
   String get navExplore => 'Explore';
 
   @override
-  String get navAiCreator => 'AI Creator';
+  String get navAiCreator => 'Creator';
 
   @override
-  String get navAiCompanion => 'AI Companion';
+  String get navAiCompanion => 'Companion';
 
   @override
   String get navSaved => 'Saved';
