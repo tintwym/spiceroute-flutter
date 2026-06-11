@@ -181,7 +181,7 @@ The repo ships with a ready-to-use Vercel config (`vercel.json` + `build.sh`):
    | `FLUTTER_VERSION` | e.g. `3.27.1` | Optional. Defaults to `stable`. Pin to a tag for reproducible builds. |
 
 4. **Backend CORS** — add your Vercel preview + production domains to `CORS_ORIGINS` in the backend's Render Environment tab. For this project that's `https://spiceroute-recipe.vercel.app`; the preview-deploy wildcard is handled by `CORS_ORIGIN_REGEX=^https://([a-z0-9-]+\.)*vercel\.app$` in `spiceroute-backend/render.yaml`.
-5. **Firebase Auth authorized domains** — in [Firebase Console → Authentication → Settings → Authorized domains](https://console.firebase.google.com/project/profound-campus-ff4nj/authentication/settings), add `spiceroute-recipe.vercel.app` (and any custom domain). Without this, Google Sign-In popups will fail in production with `auth/unauthorized-domain`.
+5. **Firebase Auth authorized domains** — in [Firebase Console → Authentication → Settings → Authorized domains](https://console.firebase.google.com/project/spice-route-498610/authentication/settings), add `spiceroute-recipe.vercel.app` (and any custom domain). Without this, Google Sign-In popups will fail in production with `auth/unauthorized-domain`.
 6. **Firestore rules** — deploy from the repo root with `firebase deploy --only firestore:rules` (rules live at `../firestore.rules`).
 7. **First deploy**: push to your default branch, or run `vercel --prod` from inside `spiceroute-flutter/`.
 

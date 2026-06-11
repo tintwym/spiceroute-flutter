@@ -40,9 +40,9 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyA_45AB1Xo6qty-9jftDPcJaSMpRiBuAHI',
-    authDomain: 'profound-campus-ff4nj.firebaseapp.com',
-    projectId: 'profound-campus-ff4nj',
-    storageBucket: 'profound-campus-ff4nj.firebasestorage.app',
+    authDomain: 'spice-route-498610.firebaseapp.com',
+    projectId: 'spice-route-498610',
+    storageBucket: 'spice-route-498610.firebasestorage.app',
     messagingSenderId: '125349390279',
     appId: '1:125349390279:web:c40e305f346392b94f9be2',
   );
