@@ -15,7 +15,7 @@ import '../../l10n/generated/app_localizations.dart';
 /// Composition:
 ///   * tap-anywhere-outside the card → dismiss
 ///   * close (×) button pinned inside the card → dismiss
-///   * sparkle hero, title, subtitle, caller-supplied body + footer
+///   * logo hero, title, subtitle, caller-supplied body + footer
 ///   * scrollable inner column so the card works on short phones
 class AuthCard extends StatelessWidget {
   const AuthCard({
@@ -87,7 +87,7 @@ class AuthCard extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                const _SparkleHero(),
+                                const _LogoHero(),
                                 const SizedBox(height: 20),
                                 Text(
                                   title,
@@ -145,8 +145,17 @@ class AuthCard extends StatelessWidget {
   }
 }
 
-class _SparkleHero extends StatelessWidget {
-  const _SparkleHero();
+/// SpiceRoute brandmark inside a soft-bordered circular badge. Replaced
+/// the generic `Icons.auto_awesome` sparkle so the auth card carries the
+/// app's identity — the same steaming-bowl glyph shown in the top nav,
+/// favicon, and PWA install banner.
+///
+/// The logo image (`assets/icon/icon.png`) has its own red background,
+/// so we clip it into a circle and let it fully fill the badge. The
+/// outline border is kept for visual continuity with other circular
+/// chrome elements in the card (avatar slots, social-sign-in buttons).
+class _LogoHero extends StatelessWidget {
+  const _LogoHero();
 
   @override
   Widget build(BuildContext context) {
@@ -157,16 +166,20 @@ class _SparkleHero extends StatelessWidget {
         height: 64,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: theme.colorScheme.surfaceContainerHighest,
           border: Border.all(
             color: theme.colorScheme.outlineVariant,
             width: 1,
           ),
         ),
-        child: Icon(
-          Icons.auto_awesome,
-          color: theme.colorScheme.primary,
-          size: 28,
+        child: ClipOval(
+          child: Image.asset(
+            'assets/icon/icon.png',
+            fit: BoxFit.cover,
+            // Tiny semantic label so screen readers announce the brand
+            // mark instead of "image" — matches the top nav's logo
+            // treatment.
+            semanticLabel: 'SpiceRoute',
+          ),
         ),
       ),
     );
