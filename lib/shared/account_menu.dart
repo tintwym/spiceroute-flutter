@@ -8,14 +8,24 @@ import '../state/locale.dart';
 
 /// Unified top-right action: a single avatar button that opens a Material 3
 /// cascading menu containing every "personal" action that used to live in
-/// the app bar — Account (Sign in / My Recipes / Sign out), Settings,
-/// and a Language submenu.
+/// the app bar — Settings, Language submenu, and Sign out.
 ///
 /// Why one menu instead of three buttons:
 ///   - Top-bar real estate is precious once the search pill, brand mark
 ///     and 5 nav items are in there.
-///   - Account, Settings and Language are all "about you", so they belong
-///     under the avatar (matches Gmail / GitHub / Vercel patterns).
+///   - Settings, Language and Sign out are all "about you / your
+///     account", so they belong under the avatar (matches Gmail /
+///     GitHub / Vercel patterns).
+///
+/// We deliberately do NOT include "My Recipes" here even though it's
+/// reachable via /my-recipes. That destination is *content navigation*
+/// (a recipe listing), not an account action, and it already has a
+/// dedicated "Mine" entry in the bottom tab bar (mobile) and the
+/// PageTabs row (desktop). Duplicating it in the avatar menu created
+/// two competing entry points for the same screen — a "which one am I
+/// supposed to use?" moment for users. Keeping it in the tab bar only
+/// makes the mental model crisp: bottom bar = jump to content,
+/// avatar menu = manage your account.
 ///
 /// The trigger always renders the avatar:
 ///   - signed in  -> photo or initial on the theme's primary container
@@ -80,12 +90,6 @@ class AccountMenuButton extends ConsumerWidget {
         // We already returned early if `user == null`, so the menu only
         // ever shows the signed-in flow.
         _AccountHeader(user: user),
-        const Divider(height: 8),
-        MenuItemButton(
-          leadingIcon: const Icon(Icons.restaurant_outlined),
-          onPressed: () => context.go('/my-recipes'),
-          child: Text(l.myRecipesTitle),
-        ),
         const Divider(height: 8),
         MenuItemButton(
           leadingIcon: const Icon(Icons.settings_outlined),
