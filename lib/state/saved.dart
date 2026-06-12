@@ -126,12 +126,23 @@ class SavedRecipesController extends StateNotifier<SavedRecipesState> {
       state = state.copyWith(recipes: const [], loading: false);
       return;
     }
+    // Snapshot the id set we're hydrating. `state.ids` may grow
+    // mid-hydrate because the user can toggle new bookmarks while
+    // batches are in flight — and we MUST NOT prune those newcomers
+    // out of the published state just because they weren't in the
+    // batch we resolved. (Previous bug: snapshot was implicit via
+    // `state.ids.intersection(stillValid)` at the end; a brand-new
+    // toggle would be silently dropped because its id was missing
+    // from `stillValid`, with no error and no UI signal — the
+    // bookmark icon would just snap back to grey a moment after the
+    // user pressed it.)
+    final hydrateSnapshot = state.ids;
     // Chunk the fetches into batches of 8 so a 200-bookmark user
     // doesn't open up 200 parallel HTTP requests at once — that used
     // to saturate the Dio pool and starve every other view in the
     // app until they all completed.
     const batchSize = 8;
-    final ids = state.ids.toList();
+    final ids = hydrateSnapshot.toList();
     final hydrated = <SpiceRouteDetail>[];
     // Snapshot the active locale once for the entire batch — if the
     // user switches mid-hydrate we'll just refetch on the next
@@ -165,20 +176,57 @@ class SavedRecipesController extends StateNotifier<SavedRecipesState> {
     // optimistic update and leave `state.ids` and `state.recipes`
     // out of sync — ids says "3 saved" but only 2 cards render.
     if (token != _hydrateToken) return;
-    // Drop ids that no longer resolve (e.g. deleted server-side).
+    // Compute the "id no longer resolves" set RELATIVE TO THE
+    // SNAPSHOT we hydrated, not the live `state.ids`. Anything
+    // added by a concurrent toggle isn't in `hydrateSnapshot`, so
+    // it can't be wrongly flagged for removal — it'll survive into
+    // the published state untouched and get hydrated on the next
+    // toggle-triggered refresh (or whenever the next event-driven
+    // hydrate fires).
     final stillValid = hydrated.map((r) => r.id).toSet();
-    final pruned = state.ids.intersection(stillValid);
-    if (pruned.length != state.ids.length) {
-      final removedIds = state.ids.difference(stillValid);
+    final dead = hydrateSnapshot.difference(stillValid);
+    final pruned = state.ids.difference(dead);
+    if (dead.isNotEmpty) {
       await _persistLocal(pruned);
       // Use targeted arrayRemove for each cleanup so concurrent
       // toggles on another device aren't clobbered by a whole-array
       // overwrite. See `_persistCloudDelta` for the full rationale.
-      await _persistCloudDelta(remove: removedIds);
+      await _persistCloudDelta(remove: dead);
     }
+    // Re-publish the recipes list. We have hydrated summaries only
+    // for ids in `hydrateSnapshot`, so any concurrent-toggle
+    // additions show up in `state.ids` but not yet in
+    // `state.recipes`. That mirrors how `toggle()` already handles
+    // it (prepends the summary it has on hand at toggle time), so
+    // by the time `_hydrate` publishes, those ids ALREADY have a
+    // card in `state.recipes` from the optimistic update. Preserve
+    // them by unioning with the freshly-hydrated payloads, keyed
+    // by id to deduplicate.
+    final hydratedById = {
+      for (final r in hydrated) r.id: r as SpiceRouteSummary,
+    };
+    final mergedRecipes = [
+      // Iterate `state.recipes` first so the user's most-recent
+      // toggle order (newest-first via toggle's prepend) is
+      // preserved as much as possible.
+      for (final r in state.recipes)
+        if (pruned.contains(r.id))
+          // Prefer the freshly-hydrated payload (correct locale,
+          // updated title/description) if we have it, otherwise
+          // keep the existing summary (came from explore or from
+          // toggle's optimistic insert).
+          hydratedById[r.id] ?? r,
+      // Anything we hydrated that wasn't already in state.recipes
+      // (rare — happens on first boot or after a clearAll +
+      // re-merge from cloud) appends at the end.
+      for (final r in hydrated)
+        if (!state.recipes.any((existing) => existing.id == r.id) &&
+            pruned.contains(r.id))
+          r as SpiceRouteSummary,
+    ];
     state = state.copyWith(
       ids: pruned,
-      recipes: hydrated.cast<SpiceRouteSummary>(),
+      recipes: mergedRecipes,
       loading: false,
     );
   }
@@ -266,6 +314,37 @@ class SavedRecipesController extends StateNotifier<SavedRecipesState> {
     if (removed.isNotEmpty) {
       unawaited(_persistCloudDelta(remove: removed));
     }
+  }
+
+  /// Called from the recipe-delete confirmation flow once the backend
+  /// `DELETE /spice_routes/{id}` has returned 200.
+  ///
+  /// Without this, the user's bookmark grid would render a tombstone
+  /// tile pointing at the just-deleted recipe until the next
+  /// hydrate-driven prune cycle fires. That gap can be a full
+  /// modal-close → tab-switch → list-render path, which is more than
+  /// enough time for the user to tap their own deleted recipe and
+  /// see an error toast.
+  ///
+  /// Distinct from `toggle()`:
+  ///   - `toggle()` operates on a `SpiceRouteSummary` the caller
+  ///     already has on hand and includes the optimistic recipes-list
+  ///     update via prepend; here we don't have a summary (the recipe
+  ///     no longer exists), so we just splice the id out of `ids`
+  ///     and remove the matching card from `recipes` by id.
+  ///   - `toggle()` adds OR removes; this is removal-only and is
+  ///     idempotent on a non-saved id.
+  void forgetDeleted(String id) {
+    if (!state.ids.contains(id) &&
+        !state.recipes.any((r) => r.id == id)) {
+      return;
+    }
+    final nextIds = state.ids.difference({id});
+    final nextRecipes =
+        state.recipes.where((r) => r.id != id).toList(growable: false);
+    state = state.copyWith(ids: nextIds, recipes: nextRecipes);
+    unawaited(_persistLocal(nextIds));
+    unawaited(_persistCloudDelta(remove: {id}));
   }
 
   /// Local-only persistence. Always operates on the full current set

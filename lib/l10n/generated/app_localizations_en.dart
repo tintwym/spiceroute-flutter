@@ -193,6 +193,18 @@ class AppL10nEn extends AppL10n {
       'Successfully published to live community feed';
 
   @override
+  String get communityUploadErrorPhotoTooLarge =>
+      'Photo is too large, try a smaller image.';
+
+  @override
+  String get communityUploadErrorPickFailed =>
+      'Couldn\'t open the photo picker. Check the app\'s photo permission and try again.';
+
+  @override
+  String get communityUploadErrorGeneric =>
+      'Couldn\'t share photo. Try again in a moment.';
+
+  @override
   String communityFilteredTo(String cuisine) {
     return 'Filtered: $cuisine';
   }

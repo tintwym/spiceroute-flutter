@@ -313,6 +313,9 @@
   "communityRemovePhoto": "写真を削除",
   "communityUploading": "圧縮中・共有中…",
   "communityUploaded": "ライブフィードに公開しました",
+  "communityUploadErrorPhotoTooLarge": "写真が大きすぎます。もう少し小さい画像をお試しください。",
+  "communityUploadErrorPickFailed": "写真ライブラリを開けませんでした。アプリの写真アクセス許可を確認してもう一度お試しください。",
+  "communityUploadErrorGeneric": "写真を共有できませんでした。しばらくしてからもう一度お試しください。",
   "communityFilteredTo": "絞り込み：{cuisine}",
   "@communityFilteredTo": { "placeholders": { "cuisine": { "type": "String" } } },
 

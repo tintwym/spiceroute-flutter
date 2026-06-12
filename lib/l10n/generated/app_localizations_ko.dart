@@ -189,6 +189,17 @@ class AppL10nKo extends AppL10n {
   String get communityUploaded => '라이브 피드에 공개되었습니다';
 
   @override
+  String get communityUploadErrorPhotoTooLarge =>
+      '사진이 너무 커요. 더 작은 이미지를 선택해 주세요.';
+
+  @override
+  String get communityUploadErrorPickFailed =>
+      '사진 선택 화면을 열 수 없어요. 앱의 사진 권한을 확인한 뒤 다시 시도해 주세요.';
+
+  @override
+  String get communityUploadErrorGeneric => '사진을 공유하지 못했어요. 잠시 후 다시 시도해 주세요.';
+
+  @override
   String communityFilteredTo(String cuisine) {
     return '필터: $cuisine';
   }

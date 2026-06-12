@@ -189,6 +189,18 @@ class AppL10nJa extends AppL10n {
   String get communityUploaded => 'ライブフィードに公開しました';
 
   @override
+  String get communityUploadErrorPhotoTooLarge =>
+      '写真が大きすぎます。もう少し小さい画像をお試しください。';
+
+  @override
+  String get communityUploadErrorPickFailed =>
+      '写真ライブラリを開けませんでした。アプリの写真アクセス許可を確認してもう一度お試しください。';
+
+  @override
+  String get communityUploadErrorGeneric =>
+      '写真を共有できませんでした。しばらくしてからもう一度お試しください。';
+
+  @override
   String communityFilteredTo(String cuisine) {
     return '絞り込み：$cuisine';
   }

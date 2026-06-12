@@ -192,6 +192,18 @@ class AppL10nVi extends AppL10n {
   String get communityUploaded => 'Đã đăng lên bảng cộng đồng';
 
   @override
+  String get communityUploadErrorPhotoTooLarge =>
+      'Ảnh quá lớn, hãy chọn ảnh nhỏ hơn.';
+
+  @override
+  String get communityUploadErrorPickFailed =>
+      'Không mở được trình chọn ảnh. Vui lòng kiểm tra quyền truy cập ảnh và thử lại.';
+
+  @override
+  String get communityUploadErrorGeneric =>
+      'Không thể chia sẻ ảnh. Vui lòng thử lại sau giây lát.';
+
+  @override
   String communityFilteredTo(String cuisine) {
     return 'Đã lọc: $cuisine';
   }

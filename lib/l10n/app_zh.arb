@@ -313,6 +313,9 @@
   "communityRemovePhoto": "重置照片",
   "communityUploading": "正在压缩与分享…",
   "communityUploaded": "已成功发布到实时美食社区",
+  "communityUploadErrorPhotoTooLarge": "照片太大,请选一张更小的图片。",
+  "communityUploadErrorPickFailed": "无法打开图库,请检查应用的相册权限后重试。",
+  "communityUploadErrorGeneric": "分享失败,请稍后再试。",
   "communityFilteredTo": "筛选中：{cuisine}",
   "@communityFilteredTo": { "placeholders": { "cuisine": { "type": "String" } } },
 

@@ -12,6 +12,37 @@ import '../../state/locale.dart';
 import '../../state/providers.dart';
 import '../explore/explore_screen.dart' show SliverCrossAxisConstrained;
 
+/// External invalidation token for the /my-recipes listing.
+///
+/// `_MyRecipesScreenState` caches the in-flight `listRecipes(mine:true)`
+/// Future on a `(uid, locale, revision)` fence so the list refetches
+/// only when one of those keys changes. Auth flips and locale changes
+/// are watched automatically, but two important write paths can mutate
+/// the user's owned-recipe set WITHOUT changing uid or locale:
+///
+///   1. Deleting a recipe from the detail modal then popping back to
+///      /my-recipes (the modal sits over /my-recipes so the underlying
+///      route's State is preserved — without a revision bump, the
+///      deleted recipe stays as a tombstone tile until the user pulls
+///      to refresh).
+///   2. Saving an AI-generated recipe from /ai/creator. The new id
+///      lands server-side, but /my-recipes won't pick it up until
+///      the next navigation-driven cache miss.
+///
+/// Writers call `ref.read(myRecipesRevisionProvider.notifier).state++`
+/// after a successful mutation. The screen `watch`es this provider
+/// and folds the value into its cache fence, forcing a refetch on
+/// the next build.
+final myRecipesRevisionProvider = StateProvider<int>((_) => 0);
+
+/// Convenience: bump the revision from any writer without dealing
+/// with the notifier directly. Idempotent and cheap (a single state
+/// notifier write), so it's safe to call even when /my-recipes isn't
+/// mounted — the next time it builds it'll see the new revision.
+void invalidateMyRecipes(WidgetRef ref) {
+  ref.read(myRecipesRevisionProvider.notifier).state++;
+}
+
 /// Lists recipes published by the current user (authenticated server-side
 /// via `?mine=true`). Shows public *and* private (draft) entries.
 class MyRecipesScreen extends ConsumerStatefulWidget {
@@ -48,6 +79,11 @@ class _MyRecipesScreenState extends ConsumerState<MyRecipesScreen> {
   // app and confusing if they were trying to verify the new
   // language even took effect).
   String? _futureForLocale;
+  // External-invalidation fence — see `myRecipesRevisionProvider`
+  // for the writer-side rationale. `int?` so the initial build
+  // always misses the cache (matches the existing `_future == null`
+  // first-build path).
+  int? _futureForRevision;
 
   Future<SpiceRouteListResponse> _fetch() {
     // Pass the active locale so user-authored recipes that were
@@ -77,6 +113,13 @@ class _MyRecipesScreenState extends ConsumerState<MyRecipesScreen> {
     // The cache-fence check below then sees the new value and re-
     // fetches with `translate_to=<new locale>`.
     final locale = ref.watch(localeProvider).languageCode;
+    // External invalidation token. Bumped by writers (recipe delete
+    // confirmation, AI Creator save) so the cached Future gets
+    // discarded and a fresh fetch goes out — the user immediately
+    // sees their just-saved AI recipe in this grid, or the just-
+    // deleted recipe disappears, instead of having to pull-to-
+    // refresh after every mutation.
+    final revision = ref.watch(myRecipesRevisionProvider);
 
     if (user == null) {
       // Defensive — shell hides this destination when signed-out, but a
@@ -86,6 +129,7 @@ class _MyRecipesScreenState extends ConsumerState<MyRecipesScreen> {
       _future = null;
       _futureForUid = null;
       _futureForLocale = null;
+      _futureForRevision = null;
       return CenterMessage(
         icon: Icons.lock_outline,
         title: l.authProtectedTitle,
@@ -94,15 +138,18 @@ class _MyRecipesScreenState extends ConsumerState<MyRecipesScreen> {
     }
 
     // First build with a signed-in user — or the active uid / locale
-    // has changed since we last fetched. Kick off a fresh request
-    // and throw away the previous Future (cross-user data leak if
-    // uid changes; stale-language titles if locale changes).
+    // / revision has changed since we last fetched. Kick off a fresh
+    // request and throw away the previous Future (cross-user data
+    // leak if uid changes; stale-language titles if locale changes;
+    // stale post-mutation list if revision changes).
     if (_future == null ||
         _futureForUid != user.uid ||
-        _futureForLocale != locale) {
+        _futureForLocale != locale ||
+        _futureForRevision != revision) {
       _future = _fetch();
       _futureForUid = user.uid;
       _futureForLocale = locale;
+      _futureForRevision = revision;
     }
 
     return RefreshIndicator(

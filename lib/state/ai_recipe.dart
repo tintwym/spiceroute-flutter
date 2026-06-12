@@ -127,6 +127,17 @@ class AiRecipeController extends StateNotifier<AiRecipeState> {
   /// Source of truth for the full recipe stays on the backend
   /// (`saved.id` resolves via `GET /spice_routes/{id}`); this
   /// list is just a recently-viewed index for the home screen.
+  ///
+  /// Wrapped in `runTransaction` so concurrent saves from two tabs
+  /// (or two devices) don't read the same list snapshot, both
+  /// append, then both write back — silently losing one entry.
+  /// The transaction reads inside the same atomic unit it writes
+  /// in, so Firestore aborts and replays one of the racers if the
+  /// underlying doc moved between read and write. `customRecipes`
+  /// is a dict-of-dicts array, NOT a string set, so we can't use
+  /// `arrayUnion` here (it'd happily add two different
+  /// `{id: 'x', createdAt: T1}` and `{id: 'x', createdAt: T2}`
+  /// entries because the maps don't deep-equal).
   Future<void> _mirrorToCloud(AiRecipeResult result) async {
     final user = _ref.read(authControllerProvider);
     final fs = _ref.read(firestoreProvider);
@@ -141,21 +152,32 @@ class AiRecipeController extends StateNotifier<AiRecipeState> {
     };
     try {
       final ref = fs.collection('users').doc(user.uid);
-      final snap = await ref.get();
-      final existing = (snap.data()?['customRecipes'] as List?)
-              ?.whereType<Map>()
-              .map((m) => m.cast<String, dynamic>())
-              .toList() ??
-          <Map<String, dynamic>>[];
-      // Dedupe + bound the list — newest first, cap at 50 entries.
-      final filtered = existing.where((m) => m['id'] != saved.id).toList();
-      final merged = [entry, ...filtered].take(50).toList();
-      await ref.set({
-        'customRecipes': merged,
-        'updatedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
-    } catch (_) {
-      // best-effort — the backend save is the source of truth
+      await fs.runTransaction((tx) async {
+        final snap = await tx.get(ref);
+        final existing = (snap.data()?['customRecipes'] as List?)
+                ?.whereType<Map>()
+                .map((m) => m.cast<String, dynamic>())
+                .toList() ??
+            <Map<String, dynamic>>[];
+        // Dedupe + bound the list — newest first, cap at 50 entries.
+        final filtered = existing.where((m) => m['id'] != saved.id).toList();
+        final merged = [entry, ...filtered].take(50).toList();
+        tx.set(ref, {
+          'customRecipes': merged,
+          'updatedAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+      });
+    } catch (e) {
+      // Local backend save is the source of truth; the cloud mirror
+      // is a recently-used index for the home screen. A retry loop
+      // here would just queue duplicates on flaky connections — but
+      // we DO log so a misconfigured ruleset, auth-domain mismatch,
+      // or a quota-exceeded write surfaces in the dev console
+      // instead of being silently swallowed for weeks. Matches the
+      // pattern in `SavedRecipesController._persistCloudDelta`.
+      if (kDebugMode) {
+        debugPrint('AiRecipe: cloud mirror write failed: $e');
+      }
     }
   }
 

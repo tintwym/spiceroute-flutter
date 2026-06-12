@@ -65,6 +65,9 @@
   "communityRemovePhoto": "ပုံကို ဖျက်ပါ",
   "communityUploading": "ချုံ့ပြီး မျှဝေနေသည်…",
   "communityUploaded": "အသိုင်းအဝိုင်းသို့ အောင်မြင်စွာ တင်ပြီးပါပြီ",
+  "communityUploadErrorPhotoTooLarge": "ဓာတ်ပုံ ကြီးလွန်းနေပါသည်။ ပိုသေးငယ်သော ပုံကို စမ်းကြည့်ပါ။",
+  "communityUploadErrorPickFailed": "ဓာတ်ပုံ ရွေးချယ်ရန် ဖွင့်၍မရပါ။ အက်ပ်၏ ဓာတ်ပုံခွင့်ပြုချက်ကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။",
+  "communityUploadErrorGeneric": "ဓာတ်ပုံ မျှဝေ၍ မရပါ။ ခဏအကြာ ထပ်စမ်းပါ။",
   "communityFilteredTo": "စစ်ထုတ်ထား: {cuisine}",
   "@communityFilteredTo": { "placeholders": { "cuisine": { "type": "String" } } },
 

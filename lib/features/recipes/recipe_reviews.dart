@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../models/spice_route.dart';
+import '../../shared/widgets.dart';
 import '../../state/auth.dart';
 import '../../state/recipe_reviews.dart';
 import '../auth/sign_in_prompt.dart';
@@ -486,10 +487,18 @@ class _ReviewFormState extends ConsumerState<_ReviewForm> {
       );
       if (picked == null) return;
       final bytes = await picked.readAsBytes();
+      if (!mounted) return;
       setState(() => _photoBytes = bytes);
     } catch (_) {
-      // Silent — picker can throw on web cancellations / permission denial,
-      // which we treat as "user changed their mind" rather than failure.
+      // image_picker throws on denied gallery permission, OS-level
+      // cancel weirdness, or web file-input errors. Previously this
+      // was a silent `// ignore` — the user tapped "Add photo",
+      // nothing happened, and they had no idea whether the picker
+      // was broken or their tap missed. Surface a localised snack
+      // so at least the failure mode is visible. Mirrors the
+      // pattern used by the community board upload flow.
+      if (!mounted) return;
+      showAppSnack(context, AppL10n.of(context).communityUploadErrorPickFailed);
     }
   }
 

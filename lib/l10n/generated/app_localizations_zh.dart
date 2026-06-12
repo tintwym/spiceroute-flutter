@@ -188,6 +188,15 @@ class AppL10nZh extends AppL10n {
   String get communityUploaded => '已成功发布到实时美食社区';
 
   @override
+  String get communityUploadErrorPhotoTooLarge => '照片太大,请选一张更小的图片。';
+
+  @override
+  String get communityUploadErrorPickFailed => '无法打开图库,请检查应用的相册权限后重试。';
+
+  @override
+  String get communityUploadErrorGeneric => '分享失败,请稍后再试。';
+
+  @override
   String communityFilteredTo(String cuisine) {
     return '筛选中：$cuisine';
   }

@@ -14,6 +14,7 @@ import '../../state/ai_recipe.dart';
 import '../../state/auth.dart';
 import '../../state/locale.dart';
 import '../auth/sign_in_prompt.dart';
+import '../my_recipes/my_recipes_screen.dart' show invalidateMyRecipes;
 
 class AiCreatorScreen extends ConsumerStatefulWidget {
   const AiCreatorScreen({super.key});
@@ -41,6 +42,13 @@ class _AiCreatorScreenState extends ConsumerState<AiCreatorScreen> {
     ref.listen<AiRecipeState>(aiRecipeProvider, (prev, next) {
       if (prev?.saved == null && next.saved != null) {
         showAppSnack(context, l.aiCreatorSavedToast);
+        // Invalidate /my-recipes so the user's newly-saved AI
+        // recipe shows up there on the next visit instead of
+        // requiring a pull-to-refresh. /my-recipes caches its
+        // listing on a State-side fence keyed by (uid, locale,
+        // revision); bumping the revision is the only thing the
+        // screen needs to drop its cache and re-fetch.
+        invalidateMyRecipes(ref);
       }
     });
 

@@ -429,6 +429,24 @@ abstract class AppL10n {
   /// **'Successfully published to live community feed'**
   String get communityUploaded;
 
+  /// Inline error banner shown on the community-board upload card when the chosen photo (after compression) is over the per-document storage cap.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo is too large, try a smaller image.'**
+  String get communityUploadErrorPhotoTooLarge;
+
+  /// Snackbar shown when image_picker.pickImage() throws (typically denied gallery permission, OS-level cancel, or web error).
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the photo picker. Check the app\'s photo permission and try again.'**
+  String get communityUploadErrorPickFailed;
+
+  /// Fallback inline error for the community upload card covering Firestore failures, network drops, and other non-user-recoverable upload errors.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t share photo. Try again in a moment.'**
+  String get communityUploadErrorGeneric;
+
   /// No description provided for @communityFilteredTo.
   ///
   /// In en, this message translates to:

@@ -194,6 +194,18 @@ class AppL10nMy extends AppL10n {
       'အသိုင်းအဝိုင်းသို့ အောင်မြင်စွာ တင်ပြီးပါပြီ';
 
   @override
+  String get communityUploadErrorPhotoTooLarge =>
+      'ဓာတ်ပုံ ကြီးလွန်းနေပါသည်။ ပိုသေးငယ်သော ပုံကို စမ်းကြည့်ပါ။';
+
+  @override
+  String get communityUploadErrorPickFailed =>
+      'ဓာတ်ပုံ ရွေးချယ်ရန် ဖွင့်၍မရပါ။ အက်ပ်၏ ဓာတ်ပုံခွင့်ပြုချက်ကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။';
+
+  @override
+  String get communityUploadErrorGeneric =>
+      'ဓာတ်ပုံ မျှဝေ၍ မရပါ။ ခဏအကြာ ထပ်စမ်းပါ။';
+
+  @override
   String communityFilteredTo(String cuisine) {
     return 'စစ်ထုတ်ထား: $cuisine';
   }

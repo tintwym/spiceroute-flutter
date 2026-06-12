@@ -64,24 +64,46 @@ class CookModeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppL10n.of(context);
     final async = ref.watch(_cookDetailProvider(recipeId));
+    // Keep showing the previous recipe across refetches (the typical
+    // trigger being a locale flip mid-cook via `localeProvider`).
+    //
+    // Previously this used `async.when(data: …, loading: spinner)`,
+    // which routed through a CircularProgressIndicator while the
+    // re-fetch was in flight. That tore `_CookModeBody` out of the
+    // tree — and along with it the entire `_CookModeBodyState`,
+    // which holds `_stepIndex`, `_completed`, `_servings`, AND the
+    // `PageController`. The user would mid-cook switch to
+    // Vietnamese to read a step better, watch the page slam back
+    // to step 0 with zero checkmarks, and quietly close the app.
+    //
+    // `valueOrNull` returns the prior data while AsyncLoading is in
+    // flight (Riverpod 2.x carries it via `previous`), so as long
+    // as we've ever rendered a recipe at this id, `_CookModeBody`
+    // stays mounted and its progress is preserved. The brand-new-
+    // load and hard-error paths still drop down to `async.when`.
+    final preserved = async.valueOrNull;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
-        child: async.when(
-          data: (recipe) => _CookModeBody(recipe: recipe),
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => CenterMessage(
-            icon: Icons.error_outline,
-            title: l.commonError,
-            subtitle: (e is ApiException)
-                ? localizeApiErrorMessage(context, e.message)
-                : e.toString(),
-            action: FilledButton(
-              onPressed: () => ref.invalidate(_cookDetailProvider(recipeId)),
-              child: Text(l.commonRetry),
-            ),
-          ),
-        ),
+        child: preserved != null
+            ? _CookModeBody(recipe: preserved)
+            : async.when(
+                data: (recipe) => _CookModeBody(recipe: recipe),
+                loading: () =>
+                    const Center(child: CircularProgressIndicator()),
+                error: (e, _) => CenterMessage(
+                  icon: Icons.error_outline,
+                  title: l.commonError,
+                  subtitle: (e is ApiException)
+                      ? localizeApiErrorMessage(context, e.message)
+                      : e.toString(),
+                  action: FilledButton(
+                    onPressed: () =>
+                        ref.invalidate(_cookDetailProvider(recipeId)),
+                    child: Text(l.commonRetry),
+                  ),
+                ),
+              ),
       ),
     );
   }

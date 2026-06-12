@@ -313,6 +313,9 @@
   "communityRemovePhoto": "사진 삭제",
   "communityUploading": "압축 후 공유 중…",
   "communityUploaded": "라이브 피드에 공개되었습니다",
+  "communityUploadErrorPhotoTooLarge": "사진이 너무 커요. 더 작은 이미지를 선택해 주세요.",
+  "communityUploadErrorPickFailed": "사진 선택 화면을 열 수 없어요. 앱의 사진 권한을 확인한 뒤 다시 시도해 주세요.",
+  "communityUploadErrorGeneric": "사진을 공유하지 못했어요. 잠시 후 다시 시도해 주세요.",
   "communityFilteredTo": "필터: {cuisine}",
   "@communityFilteredTo": { "placeholders": { "cuisine": { "type": "String" } } },
 

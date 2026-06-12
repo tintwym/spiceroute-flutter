@@ -313,6 +313,9 @@
   "communityRemovePhoto": "GỠ ẢNH",
   "communityUploading": "Đang nén và chia sẻ…",
   "communityUploaded": "Đã đăng lên bảng cộng đồng",
+  "communityUploadErrorPhotoTooLarge": "Ảnh quá lớn, hãy chọn ảnh nhỏ hơn.",
+  "communityUploadErrorPickFailed": "Không mở được trình chọn ảnh. Vui lòng kiểm tra quyền truy cập ảnh và thử lại.",
+  "communityUploadErrorGeneric": "Không thể chia sẻ ảnh. Vui lòng thử lại sau giây lát.",
   "communityFilteredTo": "Đã lọc: {cuisine}",
   "@communityFilteredTo": { "placeholders": { "cuisine": { "type": "String" } } },
 

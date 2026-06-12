@@ -183,6 +183,18 @@ class ReviewSubmitController extends StateNotifier<ReviewSubmitState> {
     Uint8List? photoBytes,
     Cuisine? cuisine,
   }) async {
+    // Re-entrancy guard. Without this, a rapid double-tap on the
+    // "Post Review" button (or an aggressive double-Enter on a
+    // hardware keyboard) used to fire two concurrent Firestore
+    // `add()` calls in parallel. Both succeed and create TWO
+    // identical review documents — same recipe id, same user, same
+    // rating, same comment, same timestamp — and there's no
+    // dedupe path on the read side, so both render as separate
+    // reviews and both count toward the average. The form button
+    // already binds its `onPressed` to `!state.submitting`, but
+    // setState on the calling widget can lag a frame behind the
+    // tap that fires this method, so belt-and-braces here.
+    if (state.submitting) return;
     final fs = _ref.read(firestoreProvider);
     final user = _ref.read(authControllerProvider);
     if (fs == null || user == null) {

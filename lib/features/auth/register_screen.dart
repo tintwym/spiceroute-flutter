@@ -52,6 +52,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   Future<void> _register() async {
+    // Re-entrancy guard. The "Register" button itself disables when
+    // `_busy` is true via [AuthPrimaryButton], but `_register` can
+    // also fire from the password field's `onSubmitted` (Enter on a
+    // hardware keyboard, IME "done" on mobile). A user mashing Enter
+    // twice — or hitting Enter then tapping the button before the
+    // first call finished — used to fire TWO concurrent
+    // `registerWithEmail` calls: the first succeeds and creates the
+    // account, the second comes back with `email-already-in-use`,
+    // and the second's error is what the user sees in the snack.
+    // Net effect: account is created, but the user is told it
+    // wasn't. Drop the second call on the floor.
+    if (_busy) return;
     if (!(_form.currentState?.validate() ?? false)) return;
     setState(() => _busy = true);
     // try/finally so `_busy` always resets — even if the controller
@@ -77,6 +89,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   Future<void> _google() async {
+    // Same double-submit guard as `_register`. The Google button is
+    // disabled while `_busy`, but `_busy` is only `true` AFTER this
+    // method's setState is applied. Two rapid taps (especially on
+    // tablets where the touch target is large and the OS may
+    // collapse a long-press into a double-tap) could otherwise fire
+    // two `signInWithGoogle()` calls. The second's popup typically
+    // dies with `cancelled-popup-request`, which we now skip — but
+    // belt-and-braces here so the second call never starts.
+    if (_busy) return;
     setState(() => _busy = true);
     try {
       final result =

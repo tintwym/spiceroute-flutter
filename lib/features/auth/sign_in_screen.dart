@@ -54,6 +54,17 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   }
 
   Future<void> _signIn() async {
+    // Re-entrancy guard. `_signIn` fires from BOTH the password
+    // field's `onSubmitted` (hardware Enter / IME "done") AND the
+    // primary button — without this guard, a user mashing Enter
+    // twice (or tapping the button while Enter is still in flight)
+    // would issue two parallel `signInWithEmail` calls. The second
+    // typically dies with `INVALID_LOGIN_CREDENTIALS` because Firebase
+    // has rate-limit-style protection on rapid duplicate attempts,
+    // and the user sees that as the snack message even though their
+    // FIRST call succeeded and they're now signed in. Drop dupes on
+    // the floor.
+    if (_busy) return;
     if (!(_form.currentState?.validate() ?? false)) return;
     setState(() => _busy = true);
     // try/finally guarantees `_busy` is reset even if the controller
@@ -76,6 +87,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   }
 
   Future<void> _google() async {
+    // Same double-submit guard as `_signIn`. Belt-and-braces against
+    // rapid taps on the Google button before `_busy` propagates to
+    // disable it.
+    if (_busy) return;
     setState(() => _busy = true);
     try {
       final result =

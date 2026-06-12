@@ -306,6 +306,23 @@ class AuthController extends StateNotifier<AppUser?> {
     }
   }
 
+  /// In-flight `getIdToken(forceRefresh: true)` Future. Holds the
+  /// single coalesced refresh so a burst of concurrent 401-retry
+  /// callers all await the SAME Firebase token-endpoint round-trip
+  /// instead of firing N parallel rotations.
+  ///
+  /// Why this matters: at boot the cached ID token may expire
+  /// seconds after the first request goes out. Five widgets on the
+  /// home screen each kick off their own GET, all five 401, and the
+  /// Dio onError interceptor (api_client.dart) fires
+  /// `getIdToken(forceRefresh: true)` five times in parallel.
+  /// Firebase's SDK does NOT internally coalesce `forceRefresh:
+  /// true` — each call is a separate network round-trip to
+  /// `securetoken.googleapis.com`. That's wasted bandwidth and,
+  /// under heavy concurrency or flaky networks, an easy way to
+  /// trip Firebase's per-project rate limits.
+  Future<String?>? _inFlightForceRefresh;
+
   /// Returns a token the backend will accept. Real Firebase ID token in
   /// production; a `dev:<uid>:<email>:<name>` stub in dev mode.
   ///
@@ -318,6 +335,33 @@ class AuthController extends StateNotifier<AppUser?> {
   /// backend responds with a clean 401 that triggers the normal
   /// re-auth flow.
   Future<String?> getIdToken({bool forceRefresh = false}) async {
+    if (forceRefresh) {
+      // Coalesce. Concurrent callers all subscribe to the same
+      // in-flight refresh and unblock together when Firebase
+      // replies. The next call after that Future settles starts
+      // a fresh refresh — we don't memoize the result, only the
+      // in-flight request, so the staleness window matches
+      // Firebase's own (~5 second skew, configurable in their SDK).
+      final pending = _inFlightForceRefresh;
+      if (pending != null) return await pending;
+      final fut = _rawGetIdToken(true);
+      _inFlightForceRefresh = fut;
+      try {
+        return await fut;
+      } finally {
+        if (identical(_inFlightForceRefresh, fut)) {
+          _inFlightForceRefresh = null;
+        }
+      }
+    }
+    // Non-force calls go through Firebase's own hot cache (returns
+    // the cached token until ~5 min before expiry) — coalescing
+    // would add no value and would risk hiding latency that's
+    // actually instructive in profiling.
+    return _rawGetIdToken(false);
+  }
+
+  Future<String?> _rawGetIdToken(bool forceRefresh) async {
     final auth = _auth;
     if (auth != null) {
       final u = auth.currentUser;

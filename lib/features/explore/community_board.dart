@@ -335,9 +335,17 @@ class _ShowcaseCardState extends ConsumerState<_ShowcaseCard> {
       );
       if (picked == null) return;
       final bytes = await picked.readAsBytes();
+      if (!mounted) return;
       setState(() => _photoBytes = bytes);
     } catch (_) {
-      // Picker can throw on permission denial or web cancel — silently bail.
+      // Picker throws on denied gallery permission, OS-level cancel
+      // weirdness, or web-side file-input errors. Previously this
+      // branch was a silent `// ignore` which left the user with no
+      // feedback when they tapped "upload" and nothing happened.
+      // Surface a localised snackbar so the user at least knows the
+      // picker failed and that they should check permissions.
+      if (!mounted) return;
+      showAppSnack(context, AppL10n.of(context).communityUploadErrorPickFailed);
     }
   }
 
@@ -454,6 +462,17 @@ class _ShowcaseCardState extends ConsumerState<_ShowcaseCard> {
               ),
             ),
           ],
+          // Inline failure banner: previously `upload.error` was set
+          // by the controller (photo-too-large, Firestore errors,
+          // missing Firebase config) but nothing in the UI ever read
+          // it, so users would tap "Share", see the button flip back
+          // to its idle label, and have no idea why their photo
+          // didn't show up in the live feed. Surface the localised
+          // copy here so failures are at least visible.
+          if (upload.error != null) ...[
+            const SizedBox(height: 12),
+            _UploadErrorBanner(error: upload.error!),
+          ],
         ],
       ),
     );
@@ -478,6 +497,53 @@ class _FieldLabel extends StatelessWidget {
         color: theme.colorScheme.onSurfaceVariant,
         letterSpacing: 1.0,
         fontWeight: FontWeight.w700,
+      ),
+    );
+  }
+}
+
+/// Inline error banner for the community-board upload card.
+///
+/// Translates the sentinel strings written by [CommunityUploadController]
+/// (`photo-too-large`, `firebase-not-configured`, the Firestore-prefixed
+/// `firestore-error-*` codes) into the active locale at render time.
+/// Anything we don't recognise falls back to the generic upload-error
+/// copy so the user always sees a sentence rather than a raw sentinel.
+class _UploadErrorBanner extends StatelessWidget {
+  const _UploadErrorBanner({required this.error});
+  final String error;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final message = switch (error) {
+      'photo-too-large' => l.communityUploadErrorPhotoTooLarge,
+      _ => l.communityUploadErrorGeneric,
+    };
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: cs.errorContainer.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: cs.error.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.error_outline, size: 16, color: cs.error),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              message,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: cs.onErrorContainer,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

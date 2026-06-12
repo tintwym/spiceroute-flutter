@@ -14,6 +14,7 @@ import '../../shared/widgets.dart';
 import '../../state/locale.dart';
 import '../../state/providers.dart';
 import '../../state/saved.dart';
+import '../my_recipes/my_recipes_screen.dart' show invalidateMyRecipes;
 import 'recipe_reviews.dart';
 
 /// `.autoDispose` is critical here: this is a `family` provider keyed by
@@ -118,28 +119,46 @@ class RecipeDetailScreen extends ConsumerWidget {
                     onTap: () {},
                     child: Stack(
                       children: [
-                        async.when(
-                          data: (recipe) => _ModalContent(recipe: recipe),
-                          loading: () => const SizedBox(
-                            height: 320,
-                            child: Center(child: CircularProgressIndicator()),
-                          ),
-                          error: (e, _) => SizedBox(
-                            height: 320,
-                            child: CenterMessage(
-                              icon: Icons.error_outline,
-                              title: l.commonError,
-                              subtitle: (e is ApiException)
-                                  ? localizeApiErrorMessage(context, e.message)
-                                  : e.toString(),
-                              action: FilledButton(
-                                onPressed: () =>
-                                    ref.invalidate(_detailProvider(recipeId)),
-                                child: Text(l.commonRetry),
+                        // Keep the previous recipe rendered across
+                        // watched-dependency refetches (typically a
+                        // locale flip mid-modal). Without this, the
+                        // `loading:` branch would route through a
+                        // CircularProgressIndicator at fixed 320px,
+                        // unmounting `_ModalContent` along with its
+                        // inner scroll positions and any review-form
+                        // text the user had typed but not posted —
+                        // a real "where did my draft go?" moment.
+                        // See `_cookDetailProvider`'s wrapper in
+                        // cook_mode_screen.dart for the same pattern
+                        // and the AsyncValue-source citation for why
+                        // `valueOrNull` traverses to `previous` here.
+                        if (async.valueOrNull != null)
+                          _ModalContent(recipe: async.valueOrNull!)
+                        else
+                          async.when(
+                            data: (recipe) => _ModalContent(recipe: recipe),
+                            loading: () => const SizedBox(
+                              height: 320,
+                              child:
+                                  Center(child: CircularProgressIndicator()),
+                            ),
+                            error: (e, _) => SizedBox(
+                              height: 320,
+                              child: CenterMessage(
+                                icon: Icons.error_outline,
+                                title: l.commonError,
+                                subtitle: (e is ApiException)
+                                    ? localizeApiErrorMessage(
+                                        context, e.message)
+                                    : e.toString(),
+                                action: FilledButton(
+                                  onPressed: () => ref
+                                      .invalidate(_detailProvider(recipeId)),
+                                  child: Text(l.commonRetry),
+                                ),
                               ),
                             ),
                           ),
-                        ),
                         Positioned(
                           top: 12,
                           right: 12,
@@ -197,6 +216,25 @@ class RecipeDetailScreen extends ConsumerWidget {
     try {
       await ref.read(apiClientProvider).deleteRecipe(id);
       if (!context.mounted) return;
+      // Drop the now-deleted id from the user's local saved set so
+      // the bookmark grid doesn't render a tombstone tile that
+      // 404s on tap. The hydrate-prune branch would eventually
+      // catch this on the next refresh, but the window between
+      // "delete returns 200" and "next refresh fires" can be a
+      // full screen-to-screen navigation — long enough for the
+      // user to tap their own deleted recipe from the saved list
+      // and see an error toast. Surgical removal beats a full
+      // refresh: arrayRemove keeps the cloud doc consistent with
+      // local without clobbering concurrent toggles from another
+      // device. Safe to call even if the id wasn't in the set
+      // (no-op on both local and cloud sides).
+      ref.read(savedRecipesProvider.notifier).forgetDeleted(id);
+      // /my-recipes caches its `listRecipes(mine:true)` Future on the
+      // State, so popping the modal back to it (the modal sits over
+      // /my-recipes in the navigation stack) would otherwise show a
+      // tombstone tile until the user pulls to refresh. Bumping the
+      // revision token forces the cache fence to miss and re-fetch.
+      invalidateMyRecipes(ref);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l.detailDeletedToast)),
       );
