@@ -150,13 +150,20 @@ class ExploreScreen extends ConsumerWidget {
     }
 
     if (state.error != null && visible.isEmpty) {
+      // Translate the controller's sentinel — the state notifier
+      // can't reach AppL10n itself, so it stamps a known marker and
+      // the render site swaps in the localized string. Genuine
+      // server-supplied ApiException messages flow through unchanged.
+      final subtitle = state.error == kUnknownErrorSentinel
+          ? l.commonError
+          : state.error;
       return [
         SliverFillRemaining(
           hasScrollBody: false,
           child: CenterMessage(
             icon: Icons.cloud_off,
             title: l.exploreErrorTitle,
-            subtitle: state.error,
+            subtitle: subtitle,
             action: FilledButton(
               onPressed: onRetry,
               child: Text(l.exploreErrorRetry),

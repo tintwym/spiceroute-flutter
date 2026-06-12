@@ -10,6 +10,7 @@ import '../../shared/brand.dart';
 import '../../shared/breakpoints.dart';
 import '../../shared/format.dart';
 import '../../shared/widgets.dart';
+import '../../state/locale.dart';
 import '../../state/providers.dart';
 import '../../state/saved.dart';
 import 'recipe_reviews.dart';
@@ -24,7 +25,13 @@ import 'recipe_reviews.dart';
 /// which for a modal detail screen is immediately on close.
 final _detailProvider =
     FutureProvider.autoDispose.family<SpiceRouteDetail, String>((ref, id) async {
-  return ref.read(apiClientProvider).getRecipe(id);
+  // Watch (not read) the locale so flipping languages while the modal
+  // is open invalidates the cached entry and re-fetches with the new
+  // `translate_to` query param. Without the watch the modal's title /
+  // description stay frozen in the old language until the user closes
+  // and re-opens the recipe.
+  final locale = ref.watch(localeProvider).languageCode;
+  return ref.read(apiClientProvider).getRecipe(id, translateTo: locale);
 });
 
 /// Recipe detail, presented as a centered **modal box** over the dimmed

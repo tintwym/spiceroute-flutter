@@ -95,6 +95,8 @@
   "filterExpandAll": "모두 펼치기",
   "filterCollapseAll": "모두 접기",
   "filterNoMatches": "일치 항목 없음",
+  "filterClearSearch": "검색 지우기",
+  "filterDismissMenu": "메뉴 닫기",
 
   "recipeMinutesShort": "{minutes}분",
   "@recipeMinutesShort": { "placeholders": { "minutes": { "type": "int" } } },

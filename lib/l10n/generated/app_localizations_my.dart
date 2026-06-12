@@ -429,6 +429,12 @@ class AppL10nMy extends AppL10n {
   String get filterNoMatches => 'ကိုက်ညီသည် မရှိ';
 
   @override
+  String get filterClearSearch => 'ရှာဖွေမှု ဖျက်ပါ';
+
+  @override
+  String get filterDismissMenu => 'မီနူး ပိတ်ပါ';
+
+  @override
   String recipeMinutesShort(int minutes) {
     return '$minutes မိနစ်';
   }

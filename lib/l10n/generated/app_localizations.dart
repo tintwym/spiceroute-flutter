@@ -855,6 +855,18 @@ abstract class AppL10n {
   /// **'No matches'**
   String get filterNoMatches;
 
+  /// No description provided for @filterClearSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear search'**
+  String get filterClearSearch;
+
+  /// No description provided for @filterDismissMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss menu'**
+  String get filterDismissMenu;
+
   /// No description provided for @recipeMinutesShort.
   ///
   /// In en, this message translates to:

@@ -417,6 +417,12 @@ class AppL10nJa extends AppL10n {
   String get filterNoMatches => '該当なし';
 
   @override
+  String get filterClearSearch => '検索をクリア';
+
+  @override
+  String get filterDismissMenu => 'メニューを閉じる';
+
+  @override
   String recipeMinutesShort(int minutes) {
     return '$minutes 分';
   }

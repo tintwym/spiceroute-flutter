@@ -95,6 +95,8 @@
   "filterExpandAll": "すべて展開",
   "filterCollapseAll": "すべて閉じる",
   "filterNoMatches": "該当なし",
+  "filterClearSearch": "検索をクリア",
+  "filterDismissMenu": "メニューを閉じる",
 
   "recipeMinutesShort": "{minutes} 分",
   "@recipeMinutesShort": { "placeholders": { "minutes": { "type": "int" } } },

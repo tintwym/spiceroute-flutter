@@ -1,11 +1,25 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../api/api_client.dart';
 import '../models/spice_route.dart';
+import 'locale.dart';
 import 'providers.dart';
+
+/// Sentinel stored in [ExploreState.error] (and other state-notifier
+/// error fields) when the failure was *not* an [ApiException] — i.e.
+/// there's no server-supplied message we can surface verbatim.
+///
+/// The state notifier lives outside the widget tree and can't reach
+/// [AppL10n]; the render site checks for this sentinel and substitutes
+/// the localized `commonError` string ("Đã xảy ra lỗi" / "出错了" /
+/// "တစ်စုံတစ်ရာ မှားယွင်းသွားသည်", …). Without the sentinel the
+/// fallback string was a hardcoded English literal — visible to every
+/// non-English user on a network blip.
+const String kUnknownErrorSentinel = '__app_unknown_error__';
 
 @immutable
 class ExploreState {
@@ -86,12 +100,25 @@ class ExploreState {
 }
 
 class ExploreController extends StateNotifier<ExploreState> {
-  ExploreController(this._api) : super(const ExploreState()) {
+  ExploreController(this._api, this._ref) : super(const ExploreState()) {
+    // Re-fetch when the user switches UI locale so card titles /
+    // descriptions arrive in the new language (the backend swaps them
+    // server-side based on the `translate_to` query param). Without
+    // this watcher, switching from English → Burmese leaves the
+    // visible grid stuck on whatever titles the previous request
+    // returned, defeating the whole point of seeded translations.
+    _localeSub = _ref.listen<Locale>(localeProvider, (prev, next) {
+      if (prev?.languageCode != next.languageCode) {
+        refresh();
+      }
+    });
     refresh();
   }
 
   final ApiClient _api;
+  final Ref _ref;
   Timer? _searchDebounce;
+  ProviderSubscription<Locale>? _localeSub;
 
   /// Monotonic counter incremented on every `refresh()` entry. Used as
   /// a write-fence: only the most recent in-flight request is allowed
@@ -139,6 +166,12 @@ class ExploreController extends StateNotifier<ExploreState> {
       final res = await _api.listRecipes(
         q: state.q.isEmpty ? null : state.q,
         cuisine: state.cuisine,
+        // Tell the backend which locale to substitute into the title
+        // and description columns. Recipes without a matching entry in
+        // their `translations` JSONB fall back to the source values, so
+        // an English-only seeded recipe still shows English on a
+        // Burmese UI rather than going blank.
+        translateTo: _ref.read(localeProvider).languageCode,
         limit: 60,
       );
       if (token != _refreshToken) return;
@@ -150,16 +183,17 @@ class ExploreController extends StateNotifier<ExploreState> {
   }
 
   static String _humanError(Object e) =>
-      e is ApiException ? e.message : 'Something went wrong.';
+      e is ApiException ? e.message : kUnknownErrorSentinel;
 
   @override
   void dispose() {
     _searchDebounce?.cancel();
+    _localeSub?.close();
     super.dispose();
   }
 }
 
 final exploreProvider =
     StateNotifierProvider<ExploreController, ExploreState>((ref) {
-  return ExploreController(ref.watch(apiClientProvider));
+  return ExploreController(ref.watch(apiClientProvider), ref);
 });

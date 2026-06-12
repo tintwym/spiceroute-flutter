@@ -149,6 +149,8 @@
   "filterExpandAll": "အားလုံး ဖွင့်ပါ",
   "filterCollapseAll": "အားလုံး ပိတ်ပါ",
   "filterNoMatches": "ကိုက်ညီသည် မရှိ",
+  "filterClearSearch": "ရှာဖွေမှု ဖျက်ပါ",
+  "filterDismissMenu": "မီနူး ပိတ်ပါ",
 
   "recipeMinutesShort": "{minutes} မိနစ်",
   "@recipeMinutesShort": { "placeholders": { "minutes": { "type": "int" } } },

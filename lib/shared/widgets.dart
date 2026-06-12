@@ -7,6 +7,7 @@ import '../l10n/generated/app_localizations.dart';
 import '../models/spice_route.dart';
 import '../state/saved.dart';
 import 'cuisine_pill_bar.dart';
+import 'dish_emoji.dart';
 import 'format.dart';
 import 'theme.dart';
 
@@ -166,51 +167,50 @@ class RecipeCard extends ConsumerWidget {
                     else
                       _ImageFallback(recipe: recipe),
                     // Top-left "what kind of dish" badge — a food emoji
-                    // (sushi for Japanese, taco for Mexican, etc.) on a
-                    // creamy circular chip. Keeps the photo content the
-                    // hero and gives a glanceable dish-type cue without
-                    // duplicating the country flag (the flag stays inside
-                    // the filter dropdown).
-                    if (recipe.cuisine != null)
-                      Positioned(
-                        top: 10,
-                        left: 10,
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 34,
-                              height: 34,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: cs.surface,
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.18),
-                                    blurRadius: 6,
-                                    offset: const Offset(0, 1),
-                                  ),
-                                ],
-                              ),
-                              child: Text(
-                                CuisinePillBar.foodEmojiFor(recipe.cuisine!),
-                                // Use the emoji-safe TextStyle helper so
-                                // CanvasKit can locate a color emoji
-                                // glyph for the badge — a plain
-                                // `TextStyle(fontSize: 17)` rendered as
-                                // a blank box on Flutter web.
-                                style: emojiTextStyle(fontSize: 17),
-                              ),
+                    // derived per-recipe (pie slice for Quiche, eggplant
+                    // for Ratatouille, poultry leg for Coq au Vin, …)
+                    // by [dishEmojiFor] instead of one icon per cuisine.
+                    // Falls back to the per-cuisine emoji and finally a
+                    // generic plate, so the badge is always present and
+                    // visually differentiates rows of same-cuisine
+                    // dishes that previously all wore the same icon.
+                    Positioned(
+                      top: 10,
+                      left: 10,
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 34,
+                            height: 34,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: cs.surface,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.18),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 1),
+                                ),
+                              ],
                             ),
-                            if (recipe.isAiAuthored) ...[
-                              const SizedBox(width: 6),
-                              const _AiBadge(),
-                            ],
+                            child: Text(
+                              dishEmojiFor(recipe),
+                              // Use the emoji-safe TextStyle helper so
+                              // CanvasKit can locate a color emoji
+                              // glyph for the badge — a plain
+                              // `TextStyle(fontSize: 17)` rendered as
+                              // a blank box on Flutter web.
+                              style: emojiTextStyle(fontSize: 17),
+                            ),
+                          ),
+                          if (recipe.isAiAuthored) ...[
+                            const SizedBox(width: 6),
+                            const _AiBadge(),
                           ],
-                        ),
-                      )
-                    else if (recipe.isAiAuthored)
-                      const Positioned(top: 10, left: 10, child: _AiBadge()),
+                        ],
+                      ),
+                    ),
                     // Top-right bookmark (solid bg for contrast on any photo).
                     Positioned(
                       top: 8,
@@ -449,9 +449,7 @@ class _ImageFallback extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
-    final emoji = recipe.cuisine == null
-        ? '🥘'
-        : CuisinePillBar.foodEmojiFor(recipe.cuisine!);
+    final emoji = dishEmojiFor(recipe);
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(

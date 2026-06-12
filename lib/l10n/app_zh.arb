@@ -95,6 +95,8 @@
   "filterExpandAll": "全部展开",
   "filterCollapseAll": "全部收起",
   "filterNoMatches": "无匹配项",
+  "filterClearSearch": "清除搜索",
+  "filterDismissMenu": "关闭菜单",
 
   "recipeMinutesShort": "{minutes} 分钟",
   "@recipeMinutesShort": { "placeholders": { "minutes": { "type": "int" } } },

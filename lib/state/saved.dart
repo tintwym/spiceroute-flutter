@@ -5,9 +5,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import 'dart:ui';
+
 import '../api/api_client.dart';
 import '../models/spice_route.dart';
 import 'auth.dart';
+import 'explore.dart' show kUnknownErrorSentinel;
+import 'locale.dart';
 import 'providers.dart';
 import 'user_profile.dart';
 
@@ -64,6 +68,15 @@ class SavedRecipesController extends StateNotifier<SavedRecipesState> {
         unawaited(_mergeOnSignIn(next));
       }
     });
+    // Re-hydrate when the user switches UI locale so the saved-recipe
+    // grid's titles + descriptions arrive in the new language. We only
+    // need to refetch the recipe payloads — the bookmark id set is
+    // language-independent.
+    _ref.listen<Locale>(localeProvider, (prev, next) {
+      if (prev?.languageCode != next.languageCode && state.ids.isNotEmpty) {
+        unawaited(_hydrate());
+      }
+    });
   }
 
   final Ref _ref;
@@ -87,7 +100,7 @@ class SavedRecipesController extends StateNotifier<SavedRecipesState> {
     } catch (e) {
       state = state.copyWith(
         loading: false,
-        error: e is ApiException ? e.message : 'Something went wrong.',
+        error: e is ApiException ? e.message : kUnknownErrorSentinel,
       );
     }
   }
@@ -104,6 +117,10 @@ class SavedRecipesController extends StateNotifier<SavedRecipesState> {
     const batchSize = 8;
     final ids = state.ids.toList();
     final hydrated = <SpiceRouteDetail>[];
+    // Snapshot the active locale once for the entire batch — if the
+    // user switches mid-hydrate we'll just refetch on the next
+    // localeProvider listener tick rather than mixing two languages.
+    final locale = _ref.read(localeProvider).languageCode;
     for (var i = 0; i < ids.length; i += batchSize) {
       final batch = ids.sublist(
         i,
@@ -112,7 +129,7 @@ class SavedRecipesController extends StateNotifier<SavedRecipesState> {
       final batchResults = await Future.wait(
         batch.map((id) async {
           try {
-            return await _api.getRecipe(id);
+            return await _api.getRecipe(id, translateTo: locale);
           } catch (_) {
             return null;
           }

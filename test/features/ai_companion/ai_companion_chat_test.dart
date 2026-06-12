@@ -34,8 +34,15 @@ class _StubChat extends ChatController {
 /// because the parent constructor *calls* refresh() (virtually) and
 /// Dio's connect-timeout timer would otherwise linger past the test
 /// (tripping the framework's "pending timer" guard).
+///
+/// Takes a Ref because the real controller subscribes to
+/// localeProvider in its constructor; we forward whatever Ref the
+/// override callback hands us so the subscription is wired against
+/// the test's ProviderScope (no test ever switches locale, so the
+/// listener just sits idle).
 class _StubExplore extends ExploreController {
-  _StubExplore({Cuisine? cuisine}) : super(ApiClient()) {
+  _StubExplore({required Ref ref, Cuisine? cuisine})
+      : super(ApiClient(), ref) {
     if (cuisine != null) {
       state = state.copyWith(cuisine: cuisine);
     } else {
@@ -52,7 +59,7 @@ class _StubExplore extends ExploreController {
 Future<void> _pumpCompanion(
   WidgetTester tester, {
   required ChatController chatStub,
-  required ExploreController exploreStub,
+  Cuisine? exploreCuisine,
 }) async {
   // Wrap in a single-route GoRouter for the same reason as the AI
   // Creator test: StudioPage queries GoRouterState to render PageTabs.
@@ -69,7 +76,12 @@ Future<void> _pumpCompanion(
     ProviderScope(
       overrides: [
         chatProvider.overrideWith((ref) => chatStub),
-        exploreProvider.overrideWith((ref) => exploreStub),
+        // _StubExplore needs a Ref to satisfy the production
+        // constructor's localeProvider subscription, so build it
+        // INSIDE the override where `ref` is in scope.
+        exploreProvider.overrideWith(
+          (ref) => _StubExplore(ref: ref, cuisine: exploreCuisine),
+        ),
       ],
       child: MaterialApp.router(
         routerConfig: router,
@@ -93,7 +105,7 @@ void main() {
     await _pumpCompanion(
       tester,
       chatStub: _StubChat(),
-      exploreStub: _StubExplore(cuisine: null),
+      exploreCuisine: null,
     );
     // EN copy for `aiCompanionActiveFocus` is "Active Focus: Global".
     expect(find.text('Active Focus: Global'), findsOneWidget);
@@ -104,7 +116,7 @@ void main() {
     await _pumpCompanion(
       tester,
       chatStub: _StubChat(),
-      exploreStub: _StubExplore(cuisine: Cuisine.korean),
+      exploreCuisine: Cuisine.korean,
     );
     // The interpolated copy is "Active Focus: Korean" (`{cuisine}` is
     // the localized cuisine label from `CuisinePillBar.labelFor`).
@@ -126,7 +138,6 @@ void main() {
     await _pumpCompanion(
       tester,
       chatStub: _StubChat(messages: messages, streaming: true),
-      exploreStub: _StubExplore(),
     );
     await tester.pump(const Duration(milliseconds: 100));
 
@@ -148,7 +159,6 @@ void main() {
     await _pumpCompanion(
       tester,
       chatStub: _StubChat(messages: messages),
-      exploreStub: _StubExplore(),
     );
 
     // Both bubbles render their content as SelectableText.

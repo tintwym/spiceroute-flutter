@@ -150,6 +150,8 @@
   "filterExpandAll": "EXPAND ALL",
   "filterCollapseAll": "COLLAPSE ALL",
   "filterNoMatches": "No matches",
+  "filterClearSearch": "Clear search",
+  "filterDismissMenu": "Dismiss menu",
 
   "recipeMinutesShort": "{minutes} min",
   "@recipeMinutesShort": { "placeholders": { "minutes": { "type": "int" } } },

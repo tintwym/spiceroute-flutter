@@ -416,6 +416,12 @@ class AppL10nZh extends AppL10n {
   String get filterNoMatches => '无匹配项';
 
   @override
+  String get filterClearSearch => '清除搜索';
+
+  @override
+  String get filterDismissMenu => '关闭菜单';
+
+  @override
   String recipeMinutesShort(int minutes) {
     return '$minutes 分钟';
   }

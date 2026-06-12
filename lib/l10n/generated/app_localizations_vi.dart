@@ -422,6 +422,12 @@ class AppL10nVi extends AppL10n {
   String get filterNoMatches => 'Không tìm thấy';
 
   @override
+  String get filterClearSearch => 'Xoá tìm kiếm';
+
+  @override
+  String get filterDismissMenu => 'Đóng menu';
+
+  @override
   String recipeMinutesShort(int minutes) {
     return '$minutes phút';
   }

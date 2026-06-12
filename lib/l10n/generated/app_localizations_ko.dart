@@ -418,6 +418,12 @@ class AppL10nKo extends AppL10n {
   String get filterNoMatches => '일치 항목 없음';
 
   @override
+  String get filterClearSearch => '검색 지우기';
+
+  @override
+  String get filterDismissMenu => '메뉴 닫기';
+
+  @override
   String recipeMinutesShort(int minutes) {
     return '$minutes분';
   }

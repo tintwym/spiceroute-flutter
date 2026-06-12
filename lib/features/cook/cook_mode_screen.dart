@@ -11,6 +11,7 @@ import '../../shared/brand.dart';
 import '../../shared/breakpoints.dart';
 import '../../shared/widgets.dart';
 import '../../state/cook_prefs.dart';
+import '../../state/locale.dart';
 import '../../state/providers.dart';
 import 'cook_scaling.dart';
 
@@ -19,7 +20,11 @@ import 'cook_scaling.dart';
 /// modal's cached data when it disposes (and vice versa).
 final _cookDetailProvider =
     FutureProvider.autoDispose.family<SpiceRouteDetail, String>((ref, id) {
-  return ref.read(apiClientProvider).getRecipe(id);
+  // See `_detailProvider` in recipe_detail_screen.dart — watching
+  // localeProvider here means a locale switch mid-cook will refetch
+  // the steps + ingredients in the new language on the next frame.
+  final locale = ref.watch(localeProvider).languageCode;
+  return ref.read(apiClientProvider).getRecipe(id, translateTo: locale);
 });
 
 /// Full-screen step-by-step "cook with me" view.

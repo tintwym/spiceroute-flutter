@@ -89,31 +89,29 @@ class FilterBar extends StatelessWidget {
       onChanged: onDietaryChanged,
     );
 
-    return LayoutBuilder(builder: (context, constraints) {
-      // Below ~560px the two pills next to each other get cramped
-      // (especially the second label "DIETARY, LIFESTYLE & FORMAT
-      // RESTRICTIONS" which is long). Stack vertically on narrow
-      // screens so each column gets the full width.
-      final stacked = constraints.maxWidth < 560;
-      if (stacked) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Below ~560px the two pills next to each other get cramped
+        // (especially the second label "DIETARY, LIFESTYLE & FORMAT
+        // RESTRICTIONS" which is long). Stack vertically on narrow
+        // screens so each column gets the full width.
+        final stacked = constraints.maxWidth < 560;
+        if (stacked) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [courseCol, const SizedBox(height: 12), dietaryCol],
+          );
+        }
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            courseCol,
-            const SizedBox(height: 12),
-            dietaryCol,
+            Expanded(child: courseCol),
+            const SizedBox(width: 16),
+            Expanded(child: dietaryCol),
           ],
         );
-      }
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(child: courseCol),
-          const SizedBox(width: 16),
-          Expanded(child: dietaryCol),
-        ],
-      );
-    });
+      },
+    );
   }
 }
 
@@ -244,8 +242,7 @@ List<_FilterItem<T>> _withGroupAwareTriggerLabels<T>(
     // brevity and lets the accordion do the heavy lifting).
     for (final g in groups)
       for (final it in g.items)
-        if (!it.isHeader)
-          it.copyWith(triggerGroupLabel: g.label),
+        if (!it.isHeader) it.copyWith(triggerGroupLabel: g.label),
   ];
 }
 
@@ -287,12 +284,12 @@ class _FilterItem<T> {
   final String? triggerGroupLabel;
 
   _FilterItem<T> copyWith({String? triggerGroupLabel}) => _FilterItem<T>(
-        value: value,
-        label: label,
-        emoji: emoji,
-        isHeader: isHeader,
-        triggerGroupLabel: triggerGroupLabel ?? this.triggerGroupLabel,
-      );
+    value: value,
+    label: label,
+    emoji: emoji,
+    isHeader: isHeader,
+    triggerGroupLabel: triggerGroupLabel ?? this.triggerGroupLabel,
+  );
 }
 
 /// One accordion bucket in the searchable dropdown menu (e.g. "Dietary
@@ -351,12 +348,18 @@ class _GlassDropdownState<T> extends State<_GlassDropdown<T>> {
     // anchor flush beneath it, matching the trigger's width exactly.
     final triggerBox =
         _triggerKey.currentContext!.findRenderObject() as RenderBox;
-    final overlay = Navigator.of(context)
-        .overlay!
-        .context
-        .findRenderObject() as RenderBox;
+    final overlay =
+        Navigator.of(context).overlay!.context.findRenderObject() as RenderBox;
     final origin = triggerBox.localToGlobal(Offset.zero, ancestor: overlay);
     final triggerSize = triggerBox.size;
+
+    // Resolve localization HERE — `_open` runs with a live BuildContext
+    // but the route's `barrierLabel` getter is called later by the
+    // Navigator without one, so we have to snapshot the string at
+    // construction time and let the route hold it. Otherwise the
+    // tap-outside-to-dismiss action would be announced in English to
+    // VoiceOver / TalkBack on every non-English locale.
+    final dismissLabel = AppL10n.of(context).filterDismissMenu;
 
     final groups = widget.groups;
     final route = groups == null
@@ -366,6 +369,7 @@ class _GlassDropdownState<T> extends State<_GlassDropdown<T>> {
             viewportSize: overlay.size,
             items: widget.items,
             selectedValue: widget.value,
+            barrierLabelText: dismissLabel,
           )
         : _AccordionMenuRoute<T>(
             origin: origin,
@@ -374,6 +378,7 @@ class _GlassDropdownState<T> extends State<_GlassDropdown<T>> {
             groups: groups,
             selectedValue: widget.value,
             searchHint: widget.searchHint ?? '',
+            barrierLabelText: dismissLabel,
             // The accordion menu doesn't render any group "all"
             // sentinel by default — we surface the items[0] entry
             // (e.g. "All Courses") as a pinned reset row at the top
@@ -477,8 +482,11 @@ class _GlassDropdownState<T> extends State<_GlassDropdown<T>> {
                   ],
                 ),
               ),
-              Icon(Icons.keyboard_arrow_down,
-                  size: 22, color: cs.onSurfaceVariant),
+              Icon(
+                Icons.keyboard_arrow_down,
+                size: 22,
+                color: cs.onSurfaceVariant,
+              ),
             ],
           ),
         ),
@@ -542,6 +550,7 @@ class _GlassMenuRoute<T> extends PopupRoute<_MenuResult<T>> {
     required this.viewportSize,
     required this.items,
     required this.selectedValue,
+    required this.barrierLabelText,
   });
 
   final Offset origin;
@@ -554,6 +563,11 @@ class _GlassMenuRoute<T> extends PopupRoute<_MenuResult<T>> {
   /// type system.
   final T selectedValue;
 
+  /// Localized "Dismiss menu" string the parent resolved against the
+  /// active locale. We snapshot it on the route because [barrierLabel]
+  /// is called by the Navigator without a [BuildContext].
+  final String barrierLabelText;
+
   @override
   Color? get barrierColor => null;
 
@@ -561,7 +575,7 @@ class _GlassMenuRoute<T> extends PopupRoute<_MenuResult<T>> {
   bool get barrierDismissible => true;
 
   @override
-  String? get barrierLabel => 'Dismiss menu';
+  String? get barrierLabel => barrierLabelText;
 
   @override
   Duration get transitionDuration => const Duration(milliseconds: 180);
@@ -576,7 +590,8 @@ class _GlassMenuRoute<T> extends PopupRoute<_MenuResult<T>> {
     // column has 1 "All" row + 7 headers + 12 courses ≈ 20 rows; the
     // Cuisine column has 17 rows) still leaves breathing room top
     // and bottom. Anything longer scrolls inside the menu.
-    final maxMenuHeight = viewportSize.height - origin.dy - triggerSize.height - 24;
+    final maxMenuHeight =
+        viewportSize.height - origin.dy - triggerSize.height - 24;
     return Stack(
       children: [
         Positioned(
@@ -590,8 +605,7 @@ class _GlassMenuRoute<T> extends PopupRoute<_MenuResult<T>> {
             child: _GlassMenu<T>(
               items: items,
               selectedValue: selectedValue,
-              onSelected: (v) =>
-                  Navigator.of(context).pop(_MenuResult<T>(v)),
+              onSelected: (v) => Navigator.of(context).pop(_MenuResult<T>(v)),
             ),
           ),
         ),
@@ -608,7 +622,10 @@ class _GlassMenuRoute<T> extends PopupRoute<_MenuResult<T>> {
   ) {
     // Soft fade + tiny upward slide so the menu feels like it's settling
     // into place rather than appearing out of nothing.
-    final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+    final curved = CurvedAnimation(
+      parent: animation,
+      curve: Curves.easeOutCubic,
+    );
     return FadeTransition(
       opacity: curved,
       child: SlideTransition(
@@ -784,8 +801,7 @@ class _GlassMenuItem<T> extends StatelessWidget {
               color: selected ? activeBg : Colors.transparent,
               borderRadius: BorderRadius.circular(14),
             ),
-            padding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             child: Row(
               children: [
                 // Leading checkmark slot — always present so labels line
@@ -794,11 +810,7 @@ class _GlassMenuItem<T> extends StatelessWidget {
                 SizedBox(
                   width: 20,
                   child: selected
-                      ? const Icon(
-                          Icons.check,
-                          size: 18,
-                          color: activeFg,
-                        )
+                      ? const Icon(Icons.check, size: 18, color: activeFg)
                       : null,
                 ),
                 const SizedBox(width: 10),
@@ -818,8 +830,7 @@ class _GlassMenuItem<T> extends StatelessWidget {
                     item.label,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: selected ? activeFg : textColor,
-                      fontWeight:
-                          selected ? FontWeight.w700 : FontWeight.w500,
+                      fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                       height: 1.2,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -848,6 +859,7 @@ class _AccordionMenuRoute<T> extends PopupRoute<_MenuResult<T>> {
     required this.groups,
     required this.selectedValue,
     required this.searchHint,
+    required this.barrierLabelText,
     this.clearItem,
   });
 
@@ -857,6 +869,9 @@ class _AccordionMenuRoute<T> extends PopupRoute<_MenuResult<T>> {
   final List<_FilterGroup<T>> groups;
   final T selectedValue;
   final String searchHint;
+
+  /// Localized "Dismiss menu" string. See [_GlassMenuRoute.barrierLabelText].
+  final String barrierLabelText;
 
   /// Optional "All …" row pinned above the accordion sections. When
   /// non-null, tapping it pops the menu with its [_FilterItem.value]
@@ -870,7 +885,7 @@ class _AccordionMenuRoute<T> extends PopupRoute<_MenuResult<T>> {
   bool get barrierDismissible => true;
 
   @override
-  String? get barrierLabel => 'Dismiss menu';
+  String? get barrierLabel => barrierLabelText;
 
   @override
   Duration get transitionDuration => const Duration(milliseconds: 180);
@@ -901,8 +916,7 @@ class _AccordionMenuRoute<T> extends PopupRoute<_MenuResult<T>> {
               selectedValue: selectedValue,
               searchHint: searchHint,
               clearItem: clearItem,
-              onSelected: (v) =>
-                  Navigator.of(context).pop(_MenuResult<T>(v)),
+              onSelected: (v) => Navigator.of(context).pop(_MenuResult<T>(v)),
             ),
           ),
         ),
@@ -917,8 +931,10 @@ class _AccordionMenuRoute<T> extends PopupRoute<_MenuResult<T>> {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    final curved =
-        CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+    final curved = CurvedAnimation(
+      parent: animation,
+      curve: Curves.easeOutCubic,
+    );
     return FadeTransition(
       opacity: curved,
       child: SlideTransition(
@@ -979,8 +995,9 @@ class _AccordionGlassMenuState<T> extends State<_AccordionGlassMenu<T>> {
     // If nothing is selected (T == null) every group starts collapsed,
     // matching screenshot 2.
     for (var i = 0; i < widget.groups.length; i++) {
-      final hasSelected = widget.groups[i].items
-          .any((it) => !it.isHeader && it.value == widget.selectedValue);
+      final hasSelected = widget.groups[i].items.any(
+        (it) => !it.isHeader && it.value == widget.selectedValue,
+      );
       if (hasSelected) _expanded.add(i);
     }
   }
@@ -1148,7 +1165,8 @@ class _AccordionGlassMenuState<T> extends State<_AccordionGlassMenu<T>> {
                           if (widget.clearItem != null) ...[
                             _GlassMenuItem<T>(
                               item: widget.clearItem!,
-                              selected: widget.clearItem!.value ==
+                              selected:
+                                  widget.clearItem!.value ==
                                   widget.selectedValue,
                               onTap: () =>
                                   widget.onSelected(widget.clearItem!.value),
@@ -1156,7 +1174,9 @@ class _AccordionGlassMenuState<T> extends State<_AccordionGlassMenu<T>> {
                             ),
                             Padding(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               child: Divider(
                                 height: 1,
                                 color: cs.outlineVariant,
@@ -1166,7 +1186,9 @@ class _AccordionGlassMenuState<T> extends State<_AccordionGlassMenu<T>> {
                           if (!hasAnyVisible)
                             Padding(
                               padding: const EdgeInsets.symmetric(
-                                  vertical: 16, horizontal: 4),
+                                vertical: 16,
+                                horizontal: 4,
+                              ),
                               child: Text(
                                 l.filterNoMatches,
                                 textAlign: TextAlign.center,
@@ -1301,6 +1323,7 @@ class _AccordionSearchFieldState extends State<_AccordionSearchField> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
+    final l = AppL10n.of(context);
     final hasText = widget.controller.text.isNotEmpty;
     return Container(
       decoration: BoxDecoration(
@@ -1330,9 +1353,7 @@ class _AccordionSearchFieldState extends State<_AccordionSearchField> {
                 isDense: true,
                 contentPadding: const EdgeInsets.symmetric(vertical: 12),
               ),
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: cs.onSurface,
-              ),
+              style: theme.textTheme.bodyMedium?.copyWith(color: cs.onSurface),
             ),
           ),
           if (hasText)
@@ -1341,7 +1362,7 @@ class _AccordionSearchFieldState extends State<_AccordionSearchField> {
             // distort the pill height.
             Semantics(
               button: true,
-              label: 'Clear search',
+              label: l.filterClearSearch,
               child: InkWell(
                 customBorder: const CircleBorder(),
                 onTap: () {
@@ -1405,7 +1426,9 @@ class _AccordionSection<T> extends StatelessWidget {
           // Subtle olive highlight on the group containing the active
           // pick so the user can see at a glance "this category is
           // where my current selection lives" even when collapsed.
-          color: hasActive ? cs.primary.withValues(alpha: 0.45) : cs.outlineVariant,
+          color: hasActive
+              ? cs.primary.withValues(alpha: 0.45)
+              : cs.outlineVariant,
           width: hasActive ? 1.2 : 1,
         ),
       ),
@@ -1426,11 +1449,7 @@ class _AccordionSection<T> extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.folder_outlined,
-                      size: 18,
-                      color: cs.secondary,
-                    ),
+                    Icon(Icons.folder_outlined, size: 18, color: cs.secondary),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -1607,19 +1626,18 @@ List<_FilterGroup<Course?>> _buildCourseGroups(AppL10n l) {
     byGroup[g] = <_FilterItem<Course?>>[];
   }
   for (final c in Course.values) {
-    byGroup[c.group]!.add(_FilterItem<Course?>(
-      value: c,
-      label: _courseLabel(l, c),
-      emoji: _courseEmoji(c),
-      triggerGroupLabel: _courseGroupLabel(l, c.group),
-    ));
+    byGroup[c.group]!.add(
+      _FilterItem<Course?>(
+        value: c,
+        label: _courseLabel(l, c),
+        emoji: _courseEmoji(c),
+        triggerGroupLabel: _courseGroupLabel(l, c.group),
+      ),
+    );
   }
   return [
     for (final g in CourseGroup.values)
-      _FilterGroup<Course?>(
-        label: _courseGroupLabel(l, g),
-        items: byGroup[g]!,
-      ),
+      _FilterGroup<Course?>(label: _courseGroupLabel(l, g), items: byGroup[g]!),
   ];
 }
 
@@ -1646,12 +1664,14 @@ List<_FilterGroup<Dietary?>> _buildDietaryGroups(AppL10n l) {
     byGroup[g] = <_FilterItem<Dietary?>>[];
   }
   for (final d in Dietary.values) {
-    byGroup[d.group]!.add(_FilterItem<Dietary?>(
-      value: d,
-      label: _dietaryLabel(l, d),
-      emoji: _dietaryEmoji(d),
-      triggerGroupLabel: _dietaryGroupLabel(l, d.group),
-    ));
+    byGroup[d.group]!.add(
+      _FilterItem<Dietary?>(
+        value: d,
+        label: _dietaryLabel(l, d),
+        emoji: _dietaryEmoji(d),
+        triggerGroupLabel: _dietaryGroupLabel(l, d.group),
+      ),
+    );
   }
   return [
     for (final g in DietaryGroup.values)

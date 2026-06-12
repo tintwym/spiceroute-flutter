@@ -423,6 +423,12 @@ class AppL10nEn extends AppL10n {
   String get filterNoMatches => 'No matches';
 
   @override
+  String get filterClearSearch => 'Clear search';
+
+  @override
+  String get filterDismissMenu => 'Dismiss menu';
+
+  @override
   String recipeMinutesShort(int minutes) {
     return '$minutes min';
   }

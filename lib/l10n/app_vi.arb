@@ -95,6 +95,8 @@
   "filterExpandAll": "MỞ TẤT CẢ",
   "filterCollapseAll": "ĐÓNG TẤT CẢ",
   "filterNoMatches": "Không tìm thấy",
+  "filterClearSearch": "Xoá tìm kiếm",
+  "filterDismissMenu": "Đóng menu",
 
   "recipeMinutesShort": "{minutes} phút",
   "@recipeMinutesShort": { "placeholders": { "minutes": { "type": "int" } } },

@@ -69,15 +69,15 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/ai/companion',
             builder: (_, _) => const AiCompanionScreen(),
           ),
-          GoRoute(path: '/saved', builder: (_, _) => const SavedRecipesScreen()),
+          GoRoute(
+            path: '/saved',
+            builder: (_, _) => const SavedRecipesScreen(),
+          ),
           GoRoute(
             path: '/my-recipes',
             builder: (_, _) => const MyRecipesScreen(),
           ),
-          GoRoute(
-            path: '/settings',
-            builder: (_, _) => const SettingsScreen(),
-          ),
+          GoRoute(path: '/settings', builder: (_, _) => const SettingsScreen()),
         ],
       ),
       GoRoute(
@@ -159,8 +159,7 @@ CustomTransitionPage<void> _modalPage({
 CustomTransitionPage<void> _authModalPage({
   required LocalKey key,
   required Widget child,
-}) =>
-    _modalPage(key: key, child: child);
+}) => _modalPage(key: key, child: child);
 
 class _NotFoundScreen extends StatelessWidget {
   const _NotFoundScreen({required this.uri});
@@ -198,8 +197,9 @@ class _NotFoundScreen extends StatelessWidget {
                     uri.toString(),
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurface
-                          .withValues(alpha: 0.55),
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.55,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),

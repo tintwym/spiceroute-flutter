@@ -7,6 +7,7 @@ import '../../models/spice_route.dart';
 import '../../shared/breakpoints.dart';
 import '../../shared/widgets.dart';
 import '../../state/auth.dart';
+import '../../state/locale.dart';
 import '../../state/providers.dart';
 import '../explore/explore_screen.dart' show SliverCrossAxisConstrained;
 
@@ -35,14 +36,35 @@ class _MyRecipesScreenState extends ConsumerState<MyRecipesScreen> {
   // resolved recipe list (titles + descriptions) until they hit
   // pull-to-refresh — a real cross-account data leak in the UI.
   String? _futureForUid;
+  // Mirror of the uid fence, but for the active UI locale. The
+  // explore + saved screens get auto-refresh on locale change for
+  // free because they're driven by Riverpod controllers that
+  // subscribe to `localeProvider`. This screen owns its Future
+  // directly, so it needs its own fence — without it, switching
+  // language while sitting on /my-recipes leaves the previous
+  // language's titles + descriptions cached until the user
+  // pull-to-refreshes (inconsistent with every other listing in the
+  // app and confusing if they were trying to verify the new
+  // language even took effect).
+  String? _futureForLocale;
 
   Future<SpiceRouteListResponse> _fetch() {
-    return ref.read(apiClientProvider).listRecipes(mine: true, limit: 100);
+    // Pass the active locale so user-authored recipes that were
+    // generated with the AI Creator in another language get their
+    // translations applied — see `ApiClient.listRecipes` for the full
+    // contract.
+    final locale = ref.read(localeProvider).languageCode;
+    return ref
+        .read(apiClientProvider)
+        .listRecipes(mine: true, limit: 100, translateTo: locale);
   }
 
   Future<void> _refresh() async {
     final next = _fetch();
-    setState(() => _future = next);
+    setState(() {
+      _future = next;
+      _futureForLocale = ref.read(localeProvider).languageCode;
+    });
     await next;
   }
 
@@ -50,6 +72,10 @@ class _MyRecipesScreenState extends ConsumerState<MyRecipesScreen> {
   Widget build(BuildContext context) {
     final l = AppL10n.of(context);
     final user = ref.watch(authControllerProvider);
+    // Subscribe so the build re-runs when the user toggles language.
+    // The cache-fence check below then sees the new value and re-
+    // fetches with `translate_to=<new locale>`.
+    final locale = ref.watch(localeProvider).languageCode;
 
     if (user == null) {
       // Defensive — shell hides this destination when signed-out, but a
@@ -58,6 +84,7 @@ class _MyRecipesScreenState extends ConsumerState<MyRecipesScreen> {
       // briefly flash their stale results.
       _future = null;
       _futureForUid = null;
+      _futureForLocale = null;
       return CenterMessage(
         icon: Icons.lock_outline,
         title: l.authProtectedTitle,
@@ -65,12 +92,16 @@ class _MyRecipesScreenState extends ConsumerState<MyRecipesScreen> {
       );
     }
 
-    // First build with a signed-in user — or the active uid has
-    // changed since we last fetched. Kick off a fresh request and
-    // throw away the previous user's cached Future.
-    if (_future == null || _futureForUid != user.uid) {
+    // First build with a signed-in user — or the active uid / locale
+    // has changed since we last fetched. Kick off a fresh request
+    // and throw away the previous Future (cross-user data leak if
+    // uid changes; stale-language titles if locale changes).
+    if (_future == null ||
+        _futureForUid != user.uid ||
+        _futureForLocale != locale) {
       _future = _fetch();
       _futureForUid = user.uid;
+      _futureForLocale = locale;
     }
 
     return RefreshIndicator(

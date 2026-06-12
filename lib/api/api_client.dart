@@ -105,6 +105,7 @@ class ApiClient {
     String? q,
     Cuisine? cuisine,
     String? language,
+    String? translateTo,
     String? tag,
     int? maxMinutes,
     bool premiumOnly = false,
@@ -119,6 +120,15 @@ class ApiClient {
           if (q != null && q.isNotEmpty) 'q': q,
           if (cuisine != null) 'cuisine': cuisine.wire,
           if (language != null && language.isNotEmpty) 'language': language,
+          // translate_to is distinct from `language` — the latter filters
+          // recipes by their *source* language, the former tells the
+          // backend "give me the title/description in this locale if you
+          // have one". Send it on every request whose state knows the
+          // active UI locale; the backend silently falls back to the
+          // source title/description for any row that wasn't seeded
+          // with a matching override.
+          if (translateTo != null && translateTo.isNotEmpty)
+            'translate_to': translateTo,
           if (tag != null && tag.isNotEmpty) 'tag': tag,
           // ignore: use_null_aware_elements
           if (maxMinutes != null) 'max_minutes': maxMinutes,
@@ -134,9 +144,15 @@ class ApiClient {
     }
   }
 
-  Future<SpiceRouteDetail> getRecipe(String id) async {
+  Future<SpiceRouteDetail> getRecipe(String id, {String? translateTo}) async {
     try {
-      final res = await _dio.get('/spice_routes/$id');
+      final res = await _dio.get(
+        '/spice_routes/$id',
+        queryParameters: {
+          if (translateTo != null && translateTo.isNotEmpty)
+            'translate_to': translateTo,
+        },
+      );
       return SpiceRouteDetail.fromJson(res.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw _toApiException(e);
