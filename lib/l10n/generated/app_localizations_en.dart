@@ -763,6 +763,10 @@ class AppL10nEn extends AppL10n {
   String get commonError => 'Something went wrong';
 
   @override
+  String get errorNetwork =>
+      'Couldn\'t reach the server. Check your connection and try again.';
+
+  @override
   String get commonLoading => 'Loading...';
 
   @override

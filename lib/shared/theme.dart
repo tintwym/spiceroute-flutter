@@ -271,18 +271,22 @@ ThemeData buildTheme(Brightness brightness) {
 
 TextTheme _buildTextTheme({required Color onSurface, required Color muted}) {
   // Editorial pairing matching the reference design:
-  //   - Display + headline + title  -> Playfair Display (high-contrast serif)
-  //     for the magazine-y "SpiceRoute" headline, section titles,
+  //   - Display + headline + titleLarge -> Playfair Display (high-contrast
+  //     serif) for the magazine-y "SpiceRoute" headline, section titles,
   //     and recipe card names.
-  //   - Body + label                -> default sans (Roboto, framework-bundled)
-  //     for legibility at small sizes and full glyph coverage of the
-  //     typographic punctuation we use (em-dash, ellipsis, curly quotes).
+  //   - titleMedium + body + label      -> Inter (geometric sans) for
+  //     legibility at small sizes, tight letterforms in form fields,
+  //     and full glyph coverage of the typographic punctuation we
+  //     use (em-dash, ellipsis, curly quotes). Pairs with Playfair
+  //     in the classic "decorative serif on quiet sans" editorial
+  //     stack — see The Atlantic, The New York Times Cooking, etc.
   //
-  // The serif is bundled as a local asset (see pubspec.yaml `fonts:`)
-  // so it works offline and never fires the runtime "Failed to load
-  // font" exception the google_fonts package logs when fonts.gstatic.com
-  // is unreachable.
+  // BOTH faces are bundled as local assets (see pubspec.yaml `fonts:`)
+  // so they work offline and never fire the runtime "Failed to load
+  // font" exception the google_fonts package logs when
+  // fonts.gstatic.com is unreachable.
   const serif = 'PlayfairDisplay';
+  const sans = 'Inter';
 
   // fontFamilyFallback — fixes the "Could not find a set of Noto fonts
   // to display all missing characters" console warning on Flutter web.
@@ -370,24 +374,28 @@ TextTheme _buildTextTheme({required Color onSurface, required Color muted}) {
       color: onSurface,
     ),
     titleMedium: TextStyle(
+      fontFamily: sans,
       fontFamilyFallback: fallback,
       fontSize: 16,
       fontWeight: FontWeight.w600,
       color: onSurface,
     ),
     bodyLarge: TextStyle(
+      fontFamily: sans,
       fontFamilyFallback: fallback,
       fontSize: 16,
       height: 1.5,
       color: onSurface,
     ),
     bodyMedium: TextStyle(
+      fontFamily: sans,
       fontFamilyFallback: fallback,
       fontSize: 14,
       height: 1.45,
       color: onSurface,
     ),
     bodySmall: TextStyle(
+      fontFamily: sans,
       fontFamilyFallback: fallback,
       fontSize: 12.5,
       height: 1.4,
@@ -401,16 +409,40 @@ TextTheme _buildTextTheme({required Color onSurface, required Color muted}) {
       color: muted,
     ),
     labelLarge: TextStyle(
+      fontFamily: sans,
       fontFamilyFallback: fallback,
       fontSize: 14,
       fontWeight: FontWeight.w600,
       color: onSurface,
     ),
     labelMedium: TextStyle(
+      fontFamily: sans,
       fontFamilyFallback: fallback,
       fontSize: 12.5,
       fontWeight: FontWeight.w500,
       color: onSurface,
+    ),
+    // `labelSmall` is widely used for tracked uppercase eyebrows
+    // ("CULINARY STUDIO", "EXPLORE BY GEOGRAPHIC REGION",
+    // "REAL-TIME SYNC", etc.). Without this entry, the slot
+    // inherits the framework's Material 3 default — which is
+    // Roboto / system sans — so the eyebrows render in a DIFFERENT
+    // family than every other label around them once the rest of
+    // the theme is swapped to Inter. Pin the family + fallback;
+    // numerical values are copied verbatim from the M3 spec
+    // (fontSize 11, weight 500, letterSpacing 0.5, height 1.45)
+    // so adding this entry can't drift the rendered metrics of
+    // any existing call site. Color picks `muted` so eyebrow text
+    // reads as secondary by default; call sites that need the
+    // primary tone keep `copyWith(color: ...)` in place.
+    labelSmall: TextStyle(
+      fontFamily: sans,
+      fontFamilyFallback: fallback,
+      fontSize: 11,
+      height: 1.45,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.5,
+      color: muted,
     ),
   );
 }

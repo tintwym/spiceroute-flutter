@@ -190,6 +190,7 @@
   "commonCancel": "取消",
   "commonRetry": "重试",
   "commonError": "出错了",
+  "errorNetwork": "无法连接到服务器。请检查您的网络连接后重试。",
   "commonLoading": "加载中...",
   "commonNotFound": "未找到",
   "commonOk": "确定",

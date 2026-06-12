@@ -266,6 +266,10 @@
   "commonCancel": "Cancel",
   "commonRetry": "Retry",
   "commonError": "Something went wrong",
+  "errorNetwork": "Couldn't reach the server. Check your connection and try again.",
+  "@errorNetwork": {
+    "description": "Shown when an API call fails before the server responds — timeout, DNS failure, TLS handshake failure, browser blocked the request, no internet. Surfaced by api_client.kApiErrorNetworkSentinel."
+  },
   "commonLoading": "Loading...",
   "commonNotFound": "Not found",
   "commonOk": "OK",

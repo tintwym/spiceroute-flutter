@@ -738,6 +738,9 @@ class AppL10nJa extends AppL10n {
   String get commonError => 'エラーが発生しました';
 
   @override
+  String get errorNetwork => 'サーバーに接続できませんでした。インターネット接続を確認して、もう一度お試しください。';
+
+  @override
   String get commonLoading => '読み込み中...';
 
   @override

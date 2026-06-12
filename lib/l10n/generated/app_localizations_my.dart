@@ -767,6 +767,10 @@ class AppL10nMy extends AppL10n {
   String get commonError => 'တစ်စုံတစ်ရာ မှားယွင်းသွားသည်';
 
   @override
+  String get errorNetwork =>
+      'ဆာဗာသို့ ဆက်သွယ်၍ မရပါ။ သင်၏ အင်တာနက်ချိတ်ဆက်မှုကို စစ်ဆေး၍ ထပ်မံကြိုးစားပါ။';
+
+  @override
   String get commonLoading => 'ဖွင့်နေသည်...';
 
   @override

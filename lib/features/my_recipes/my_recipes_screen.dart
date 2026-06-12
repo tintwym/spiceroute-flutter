@@ -5,6 +5,7 @@ import '../../api/api_client.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../models/spice_route.dart';
 import '../../shared/breakpoints.dart';
+import '../../shared/error_localization.dart';
 import '../../shared/widgets.dart';
 import '../../state/auth.dart';
 import '../../state/locale.dart';
@@ -118,8 +119,15 @@ class _MyRecipesScreenState extends ConsumerState<MyRecipesScreen> {
           }
           if (snap.hasError) {
             final err = snap.error;
+            // Localize via the sentinel-aware helper so transport
+            // errors render in the active locale (timeouts /
+            // connection failures used to leak English literals to
+            // every non-English user). Server-supplied `detail`
+            // strings pass through unchanged.
             String msg = l.commonError;
-            if (err is ApiException) msg = err.message;
+            if (err is ApiException) {
+              msg = localizeApiErrorMessage(context, err.message);
+            }
             return ListView(
               physics: const AlwaysScrollableScrollPhysics(),
               children: [

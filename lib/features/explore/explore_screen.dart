@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../shared/breakpoints.dart';
+import '../../shared/error_localization.dart';
 import '../../shared/filter_bar.dart';
 import '../../shared/page_hero.dart';
 import '../../shared/page_tabs.dart';
@@ -170,13 +171,13 @@ class ExploreScreen extends ConsumerWidget {
     }
 
     if (state.error != null && visible.isEmpty) {
-      // Translate the controller's sentinel — the state notifier
-      // can't reach AppL10n itself, so it stamps a known marker and
-      // the render site swaps in the localized string. Genuine
-      // server-supplied ApiException messages flow through unchanged.
-      final subtitle = state.error == kUnknownErrorSentinel
-          ? l.commonError
-          : state.error;
+      // Translate any sentinel string the controller may have stamped
+      // (`kUnknownErrorSentinel`, `kApiErrorNetworkSentinel`, …) into
+      // the active locale. Server-supplied `detail` strings flow
+      // through unchanged. See `shared/error_localization.dart` for
+      // the full sentinel list — every new sentinel must be added
+      // there to avoid leaking the raw marker into the UI.
+      final subtitle = localizeApiErrorMessage(context, state.error!);
       return [
         SliverFillRemaining(
           hasScrollBody: false,

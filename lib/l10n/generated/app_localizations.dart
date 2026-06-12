@@ -1449,6 +1449,12 @@ abstract class AppL10n {
   /// **'Something went wrong'**
   String get commonError;
 
+  /// Shown when an API call fails before the server responds — timeout, DNS failure, TLS handshake failure, browser blocked the request, no internet. Surfaced by api_client.kApiErrorNetworkSentinel.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach the server. Check your connection and try again.'**
+  String get errorNetwork;
+
   /// No description provided for @commonLoading.
   ///
   /// In en, this message translates to:

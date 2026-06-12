@@ -65,6 +65,30 @@ flutter:
         - asset: assets/fonts/PlayfairDisplay-Variable.ttf
         - asset: assets/fonts/PlayfairDisplay-Variable.ttf
           weight: 700
+    # Body / UI face. Paired with Playfair Display following the
+    # standard editorial-pairing pattern: serif for the big
+    # decorative headlines, geometric sans for everything else
+    # (body copy, buttons, form fields, app chrome).
+    #
+    # We bundle the variable TTF for the same reason we bundle
+    # Playfair Display — using the `google_fonts` package would
+    # fetch this from fonts.gstatic.com on first use and log a
+    # runtime exception (falling back to Roboto) for anyone
+    # offline or behind a firewall. Bundling makes the first
+    # paint deterministic.
+    #
+    # Variable font caveat: a single file covers weights 100-900,
+    # but `pubspec.yaml`'s `fonts:` declaration still needs
+    # explicit entries per weight Flutter should ask the engine
+    # for. We register only 400 (default) and 700 (bold) because
+    # those are the only two the current theme actually requests.
+    # Add more here only if/when a new TextStyle pulls a
+    # different `FontWeight`.
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/InterVariable.ttf
+        - asset: assets/fonts/InterVariable.ttf
+          weight: 700
 
 flutter_launcher_icons:
   image_path: "assets/icon/icon.png"

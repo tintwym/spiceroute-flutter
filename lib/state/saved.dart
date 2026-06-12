@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
-import 'dart:ui';
 
 import '../api/api_client.dart';
 import '../models/spice_route.dart';
@@ -83,6 +83,15 @@ class SavedRecipesController extends StateNotifier<SavedRecipesState> {
   ApiClient get _api => _ref.read(apiClientProvider);
   FirebaseFirestore? get _fs => _ref.read(firestoreProvider);
 
+  /// Monotonic counter incremented on every `_hydrate()` entry. Same
+  /// write-fence pattern `ExploreController.refresh` uses — only the
+  /// most recent hydrate is allowed to write `state.recipes` back so
+  /// concurrent triggers (boot + sign-in merge + locale change +
+  /// optimistic toggle re-fetch) don't interleave and leave the
+  /// visible recipe list out of sync with `state.ids` (e.g. ids says
+  /// "3 saved" but recipes shows only 2 cards).
+  int _hydrateToken = 0;
+
   Future<void> _bootstrap() async {
     state = state.copyWith(loading: true, clearError: true);
     try {
@@ -106,7 +115,14 @@ class SavedRecipesController extends StateNotifier<SavedRecipesState> {
   }
 
   Future<void> _hydrate() async {
+    final token = ++_hydrateToken;
     if (state.ids.isEmpty) {
+      // Guard the early-out too — a stale hydrate that was kicked
+      // off when ids were non-empty might race a `clearAll()` that
+      // emptied them, and the OUTGOING (stale) hydrate could
+      // overwrite the now-empty state with its earlier results
+      // unless we bail here as well.
+      if (token != _hydrateToken) return;
       state = state.copyWith(recipes: const [], loading: false);
       return;
     }
@@ -135,8 +151,20 @@ class SavedRecipesController extends StateNotifier<SavedRecipesState> {
           }
         }),
       );
+      // Bail mid-loop if a newer hydrate has started. Keeps us from
+      // burning the rest of the API budget on results that will be
+      // discarded anyway, and from holding the loading flag true
+      // longer than necessary.
+      if (token != _hydrateToken) return;
       hydrated.addAll(batchResults.whereType<SpiceRouteDetail>());
     }
+    // Final write-fence check before the only state mutation that
+    // actually publishes the recipe payload. Without this, a stale
+    // hydrate that started before a `toggle()` (which added a new
+    // id and triggered no new hydrate of its own) could clobber the
+    // optimistic update and leave `state.ids` and `state.recipes`
+    // out of sync — ids says "3 saved" but only 2 cards render.
+    if (token != _hydrateToken) return;
     // Drop ids that no longer resolve (e.g. deleted server-side).
     final stillValid = hydrated.map((r) => r.id).toSet();
     final pruned = state.ids.intersection(stillValid);
@@ -189,8 +217,17 @@ class SavedRecipesController extends StateNotifier<SavedRecipesState> {
         await _persistCloudDelta(add: toAdd);
       }
       if (hydrateAfter) await _hydrate();
-    } catch (_) {
-      // Best-effort: a Firestore outage shouldn't break local bookmarks.
+    } catch (e, st) {
+      // Best-effort: a Firestore outage shouldn't break local
+      // bookmarks. We DO want the failure surfaced in dev console
+      // though — previously this was a `// ignore` that silently
+      // hid permission-denied / rules-misconfig errors during
+      // development, so a broken rule looked like "sync works"
+      // until QA noticed bookmarks weren't reaching the cloud. The
+      // print is no-op in release builds (kDebugMode gate).
+      if (kDebugMode) {
+        debugPrint('SavedRecipes: cloud merge on sign-in failed: $e\n$st');
+      }
     }
   }
 
@@ -289,10 +326,15 @@ class SavedRecipesController extends StateNotifier<SavedRecipesState> {
           'updatedAt': FieldValue.serverTimestamp(),
         }, SetOptions(merge: true));
       }
-    } catch (_) {
-      // ignore — local storage is the source of truth; Firestore
-      // is the cross-device shadow. A retry loop here would just
-      // queue up duplicate writes on flaky connections.
+    } catch (e) {
+      // Local storage is the source of truth; Firestore is the
+      // cross-device shadow. A retry loop here would just queue
+      // duplicate writes on flaky connections — but we DO log so
+      // a misconfigured ruleset or auth-domain mismatch surfaces
+      // in dev console rather than failing silently for weeks.
+      if (kDebugMode) {
+        debugPrint('SavedRecipes: cloud delta write failed: $e');
+      }
     }
   }
 

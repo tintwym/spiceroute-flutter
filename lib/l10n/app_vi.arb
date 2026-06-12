@@ -190,6 +190,7 @@
   "commonCancel": "Hủy",
   "commonRetry": "Thử lại",
   "commonError": "Đã xảy ra lỗi",
+  "errorNetwork": "Không thể kết nối tới máy chủ. Vui lòng kiểm tra kết nối và thử lại.",
   "commonLoading": "Đang tải...",
   "commonNotFound": "Không tìm thấy",
   "commonOk": "OK",

@@ -8,6 +8,7 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../models/spice_route.dart';
 import '../../shared/brand.dart';
 import '../../shared/breakpoints.dart';
+import '../../shared/error_localization.dart';
 import '../../shared/format.dart';
 import '../../shared/widgets.dart';
 import '../../state/locale.dart';
@@ -128,8 +129,9 @@ class RecipeDetailScreen extends ConsumerWidget {
                             child: CenterMessage(
                               icon: Icons.error_outline,
                               title: l.commonError,
-                              subtitle:
-                                  (e is ApiException) ? e.message : e.toString(),
+                              subtitle: (e is ApiException)
+                                  ? localizeApiErrorMessage(context, e.message)
+                                  : e.toString(),
                               action: FilledButton(
                                 onPressed: () =>
                                     ref.invalidate(_detailProvider(recipeId)),
@@ -202,7 +204,7 @@ class RecipeDetailScreen extends ConsumerWidget {
     } on ApiException catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message)),
+        SnackBar(content: Text(localizeApiErrorMessage(context, e.message))),
       );
     }
   }

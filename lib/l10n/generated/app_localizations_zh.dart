@@ -736,6 +736,9 @@ class AppL10nZh extends AppL10n {
   String get commonError => '出错了';
 
   @override
+  String get errorNetwork => '无法连接到服务器。请检查您的网络连接后重试。';
+
+  @override
   String get commonLoading => '加载中...';
 
   @override

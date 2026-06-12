@@ -750,6 +750,10 @@ class AppL10nVi extends AppL10n {
   String get commonError => 'Đã xảy ra lỗi';
 
   @override
+  String get errorNetwork =>
+      'Không thể kết nối tới máy chủ. Vui lòng kiểm tra kết nối và thử lại.';
+
+  @override
   String get commonLoading => 'Đang tải...';
 
   @override

@@ -738,6 +738,9 @@ class AppL10nKo extends AppL10n {
   String get commonError => '문제가 발생했어요';
 
   @override
+  String get errorNetwork => '서버에 연결할 수 없습니다. 인터넷 연결을 확인하고 다시 시도해 주세요.';
+
+  @override
   String get commonLoading => '불러오는 중...';
 
   @override

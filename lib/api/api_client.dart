@@ -19,6 +19,27 @@ class ApiException implements Exception {
   String toString() => 'ApiException($statusCode): $message';
 }
 
+/// Sentinel surfaced in [ApiException.message] when the underlying
+/// failure is a *transport-level* error (timeout, connection refused,
+/// DNS resolution failure, web XHR onError) rather than a server-
+/// supplied response body. The render site swaps this for the
+/// localized "Couldn't connect to the server" string via
+/// [localizeApiErrorMessage] so non-English users don't see an
+/// English literal on a network blip.
+///
+/// Why a sentinel instead of localizing here directly: [ApiClient]
+/// lives in the data layer and has no [BuildContext], so it can't
+/// reach [AppL10n]. The sentinel is the data layer's way of saying
+/// "I have no human-readable message — render site, please supply
+/// one in the active locale."
+///
+/// Server-supplied `detail` strings from the backend pass through
+/// unchanged (those are already chosen for the caller's locale via
+/// the per-locale recipe translations + the backend's own
+/// localized error responses), so this sentinel ONLY appears when
+/// Dio raised before any response came back.
+const String kApiErrorNetworkSentinel = '__api_network_error__';
+
 /// Pluggable token provider. Returns a Firebase ID token (or null) for the
 /// currently signed-in user. The default no-op is used in places where we
 /// haven't wired in auth yet (e.g. tests).
@@ -327,21 +348,34 @@ class ApiClient {
       return ApiException(statusCode, data['detail'] as String);
     }
 
-    // Otherwise translate Dio's library-flavored errors into short, plain
-    // copy. The raw text (e.g. "The XMLHttpRequest onError callback was
-    // called…") is useless to end-users and was leaking into the UI.
+    // Otherwise emit a sentinel — the render site translates it via
+    // [localizeApiErrorMessage] using the active [AppL10n]. The raw
+    // Dio text (e.g. "The XMLHttpRequest onError callback was
+    // called…") is useless to end-users AND was previously a
+    // hardcoded English literal that leaked into the UI for every
+    // non-English speaker on a timeout / disconnect. All
+    // transport-level errors collapse to ONE sentinel because the
+    // user-actionable advice is identical for all of them ("check
+    // your connection and try again"); distinguishing
+    // "timeout vs. DNS vs. TLS handshake" inside the UI doesn't
+    // help the user fix it.
     final message = switch (e.type) {
       DioExceptionType.connectionTimeout ||
       DioExceptionType.sendTimeout ||
-      DioExceptionType.receiveTimeout =>
-        'Request timed out. Check your connection and try again.',
+      DioExceptionType.receiveTimeout ||
       DioExceptionType.connectionError ||
-      DioExceptionType.unknown =>
-        "Couldn't reach the server. Check your connection and try again.",
-      DioExceptionType.cancel => 'Request cancelled.',
-      DioExceptionType.badCertificate => 'Secure connection failed.',
+      DioExceptionType.unknown ||
+      DioExceptionType.cancel ||
+      DioExceptionType.badCertificate =>
+        kApiErrorNetworkSentinel,
+      // 4xx / 5xx with no `detail` body — use the HTTP status line
+      // (e.g. "Bad Gateway", "Service Unavailable"). These come
+      // from the upstream proxy / load balancer and ARE in English
+      // by spec — localizing them would lie. Leaving them as the
+      // status line gives the operator something to debug from a
+      // user report.
       DioExceptionType.badResponse =>
-        e.response?.statusMessage ?? 'Server error.',
+        e.response?.statusMessage ?? kApiErrorNetworkSentinel,
     };
     return ApiException(statusCode, message);
   }

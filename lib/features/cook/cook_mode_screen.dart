@@ -9,6 +9,7 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../models/spice_route.dart';
 import '../../shared/brand.dart';
 import '../../shared/breakpoints.dart';
+import '../../shared/error_localization.dart';
 import '../../shared/widgets.dart';
 import '../../state/cook_prefs.dart';
 import '../../state/locale.dart';
@@ -72,7 +73,9 @@ class CookModeScreen extends ConsumerWidget {
           error: (e, _) => CenterMessage(
             icon: Icons.error_outline,
             title: l.commonError,
-            subtitle: (e is ApiException) ? e.message : e.toString(),
+            subtitle: (e is ApiException)
+                ? localizeApiErrorMessage(context, e.message)
+                : e.toString(),
             action: FilledButton(
               onPressed: () => ref.invalidate(_cookDetailProvider(recipeId)),
               child: Text(l.commonRetry),
