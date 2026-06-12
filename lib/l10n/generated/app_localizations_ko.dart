@@ -839,9 +839,6 @@ class AppL10nKo extends AppL10n {
   String get authPrimaryRegister => '계정 만들기';
 
   @override
-  String get authFirebaseNote => '참고: Firebase 콘솔에서 이메일/비밀번호 로그인을 활성화해 주세요.';
-
-  @override
   String get authErrorInvalid => '이메일 또는 비밀번호가 올바르지 않아요.';
 
   @override

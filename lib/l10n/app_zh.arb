@@ -224,7 +224,6 @@
   "authEmailHint": "chef@example.com",
   "authPrimarySignIn": "进入工作室",
   "authPrimaryRegister": "立即创建",
-  "authFirebaseNote": "提示:请确保已在 Firebase 控制台开启邮箱/密码登录。",
   "authErrorInvalid": "邮箱或密码不正确。",
   "authErrorEmailInUse": "该邮箱已被注册。",
   "authErrorWeakPassword": "请使用更强的密码(至少 6 个字符)。",

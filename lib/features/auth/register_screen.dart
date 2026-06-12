@@ -124,7 +124,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     return AuthCard(
       title: l.authRegisterTitle,
       subtitle: l.authRegisterSubtitle,
-      bottomNote: _BottomNote(text: devMode ? l.authDevModeBanner : l.authFirebaseNote),
+      bottomNote: devMode ? _BottomNote(text: l.authDevModeBanner) : null,
       body: Form(
         key: _form,
         child: Column(

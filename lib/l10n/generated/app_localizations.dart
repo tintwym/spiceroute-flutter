@@ -1647,12 +1647,6 @@ abstract class AppL10n {
   /// **'Create Account'**
   String get authPrimaryRegister;
 
-  /// No description provided for @authFirebaseNote.
-  ///
-  /// In en, this message translates to:
-  /// **'Note: If registering with traditional credentials, ensure standard email/password authentication is enabled inside your Google Firebase console setup.'**
-  String get authFirebaseNote;
-
   /// No description provided for @authErrorInvalid.
   ///
   /// In en, this message translates to:

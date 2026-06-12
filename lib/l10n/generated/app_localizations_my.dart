@@ -872,10 +872,6 @@ class AppL10nMy extends AppL10n {
   String get authPrimaryRegister => 'အကောင့်ဖန်တီး';
 
   @override
-  String get authFirebaseNote =>
-      'မှတ်ချက် - ရိုးရိုး အီးမေးလ်/စကားဝှက်ဖြင့် မှတ်ပုံတင်လိုပါက သင်၏ Google Firebase console တွင် စံ အီးမေးလ်/စကားဝှက် authentication ကို ဖွင့်ထားကြောင်း သေချာပါစေ။';
-
-  @override
   String get authErrorInvalid => 'အီးမေးလ် သို့မဟုတ် စကားဝှက် မှားနေပါသည်။';
 
   @override

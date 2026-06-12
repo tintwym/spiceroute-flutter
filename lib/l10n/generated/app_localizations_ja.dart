@@ -839,9 +839,6 @@ class AppL10nJa extends AppL10n {
   String get authPrimaryRegister => 'アカウント作成';
 
   @override
-  String get authFirebaseNote => '注意: Firebase コンソールでメール/パスワードログインを有効にしてください。';
-
-  @override
   String get authErrorInvalid => 'メールまたはパスワードが正しくありません。';
 
   @override

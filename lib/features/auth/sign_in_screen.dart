@@ -150,7 +150,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     return AuthCard(
       title: l.authWelcomeTitle,
       subtitle: l.authWelcomeSubtitle,
-      bottomNote: _BottomNote(text: devMode ? l.authDevModeBanner : l.authFirebaseNote),
+      bottomNote: devMode ? _BottomNote(text: l.authDevModeBanner) : null,
       body: Form(
         key: _form,
         child: Column(

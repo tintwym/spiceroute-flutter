@@ -300,7 +300,6 @@
   "authEmailHint": "chef@example.com",
   "authPrimarySignIn": "Access Studio",
   "authPrimaryRegister": "Create Account",
-  "authFirebaseNote": "Note: If registering with traditional credentials, ensure standard email/password authentication is enabled inside your Google Firebase console setup.",
   "authErrorInvalid": "Email or password isn't right.",
   "authErrorEmailInUse": "That email is already registered.",
   "authErrorWeakPassword": "Pick a stronger password (at least 6 characters).",

@@ -855,10 +855,6 @@ class AppL10nVi extends AppL10n {
   String get authPrimaryRegister => 'Tạo tài khoản';
 
   @override
-  String get authFirebaseNote =>
-      'Lưu ý: bật đăng nhập email/mật khẩu trong Firebase console.';
-
-  @override
   String get authErrorInvalid => 'Email hoặc mật khẩu không đúng.';
 
   @override

@@ -224,7 +224,6 @@
   "authEmailHint": "chef@example.com",
   "authPrimarySignIn": "Vào Studio",
   "authPrimaryRegister": "Tạo tài khoản",
-  "authFirebaseNote": "Lưu ý: bật đăng nhập email/mật khẩu trong Firebase console.",
   "authErrorInvalid": "Email hoặc mật khẩu không đúng.",
   "authErrorEmailInUse": "Email này đã được đăng ký.",
   "authErrorWeakPassword": "Hãy chọn mật khẩu mạnh hơn (tối thiểu 6 ký tự).",

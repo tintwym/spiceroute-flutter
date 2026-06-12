@@ -299,7 +299,6 @@
   "authEmailHint": "chef@example.com",
   "authPrimarySignIn": "Studio သို့",
   "authPrimaryRegister": "အကောင့်ဖန်တီး",
-  "authFirebaseNote": "မှတ်ချက် - ရိုးရိုး အီးမေးလ်/စကားဝှက်ဖြင့် မှတ်ပုံတင်လိုပါက သင်၏ Google Firebase console တွင် စံ အီးမေးလ်/စကားဝှက် authentication ကို ဖွင့်ထားကြောင်း သေချာပါစေ။",
   "authErrorInvalid": "အီးမေးလ် သို့မဟုတ် စကားဝှက် မှားနေပါသည်။",
   "authErrorEmailInUse": "ထို အီးမေးလ်ကို မှတ်ပုံတင်ပြီးသား ဖြစ်နေပါသည်။",
   "authErrorWeakPassword": "ပိုခိုင်မာသော စကားဝှက်ကို ရွေးပါ (အနည်းဆုံး ၆ လုံး)။",

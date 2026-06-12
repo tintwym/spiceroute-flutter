@@ -224,7 +224,6 @@
   "authEmailHint": "chef@example.com",
   "authPrimarySignIn": "스튜디오 입장",
   "authPrimaryRegister": "계정 만들기",
-  "authFirebaseNote": "참고: Firebase 콘솔에서 이메일/비밀번호 로그인을 활성화해 주세요.",
   "authErrorInvalid": "이메일 또는 비밀번호가 올바르지 않아요.",
   "authErrorEmailInUse": "이미 가입된 이메일이에요.",
   "authErrorWeakPassword": "더 강한 비밀번호를 사용해 주세요 (6자 이상).",

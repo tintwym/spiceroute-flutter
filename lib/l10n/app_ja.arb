@@ -224,7 +224,6 @@
   "authEmailHint": "chef@example.com",
   "authPrimarySignIn": "スタジオへ",
   "authPrimaryRegister": "アカウント作成",
-  "authFirebaseNote": "注意: Firebase コンソールでメール/パスワードログインを有効にしてください。",
   "authErrorInvalid": "メールまたはパスワードが正しくありません。",
   "authErrorEmailInUse": "そのメールアドレスは既に登録されています。",
   "authErrorWeakPassword": "より強いパスワードを設定してください(6文字以上)。",

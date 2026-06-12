@@ -836,9 +836,6 @@ class AppL10nZh extends AppL10n {
   String get authPrimaryRegister => '立即创建';
 
   @override
-  String get authFirebaseNote => '提示:请确保已在 Firebase 控制台开启邮箱/密码登录。';
-
-  @override
   String get authErrorInvalid => '邮箱或密码不正确。';
 
   @override

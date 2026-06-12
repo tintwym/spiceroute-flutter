@@ -868,10 +868,6 @@ class AppL10nEn extends AppL10n {
   String get authPrimaryRegister => 'Create Account';
 
   @override
-  String get authFirebaseNote =>
-      'Note: If registering with traditional credentials, ensure standard email/password authentication is enabled inside your Google Firebase console setup.';
-
-  @override
   String get authErrorInvalid => 'Email or password isn\'t right.';
 
   @override
