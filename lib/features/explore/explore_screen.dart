@@ -4,14 +4,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../shared/breakpoints.dart';
 import '../../shared/filter_bar.dart';
+import '../../shared/page_hero.dart';
 import '../../shared/page_tabs.dart';
 import '../../shared/region_filter_bar.dart';
 import '../../shared/site_footer.dart';
+import '../../shared/sliver_pinned_filter_bar.dart';
 import '../../shared/widgets.dart';
 import '../../state/explore.dart';
 import 'community_board.dart';
 import 'cross_cultural_stories.dart';
-import 'explore_hero.dart';
+import 'explore_filter_bar.dart';
 
 /// Explore tab — the editorial home page. Top to bottom: hero (badge +
 /// serif headline + search + result count), the filter bar, the recipe
@@ -47,9 +49,27 @@ class ExploreScreen extends ConsumerWidget {
       // momentum scroll for free.
       physics: const ClampingScrollPhysics(),
       slivers: [
+        // Editorial hero — badge + serif "SpiceRoute" + tagline.
+        // Search and result counter USED to live in this hero's
+        // `below` slot; they were extracted into a separate pinned
+        // sliver (next) so refining a query mid-scroll no longer
+        // requires scrolling back up. The hero stays a one-time
+        // welcome that's free to leave the viewport.
         SliverPadding(
           padding: pagePad.copyWith(top: 32, bottom: 8),
-          sliver: SliverToBoxAdapter(child: framed(const ExploreHero())),
+          sliver: SliverToBoxAdapter(child: framed(const PageHero())),
+        ),
+        // Pinned search field + result counter. Sticks to the top of
+        // the viewport as soon as the hero scrolls past it. Phone-
+        // class viewports render the counter only (the search input
+        // itself lives in the AppBar pill — see
+        // `responsive_scaffold.dart`).
+        SliverPinnedFilterBar(
+          height: ExploreFilterRow.estimatedHeight(context),
+          child: Padding(
+            padding: pagePad.copyWith(top: 16, bottom: 16),
+            child: framed(const ExploreFilterRow()),
+          ),
         ),
         // Page-level tab row sits between the hero and the filter bar —
         // mirrors the reference design's banded sub-nav under the
