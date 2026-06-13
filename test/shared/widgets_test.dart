@@ -183,6 +183,67 @@ void main() {
   );
 
   testWidgets(
+    'card footer renders full time on typical desktop 4-up widths',
+    (tester) async {
+      // Regression for "we don't see fully time" — on wide-tier 4-up
+      // laptops the footer landed in tight mode with Flexible(time),
+      // Flexible(kcal), and Spacer all competing for residual space,
+      // and time lost: it ellipsized to "1 h 15 …".
+      //
+      // The fix drops the difficulty pill + Spacer in tight mode so
+      // time, servings, and kcal all render at their intrinsic widths.
+      //
+      // We use a 280-dp card width. The app's `cardTheme.margin` is
+      // `EdgeInsets.zero`, so the card takes the full SizedBox width
+      // and the footer ends up at 280 − 28 (column padding) = 252 dp.
+      // That's safely below the 290-dp tight/roomy split (so the
+      // difficulty pill is suppressed) and well above the
+      // ~211-dp floor where Ahem (the test font, 1 em per glyph)
+      // can still fit "1 h 15 min" + servings + compact kcal at
+      // intrinsic widths. Narrower 4-up widths are still covered
+      // by the "no overflow" test below.
+      final long = SpiceRouteSummary(
+        id: 'r-time',
+        title: 'Slow braise',
+        description: 'Long cook.',
+        prepMinutes: 15,
+        cookMinutes: 60,
+        servings: 6,
+        imageUrl: 'https://example.com/braise.jpg',
+        cuisine: Cuisine.italian,
+        caloriesPerServing: 620,
+      );
+      await pumpCard(tester, long, width: 280);
+
+      // Time text must contain the minutes portion verbatim — no
+      // ellipsis. We match on the substring "15" because the exact
+      // formatter output depends on locale (e.g. "1 h 15 min" en,
+      // "1時間15分" ja).
+      expect(
+        find.textContaining('15'),
+        findsWidgets,
+        reason: 'time minutes must render verbatim, not as "1 h 15 …"',
+      );
+      expect(
+        find.textContaining('…'),
+        findsNothing,
+        reason: 'no ellipsis should appear in the metadata row',
+      );
+      // Kcal must remain visible too — the v2→v3 fix dropped the
+      // pill, not the data.
+      expect(find.textContaining('620'), findsOneWidget);
+      // Difficulty pill should NOT render at this width band — it's
+      // dropped in tight mode to make room for time/servings/kcal.
+      expect(
+        find.textContaining('MEDIUM'),
+        findsNothing,
+        reason: 'difficulty pill is suppressed below 290-dp footer width',
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
     'card footer keeps kcal visible at typical desktop 4-up widths',
     (tester) async {
       // Regression for "cannot see kcal on web layout". On wide-tier

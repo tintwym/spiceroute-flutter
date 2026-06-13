@@ -289,8 +289,9 @@ class RecipeCard extends ConsumerWidget {
   }
 }
 
-/// Clean footer row: time · servings · calories on the left, a soft
-/// difficulty pill pinned to the far right.
+/// Clean footer row: time · servings · calories on the left. On
+/// roomy widths a soft difficulty pill is also pinned to the far
+/// right; on tight widths the pill is suppressed so the data fits.
 ///
 /// Two render modes, picked by [LayoutBuilder] from the footer width.
 ///
@@ -305,11 +306,23 @@ class RecipeCard extends ConsumerWidget {
 /// ~184–280 dp on most laptops, small-tablet 2-up runs ~232–303 dp,
 /// some narrow phone columns dip below 290 too):
 ///   - 8-dp gaps
-///   - [Flexible] wrappers on time + kcal so they ellipsize under
-///     pressure rather than overflowing the cell
+///   - difficulty pill is **dropped** at this width band. Worst-case
+///     English ("1 h 15 min") needs ~90 dp at intrinsic; with the
+///     pill (~70 dp) + servings (~35 dp) + compact kcal (~35 dp) +
+///     three 8-dp gaps the row totals 254 dp before any Spacer
+///     slack. Anything narrower forced the time to ellipsize to
+///     "1 h 15 …", which is what users actually saw on every
+///     1280-px-class laptop. Dropping the pill (stylistic chrome
+///     that's already redundant with cooking time — longer cook =
+///     harder) frees that 70 dp so the *data* (time/servings/kcal)
+///     all renders verbatim.
+///   - items pack left (no [Spacer]); the freed slack sits as empty
+///     space on the right of the row
+///   - [Flexible] wrapper on time stays as a safety net for sub-130-dp
+///     viewports; at every realistic width it's a no-op and time
+///     takes its intrinsic size
 ///   - kcal stays in compact form ("620"), and is dropped entirely
-///     only below 150 dp (a phone-landscape-with-sidebar edge case)
-///   - difficulty pill is right-pinned with [Spacer]
+///     only below 180 dp (where time + servings is the floor)
 ///
 /// **Roomy mode** (footer ≥ 290 dp — phone single-column, tablet 2-up
 /// at full width, recipe-detail modal). CSS analogue:
@@ -322,13 +335,19 @@ class RecipeCard extends ConsumerWidget {
 ///   - kcal is full "620 kcal" above 380 dp, compact "620" below;
 ///     it's no longer hidden anywhere in this band.
 ///
-/// History: the original split had tight mode at <230 dp and roomy
-/// mode at ≥230 dp with `hideKcal = w < 290` inside roomy. That
-/// produced a dead band at 230–289 dp where kcal silently disappeared
-/// — which is exactly the footer width range every wide-tier 4-up
-/// laptop layout (1280–1880 px viewports) and every small-tablet
-/// 2-up layout (600–744 px) lands in. Lifting the boundary to 290 dp
-/// puts those layouts back in tight mode, where compact kcal fits.
+/// History:
+///   * v1: tight at <230, roomy at ≥230, `hideKcal = w < 290`
+///     inside roomy. → dead band 230–289 dp where kcal silently
+///     vanished on every wide-tier 4-up laptop layout.
+///   * v2: lifted boundary to 290 dp so wide-tier 4-up landed in
+///     tight mode and showed compact kcal. But the tight-mode row
+///     still kept the difficulty pill + Spacer, leaving Flexible
+///     time fighting Flexible kcal and Spacer for residual space —
+///     time ellipsized to "1 h 15 …" on those same layouts.
+///   * v3 (current): tight mode drops the difficulty pill and the
+///     Spacer entirely. Items pack left at intrinsic widths; time
+///     renders fully. The pill returns at ≥290 dp where there's
+///     room to right-pin it without crowding the data.
 class _CardFooter extends StatelessWidget {
   const _CardFooter({required this.recipe});
   final SpiceRouteSummary recipe;
@@ -346,33 +365,36 @@ class _CardFooter extends StatelessWidget {
 
       // -----------------------------------------------------------
       // Tight mode (4-up desktop / wide grids, small-tablet 2-up,
-      // and any other layout below the 290-dp threshold). Compact
-      // kcal + Flexible time keeps everything visible without ever
-      // overflowing — the Row distributes the residual space among
-      // the three Flexibles (time, kcal, Spacer) so degraded cases
-      // ellipsize rather than triggering a RenderFlex overflow.
+      // and any other layout below the 290-dp threshold).
+      //
+      // Drop the difficulty pill here so the time, servings, and
+      // kcal numerals all render at their intrinsic widths without
+      // ellipsis. Items pack left (no Spacer); freed slack sits on
+      // the right.
+      //
+      // Sub-band at < 180 dp drops kcal too — only time + servings
+      // can fit at this floor (90 + 35 + 8 ≈ 133 dp).
       // -----------------------------------------------------------
       if (w < 290) {
-        final hideKcal = w < 150;
+        final hideKcal = w < 180;
         final kcalText = kcal == null ? null : '$kcal';
         return Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            // Flexible is a safety net for degenerate viewports
+            // (< 130 dp). At every realistic width the time text
+            // takes its intrinsic size and Flexible is a no-op.
             Flexible(child: _MetaItem(icon: Icons.schedule, text: timeText)),
             const SizedBox(width: 8),
             _MetaItem(
                 icon: Icons.person_outline, text: '${recipe.servings}'),
             if (kcalText != null && !hideKcal) ...[
               const SizedBox(width: 8),
-              Flexible(
-                child: _MetaItem(
-                  icon: Icons.local_fire_department_outlined,
-                  text: kcalText,
-                ),
+              _MetaItem(
+                icon: Icons.local_fire_department_outlined,
+                text: kcalText,
               ),
             ],
-            const Spacer(),
-            _DifficultyPill(label: difficulty),
           ],
         );
       }
