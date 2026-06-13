@@ -1428,9 +1428,23 @@ class _AccordionSearchFieldState extends State<_AccordionSearchField> {
     final cs = theme.colorScheme;
     final l = AppL10n.of(context);
     final hasText = widget.controller.text.isNotEmpty;
+    // `surfaceContainerHighest` (not `surface`) on purpose. In dark
+    // mode `cs.surface` == #1B1F15 which is also the page background,
+    // so a search bar filled with `cs.surface` looks like a DARKER
+    // hole punched through the lighter frosted-glass sheet (the
+    // sheet sits on an 8% white overlay over a backdrop blur, which
+    // raises its effective tone). That's the wrong direction —
+    // inputs should read as a *raised* element, not recessed. The
+    // theme's design doc explicitly assigns `surfaceContainerHighest`
+    // (#272C1F dark / #F5F2ED light) to "inner surfaces — dropdown
+    // items, card details", and Material 3's `inputDecorationTheme`
+    // already uses the same token as the canonical filled-input
+    // colour. Pinning here keeps the bar consistent with both the
+    // outer trigger pill (also `surfaceContainerHighest`) and the
+    // M3 input convention.
     return Container(
       decoration: BoxDecoration(
-        color: cs.surface,
+        color: cs.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: cs.outlineVariant, width: 1),
       ),
