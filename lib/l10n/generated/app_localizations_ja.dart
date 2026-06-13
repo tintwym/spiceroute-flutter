@@ -424,6 +424,18 @@ class AppL10nJa extends AppL10n {
   String get filterSearchDietary => '食事制限を検索（例：グルテンフリー、ビーガン…）';
 
   @override
+  String get filterTabCourse => 'コース別';
+
+  @override
+  String get filterTabDiet => '食事・ライフスタイル別';
+
+  @override
+  String get filterCourseHeading => 'コース選択フィルター';
+
+  @override
+  String get filterDietHeading => '食事・ライフスタイル制限';
+
+  @override
   String filterChoicesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

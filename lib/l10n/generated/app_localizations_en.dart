@@ -430,6 +430,18 @@ class AppL10nEn extends AppL10n {
   String get filterSearchDietary => 'Search diets (e.g. Gluten-Free, Vegan…)';
 
   @override
+  String get filterTabCourse => 'By Course';
+
+  @override
+  String get filterTabDiet => 'By Diet & Lifestyle';
+
+  @override
+  String get filterCourseHeading => 'COURSE SELECTION FILTERS';
+
+  @override
+  String get filterDietHeading => 'DIETARY & LIFESTYLE RESTRICTIONS';
+
+  @override
   String filterChoicesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

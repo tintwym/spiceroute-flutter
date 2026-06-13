@@ -96,6 +96,10 @@
 
   "filterSearchCourses": "코스 검색 (예: 디저트, 메인…)",
   "filterSearchDietary": "식단 검색 (예: 글루텐프리, 비건…)",
+  "filterTabCourse": "코스별",
+  "filterTabDiet": "식단 & 라이프스타일별",
+  "filterCourseHeading": "코스 선택 필터",
+  "filterDietHeading": "식단 & 라이프스타일",
   "filterChoicesCount": "{count, plural, =1{1개} other{{count}개}}",
   "@filterChoicesCount": { "placeholders": { "count": { "type": "int" } } },
   "filterExpandAll": "모두 펼치기",

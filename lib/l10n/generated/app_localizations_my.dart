@@ -436,6 +436,18 @@ class AppL10nMy extends AppL10n {
       'အစားအသောက် ရှာဖွေပါ (ဥပမာ Gluten-Free, Vegan…)';
 
   @override
+  String get filterTabCourse => 'ဟင်းပွဲအလိုက်';
+
+  @override
+  String get filterTabDiet => 'အစားအသောက် နှင့် ဘဝနေထိုင်မှုအလိုက်';
+
+  @override
+  String get filterCourseHeading => 'ဟင်းပွဲ ရွေးချယ်မှု စစ်ထုတ်ချက်';
+
+  @override
+  String get filterDietHeading => 'အစားအသောက် နှင့် ဘဝနေထိုင်မှု';
+
+  @override
   String filterChoicesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

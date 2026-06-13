@@ -157,6 +157,10 @@
 
   "filterSearchCourses": "Search courses (e.g. Dessert, Main…)",
   "filterSearchDietary": "Search diets (e.g. Gluten-Free, Vegan…)",
+  "filterTabCourse": "By Course",
+  "filterTabDiet": "By Diet & Lifestyle",
+  "filterCourseHeading": "COURSE SELECTION FILTERS",
+  "filterDietHeading": "DIETARY & LIFESTYLE RESTRICTIONS",
   "filterChoicesCount": "{count, plural, =1{1 choice} other{{count} choices}}",
   "@filterChoicesCount": { "placeholders": { "count": { "type": "int" } } },
   "filterExpandAll": "EXPAND ALL",

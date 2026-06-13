@@ -420,6 +420,18 @@ class AppL10nZh extends AppL10n {
   String get filterSearchDietary => '搜索饮食偏好（如：无麸质、纯素…）';
 
   @override
+  String get filterTabCourse => '按餐式';
+
+  @override
+  String get filterTabDiet => '按饮食偏好';
+
+  @override
+  String get filterCourseHeading => '餐式筛选';
+
+  @override
+  String get filterDietHeading => '饮食与生活方式';
+
+  @override
   String filterChoicesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

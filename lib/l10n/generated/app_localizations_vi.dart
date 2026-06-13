@@ -429,6 +429,18 @@ class AppL10nVi extends AppL10n {
       'Tìm chế độ ăn (vd: Không gluten, Thuần chay…)';
 
   @override
+  String get filterTabCourse => 'Theo bữa ăn';
+
+  @override
+  String get filterTabDiet => 'Theo chế độ ăn & lối sống';
+
+  @override
+  String get filterCourseHeading => 'BỘ LỌC BỮA ĂN';
+
+  @override
+  String get filterDietHeading => 'CHẾ ĐỘ ĂN & LỐI SỐNG';
+
+  @override
   String filterChoicesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

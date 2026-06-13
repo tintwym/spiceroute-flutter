@@ -424,6 +424,18 @@ class AppL10nKo extends AppL10n {
   String get filterSearchDietary => '식단 검색 (예: 글루텐프리, 비건…)';
 
   @override
+  String get filterTabCourse => '코스별';
+
+  @override
+  String get filterTabDiet => '식단 & 라이프스타일별';
+
+  @override
+  String get filterCourseHeading => '코스 선택 필터';
+
+  @override
+  String get filterDietHeading => '식단 & 라이프스타일';
+
+  @override
   String filterChoicesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

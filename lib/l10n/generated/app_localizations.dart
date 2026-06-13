@@ -879,6 +879,30 @@ abstract class AppL10n {
   /// **'Search diets (e.g. Gluten-Free, Vegan…)'**
   String get filterSearchDietary;
 
+  /// No description provided for @filterTabCourse.
+  ///
+  /// In en, this message translates to:
+  /// **'By Course'**
+  String get filterTabCourse;
+
+  /// No description provided for @filterTabDiet.
+  ///
+  /// In en, this message translates to:
+  /// **'By Diet & Lifestyle'**
+  String get filterTabDiet;
+
+  /// No description provided for @filterCourseHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'COURSE SELECTION FILTERS'**
+  String get filterCourseHeading;
+
+  /// No description provided for @filterDietHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'DIETARY & LIFESTYLE RESTRICTIONS'**
+  String get filterDietHeading;
+
   /// No description provided for @filterChoicesCount.
   ///
   /// In en, this message translates to:

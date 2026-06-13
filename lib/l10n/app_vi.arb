@@ -96,6 +96,10 @@
 
   "filterSearchCourses": "Tìm bữa ăn (vd: Tráng miệng, Món chính…)",
   "filterSearchDietary": "Tìm chế độ ăn (vd: Không gluten, Thuần chay…)",
+  "filterTabCourse": "Theo bữa ăn",
+  "filterTabDiet": "Theo chế độ ăn & lối sống",
+  "filterCourseHeading": "BỘ LỌC BỮA ĂN",
+  "filterDietHeading": "CHẾ ĐỘ ĂN & LỐI SỐNG",
   "filterChoicesCount": "{count, plural, =1{1 lựa chọn} other{{count} lựa chọn}}",
   "@filterChoicesCount": { "placeholders": { "count": { "type": "int" } } },
   "filterExpandAll": "MỞ TẤT CẢ",

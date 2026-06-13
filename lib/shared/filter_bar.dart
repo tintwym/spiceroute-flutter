@@ -42,51 +42,17 @@ class FilterBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppL10n.of(context);
-
-    final courseCol = _FilterColumn<Course?>(
-      label: l.filterCourseLabel,
-      labelIcon: Icons.schedule,
-      value: course,
-      hintEmoji: _allCoursesEmoji,
-      hintText: l.filterAllCourses,
-      // Same accordion treatment as Dietary: search field, collapsible
-      // CourseGroup sections (Early Day, Daytime / Casual, …), and an
-      // EXPAND ALL / COLLAPSE ALL toggle. `items` only carries the
-      // "All Courses" sentinel — the accordion reads its real options
-      // from `groups` and the trigger pill resolves the active value
-      // against the flattened group items.
-      items: [
-        _FilterItem<Course?>(
-          value: null,
-          label: l.filterAllCourses,
-          emoji: _allCoursesEmoji,
-        ),
-      ],
-      groups: _buildCourseGroups(l),
-      searchHint: l.filterSearchCourses,
-      onChanged: onCourseChanged,
+    final courseGroups = _buildCourseGroups(l);
+    final dietaryGroups = _buildDietaryGroups(l);
+    final courseClearItem = _FilterItem<Course?>(
+      value: null,
+      label: l.filterAllCourses,
+      emoji: _allCoursesEmoji,
     );
-
-    final dietaryCol = _FilterColumn<Dietary?>(
-      label: l.filterDietaryLabel,
-      labelIcon: Icons.eco_outlined,
-      value: dietary,
-      hintEmoji: _allDietaryEmoji,
-      hintText: l.filterAllDietary,
-      // Flat `items` only carries the "All Requests" sentinel — the
-      // accordion menu reads its real options from `groups`. The
-      // sentinel still appears in `items` so the trigger pill knows
-      // how to render the cleared state (hint emoji + hint text).
-      items: [
-        _FilterItem(
-          value: null,
-          label: l.filterAllDietary,
-          emoji: _allDietaryEmoji,
-        ),
-      ],
-      groups: _buildDietaryGroups(l),
-      searchHint: l.filterSearchDietary,
-      onChanged: onDietaryChanged,
+    final dietaryClearItem = _FilterItem<Dietary?>(
+      value: null,
+      label: l.filterAllDietary,
+      emoji: _allDietaryEmoji,
     );
 
     return LayoutBuilder(
@@ -96,6 +62,92 @@ class FilterBar extends StatelessWidget {
         // RESTRICTIONS" which is long). Stack vertically on narrow
         // screens so each column gets the full width.
         final stacked = constraints.maxWidth < 560;
+
+        // On mobile, both pills open a single shared tabbed sheet
+        // (matches the iOS-style minimalist filter mockup). The pill
+        // that was tapped pre-selects its own tab, but the user can
+        // switch between "By Course" and "By Diet & Lifestyle" inside
+        // the same sheet without dismissing.
+        //
+        // On desktop we keep the original behaviour: each pill opens
+        // its own single-dimension accordion route anchored beneath
+        // it. The two columns are visually adjacent so a tabbed sheet
+        // would just be redundant chrome.
+        void Function(
+          BuildContext,
+          Offset triggerOrigin,
+          Size triggerSize,
+        )?
+        openCourseOnMobile;
+        void Function(
+          BuildContext,
+          Offset triggerOrigin,
+          Size triggerSize,
+        )?
+        openDietaryOnMobile;
+
+        if (stacked) {
+          Future<void> openTabbed(
+            BuildContext ctx,
+            int initialTab,
+            Offset origin,
+            Size size,
+          ) async {
+            final overlay =
+                Navigator.of(ctx).overlay!.context.findRenderObject()
+                    as RenderBox;
+            final dismissLabel = AppL10n.of(ctx).filterDismissMenu;
+            await Navigator.of(ctx).push<void>(
+              _TabbedAccordionMenuRoute(
+                origin: origin,
+                triggerSize: size,
+                viewportSize: overlay.size,
+                initialTab: initialTab,
+                courseValue: course,
+                dietaryValue: dietary,
+                courseGroups: courseGroups,
+                dietaryGroups: dietaryGroups,
+                courseClearItem: courseClearItem,
+                dietaryClearItem: dietaryClearItem,
+                onCourseSelected: onCourseChanged,
+                onDietarySelected: onDietaryChanged,
+                barrierLabelText: dismissLabel,
+              ),
+            );
+          }
+
+          openCourseOnMobile = (ctx, origin, size) =>
+              openTabbed(ctx, 0, origin, size);
+          openDietaryOnMobile = (ctx, origin, size) =>
+              openTabbed(ctx, 1, origin, size);
+        }
+
+        final courseCol = _FilterColumn<Course?>(
+          label: l.filterCourseLabel,
+          labelIcon: Icons.schedule,
+          value: course,
+          hintEmoji: _allCoursesEmoji,
+          hintText: l.filterAllCourses,
+          items: [courseClearItem],
+          groups: courseGroups,
+          searchHint: l.filterSearchCourses,
+          onChanged: onCourseChanged,
+          customOpen: openCourseOnMobile,
+        );
+
+        final dietaryCol = _FilterColumn<Dietary?>(
+          label: l.filterDietaryLabel,
+          labelIcon: Icons.eco_outlined,
+          value: dietary,
+          hintEmoji: _allDietaryEmoji,
+          hintText: l.filterAllDietary,
+          items: [dietaryClearItem],
+          groups: dietaryGroups,
+          searchHint: l.filterSearchDietary,
+          onChanged: onDietaryChanged,
+          customOpen: openDietaryOnMobile,
+        );
+
         if (stacked) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -129,6 +181,7 @@ class _FilterColumn<T> extends StatelessWidget {
     required this.onChanged,
     this.groups,
     this.searchHint,
+    this.customOpen,
   });
 
   final String label;
@@ -138,6 +191,12 @@ class _FilterColumn<T> extends StatelessWidget {
   final String hintText;
   final List<_FilterItem<T>> items;
   final ValueChanged<T> onChanged;
+
+  /// See [_GlassDropdown.customOpen]. Forwarded so the parent
+  /// [FilterBar] can override per-pill open behaviour on mobile
+  /// (both pills open the shared tabbed sheet there).
+  final void Function(BuildContext, Offset triggerOrigin, Size triggerSize)?
+  customOpen;
 
   /// When non-null the dropdown opens the *accordion* menu variant
   /// (search input + collapsible subcategory cards + expand-all
@@ -204,6 +263,7 @@ class _FilterColumn<T> extends StatelessWidget {
           onChanged: onChanged,
           groups: groups,
           searchHint: searchHint,
+          customOpen: customOpen,
         ),
       ],
     );
@@ -323,6 +383,7 @@ class _GlassDropdown<T> extends StatefulWidget {
     required this.onChanged,
     this.groups,
     this.searchHint,
+    this.customOpen,
   });
 
   final T value;
@@ -335,6 +396,20 @@ class _GlassDropdown<T> extends StatefulWidget {
   /// accordion menu variant instead of the flat list.
   final List<_FilterGroup<T>>? groups;
   final String? searchHint;
+
+  /// When non-null, tapping the trigger calls this *instead* of pushing
+  /// the default accordion / flat-menu route. The callback receives the
+  /// trigger's screen origin + size (so the parent can anchor its own
+  /// route flush beneath the pill) and is responsible for handling the
+  /// resulting selection itself — [onChanged] is **not** invoked along
+  /// this path.
+  ///
+  /// Used by the mobile [FilterBar] so both the Course pill and the
+  /// Dietary pill open a single shared [_TabbedAccordionMenuRoute]
+  /// containing both accordions, rather than each pill opening its
+  /// own single-dimension route.
+  final void Function(BuildContext, Offset triggerOrigin, Size triggerSize)?
+  customOpen;
 
   @override
   State<_GlassDropdown<T>> createState() => _GlassDropdownState<T>();
@@ -352,6 +427,14 @@ class _GlassDropdownState<T> extends State<_GlassDropdown<T>> {
         Navigator.of(context).overlay!.context.findRenderObject() as RenderBox;
     final origin = triggerBox.localToGlobal(Offset.zero, ancestor: overlay);
     final triggerSize = triggerBox.size;
+
+    // Mobile (or any caller) can hand us a custom opener that pushes
+    // its own route. We just provide the anchor info and step out;
+    // the parent is responsible for handling the selection.
+    if (widget.customOpen != null) {
+      widget.customOpen!(context, origin, triggerSize);
+      return;
+    }
 
     // Resolve localization HERE — `_open` runs with a live BuildContext
     // but the route's `barrierLabel` getter is called later by the
@@ -958,11 +1041,14 @@ class _AccordionMenuRoute<T> extends PopupRoute<_MenuResult<T>> {
 /// reported via [onSelected].
 class _AccordionGlassMenu<T> extends StatefulWidget {
   const _AccordionGlassMenu({
+    super.key,
     required this.groups,
     required this.selectedValue,
     required this.searchHint,
     required this.onSelected,
     this.clearItem,
+    this.heading,
+    this.dropFrostedSurface = false,
   });
 
   final List<_FilterGroup<T>> groups;
@@ -973,6 +1059,22 @@ class _AccordionGlassMenu<T> extends StatefulWidget {
   /// Optional "All …" row pinned above the accordion sections. See
   /// [_AccordionMenuRoute.clearItem].
   final _FilterItem<T>? clearItem;
+
+  /// Optional uppercase heading rendered to the left of the
+  /// EXPAND ALL toggle. Used by the mobile tabbed sheet so each
+  /// tab can display its own context label
+  /// ("COURSE SELECTION FILTERS", "DIETARY & LIFESTYLE
+  /// RESTRICTIONS"). Desktop callers leave it null — they already
+  /// render the heading above the trigger pill via [_FilterColumn].
+  final String? heading;
+
+  /// When true, drops the outer frosted-glass surface (shadow,
+  /// rounded clip, BackdropFilter, fill colour, padding) so the
+  /// menu can be embedded inside another container that already
+  /// owns those visuals — like the mobile tabbed sheet, which
+  /// wraps two accordions in a single shared frosted-glass card
+  /// instead of giving each its own.
+  final bool dropFrostedSurface;
 
   @override
   State<_AccordionGlassMenu<T>> createState() => _AccordionGlassMenuState<T>();
@@ -1085,6 +1187,134 @@ class _AccordionGlassMenuState<T> extends State<_AccordionGlassMenu<T>> {
     ];
     final hasAnyVisible = visibleByIdx.any((items) => items.isNotEmpty);
 
+    // -------------------------------------------------------------
+    // Top-of-menu chrome: the EXPAND ALL toggle (always present)
+    // and an optional uppercase heading on the left.
+    //
+    // The heading is wrapped in `Flexible` so a long localized
+    // string (Burmese "ဟင်းပွဲ ရွေးချယ်မှု စစ်ထုတ်ချက်" runs
+    // ~28 chars) can wrap to a second line instead of pushing
+    // the toggle off the right edge of the row.
+    // -------------------------------------------------------------
+    final topRow = Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        if (widget.heading != null)
+          Flexible(
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Text(
+                widget.heading!,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: cs.onSurfaceVariant,
+                  letterSpacing: 1.2,
+                  fontWeight: FontWeight.w700,
+                  height: 1.25,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          )
+        else
+          const Spacer(),
+        _ExpandAllToggle(
+          expanded: _allExpanded,
+          onTap: _toggleAll,
+        ),
+      ],
+    );
+
+    final body = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        topRow,
+        const SizedBox(height: 6),
+        // ---------------------------------------------------------
+        // Search input. autofocus: false so the on-screen keyboard
+        // doesn't pop the moment the menu opens — many users open
+        // the menu just to browse.
+        // ---------------------------------------------------------
+        _AccordionSearchField(
+          controller: _searchCtl,
+          hint: widget.searchHint,
+          onChanged: _onSearchChanged,
+        ),
+        const SizedBox(height: 10),
+        // ---------------------------------------------------------
+        // Scrollable column of accordion sections so the menu
+        // height never exceeds the route's maxHeight. The clear
+        // row sits OUTSIDE the search/no-matches filter — we always
+        // want it reachable even when the user's query is "asdf"
+        // and nothing matches.
+        // ---------------------------------------------------------
+        Flexible(
+          child: SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (widget.clearItem != null) ...[
+                  _GlassMenuItem<T>(
+                    item: widget.clearItem!,
+                    selected:
+                        widget.clearItem!.value == widget.selectedValue,
+                    onTap: () => widget.onSelected(widget.clearItem!.value),
+                    textColor: cs.onSurface,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    child: Divider(height: 1, color: cs.outlineVariant),
+                  ),
+                ],
+                if (!hasAnyVisible)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 16,
+                      horizontal: 4,
+                    ),
+                    child: Text(
+                      l.filterNoMatches,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: cs.onSurfaceVariant,
+                      ),
+                    ),
+                  )
+                else
+                  for (var i = 0; i < widget.groups.length; i++)
+                    if (visibleByIdx[i].isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: _AccordionSection<T>(
+                          label: widget.groups[i].label,
+                          items: visibleByIdx[i],
+                          selectedValue: widget.selectedValue,
+                          expanded: _expanded.contains(i),
+                          onToggle: () => _toggleGroup(i),
+                          onSelected: widget.onSelected,
+                        ),
+                      ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+
+    if (widget.dropFrostedSurface) {
+      // The mobile tabbed sheet owns the outer frosted-glass card
+      // (shadow + ClipRRect + BackdropFilter + fill) so multiple
+      // accordions can share a single visual surface. Just emit
+      // the body — no padding either, the host applies its own.
+      return Material(type: MaterialType.transparency, child: body);
+    }
+
     return Material(
       type: MaterialType.transparency,
       child: Container(
@@ -1116,107 +1346,7 @@ class _AccordionGlassMenuState<T> extends State<_AccordionGlassMenu<T>> {
                 border: Border.all(color: borderColor, width: 1),
               ),
               padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // -------------------------------------------------
-                  // Expand-all / Collapse-all toggle. Right-aligned so
-                  // the chrome doesn't crowd the search field below.
-                  // -------------------------------------------------
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: _ExpandAllToggle(
-                      expanded: _allExpanded,
-                      onTap: _toggleAll,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  // -------------------------------------------------
-                  // Search input. autofocus: false so the on-screen
-                  // keyboard doesn't pop the moment the menu opens —
-                  // many users open the menu just to browse.
-                  // -------------------------------------------------
-                  _AccordionSearchField(
-                    controller: _searchCtl,
-                    hint: widget.searchHint,
-                    onChanged: _onSearchChanged,
-                  ),
-                  const SizedBox(height: 10),
-                  // -------------------------------------------------
-                  // Scrollable column of accordion sections so the
-                  // menu height never exceeds the route's maxHeight.
-                  // The clear-row sits OUTSIDE the search/no-matches
-                  // filter — we always want it reachable even when
-                  // the user's query is "asdf" and nothing matches.
-                  // -------------------------------------------------
-                  Flexible(
-                    child: SingleChildScrollView(
-                      physics: const ClampingScrollPhysics(),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // Pinned "All …" reset row + thin divider
-                          // separating it from the accordion sections
-                          // below. Distinct from category rows since
-                          // the user explicitly opted into the
-                          // "filter-off" presentation.
-                          if (widget.clearItem != null) ...[
-                            _GlassMenuItem<T>(
-                              item: widget.clearItem!,
-                              selected:
-                                  widget.clearItem!.value ==
-                                  widget.selectedValue,
-                              onTap: () =>
-                                  widget.onSelected(widget.clearItem!.value),
-                              textColor: cs.onSurface,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              child: Divider(
-                                height: 1,
-                                color: cs.outlineVariant,
-                              ),
-                            ),
-                          ],
-                          if (!hasAnyVisible)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 16,
-                                horizontal: 4,
-                              ),
-                              child: Text(
-                                l.filterNoMatches,
-                                textAlign: TextAlign.center,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: cs.onSurfaceVariant,
-                                ),
-                              ),
-                            )
-                          else
-                            for (var i = 0; i < widget.groups.length; i++)
-                              if (visibleByIdx[i].isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 8),
-                                  child: _AccordionSection<T>(
-                                    label: widget.groups[i].label,
-                                    items: visibleByIdx[i],
-                                    selectedValue: widget.selectedValue,
-                                    expanded: _expanded.contains(i),
-                                    onToggle: () => _toggleGroup(i),
-                                    onSelected: widget.onSelected,
-                                  ),
-                                ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              child: body,
             ),
           ),
         ),
@@ -1745,5 +1875,433 @@ String _dietaryEmoji(Dietary d) {
       return '🌶️';
     case Dietary.antiInflammatory:
       return '🥦';
+  }
+}
+
+// =============================================================================
+// Mobile two-tab filter sheet
+// =============================================================================
+//
+// On screens narrower than 560 dp the [FilterBar] swaps each pill's
+// per-dimension accordion route for a single shared route that hosts
+// BOTH the Course and Dietary accordions in a tab toggle. This matches
+// the minimalist iOS-style mockup (`assets/filter-ui-mockup.png`):
+//
+//     ┌─────────────────────────────────────────────────┐
+//     │  [⏱ By Course]   [🌿 By Diet & Lifestyle]      │   tab toggle
+//     ├─────────────────────────────────────────────────┤
+//     │  COURSE SELECTION FILTERS         ⊕ EXPAND ALL  │   heading + toggle
+//     │  ┌───────────────────────────────────────────┐  │
+//     │  │ 🔍  Search courses (e.g. Dessert, Mains…) │  │   search field
+//     │  └───────────────────────────────────────────┘  │
+//     │  ┌───────────────────────────────────────────┐  │
+//     │  │ 🗂  EARLY DAY               2 MATCHED  ⌄  │  │   accordion section
+//     │  └───────────────────────────────────────────┘  │
+//     │  …                                              │
+//     └─────────────────────────────────────────────────┘
+//
+// Architecture:
+//   * [_TabbedAccordionMenuRoute] is the [PopupRoute] anchored beneath
+//     whichever pill the user tapped. Same anchoring rules as the
+//     single-dimension [_AccordionMenuRoute].
+//   * [_TabbedAccordionMenu] is the surface widget. It owns the
+//     active-tab state and wraps two [_AccordionGlassMenu] instances
+//     (one per dimension) in an [IndexedStack]. Each accordion runs
+//     with `dropFrostedSurface: true` so the outer sheet's frosted
+//     surface isn't double-rendered.
+//   * State (search query, expanded sections) is preserved across tab
+//     switches because [IndexedStack] keeps both subtrees alive — a
+//     user who types into the Course search box, switches to Diet,
+//     then switches back, finds their query intact.
+
+/// Modal route that renders the tabbed sheet. Mirrors
+/// [_AccordionMenuRoute] but hosts a two-tab body.
+class _TabbedAccordionMenuRoute extends PopupRoute<void> {
+  _TabbedAccordionMenuRoute({
+    required this.origin,
+    required this.triggerSize,
+    required this.viewportSize,
+    required this.initialTab,
+    required this.courseValue,
+    required this.dietaryValue,
+    required this.courseGroups,
+    required this.dietaryGroups,
+    required this.courseClearItem,
+    required this.dietaryClearItem,
+    required this.onCourseSelected,
+    required this.onDietarySelected,
+    required this.barrierLabelText,
+  });
+
+  final Offset origin;
+  final Size triggerSize;
+  final Size viewportSize;
+  final int initialTab;
+
+  final Course? courseValue;
+  final Dietary? dietaryValue;
+  final List<_FilterGroup<Course?>> courseGroups;
+  final List<_FilterGroup<Dietary?>> dietaryGroups;
+  final _FilterItem<Course?> courseClearItem;
+  final _FilterItem<Dietary?> dietaryClearItem;
+  final ValueChanged<Course?> onCourseSelected;
+  final ValueChanged<Dietary?> onDietarySelected;
+  final String barrierLabelText;
+
+  @override
+  Color? get barrierColor => null;
+
+  @override
+  bool get barrierDismissible => true;
+
+  @override
+  String? get barrierLabel => barrierLabelText;
+
+  @override
+  Duration get transitionDuration => const Duration(milliseconds: 180);
+
+  @override
+  Widget buildPage(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+  ) {
+    // The tabbed sheet is taller than a single accordion (it adds the
+    // ~52 dp tab toggle on top), so bump the lower bound from 220 to
+    // 280 dp — anything shorter clips the active accordion's first
+    // section before the user can even read its label.
+    final maxMenuHeight =
+        viewportSize.height - origin.dy - triggerSize.height - 24;
+    return Stack(
+      children: [
+        Positioned(
+          left: origin.dx,
+          top: origin.dy + triggerSize.height + 8,
+          width: triggerSize.width,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: maxMenuHeight.clamp(280.0, 600.0),
+            ),
+            child: _TabbedAccordionMenu(
+              initialTab: initialTab,
+              courseValue: courseValue,
+              dietaryValue: dietaryValue,
+              courseGroups: courseGroups,
+              dietaryGroups: dietaryGroups,
+              courseClearItem: courseClearItem,
+              dietaryClearItem: dietaryClearItem,
+              onCourseSelected: (v) {
+                onCourseSelected(v);
+                Navigator.of(context).pop();
+              },
+              onDietarySelected: (v) {
+                onDietarySelected(v);
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget buildTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    final curved = CurvedAnimation(
+      parent: animation,
+      curve: Curves.easeOutCubic,
+    );
+    return FadeTransition(
+      opacity: curved,
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0, -0.04),
+          end: Offset.zero,
+        ).animate(curved),
+        child: child,
+      ),
+    );
+  }
+}
+
+/// Frosted-glass surface containing the tab toggle on top and the
+/// active dimension's accordion below.
+///
+/// Stateful only so the active-tab index can be flipped in-place by
+/// the toggle without round-tripping through the parent.
+class _TabbedAccordionMenu extends StatefulWidget {
+  const _TabbedAccordionMenu({
+    required this.initialTab,
+    required this.courseValue,
+    required this.dietaryValue,
+    required this.courseGroups,
+    required this.dietaryGroups,
+    required this.courseClearItem,
+    required this.dietaryClearItem,
+    required this.onCourseSelected,
+    required this.onDietarySelected,
+  });
+
+  final int initialTab;
+  final Course? courseValue;
+  final Dietary? dietaryValue;
+  final List<_FilterGroup<Course?>> courseGroups;
+  final List<_FilterGroup<Dietary?>> dietaryGroups;
+  final _FilterItem<Course?> courseClearItem;
+  final _FilterItem<Dietary?> dietaryClearItem;
+  final ValueChanged<Course?> onCourseSelected;
+  final ValueChanged<Dietary?> onDietarySelected;
+
+  @override
+  State<_TabbedAccordionMenu> createState() => _TabbedAccordionMenuState();
+}
+
+class _TabbedAccordionMenuState extends State<_TabbedAccordionMenu> {
+  late int _activeTab;
+
+  @override
+  void initState() {
+    super.initState();
+    _activeTab = widget.initialTab;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l = AppL10n.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final glassFill = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.white.withValues(alpha: 0.62);
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.12)
+        : Colors.white.withValues(alpha: 0.6);
+
+    return Material(
+      type: MaterialType.transparency,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(22),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.55 : 0.18),
+              blurRadius: 28,
+              offset: const Offset(0, 14),
+            ),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.08),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(22),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+            child: Container(
+              decoration: BoxDecoration(
+                color: glassFill,
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: borderColor, width: 1),
+              ),
+              padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _FilterTabBar(
+                    activeIndex: _activeTab,
+                    onChanged: (i) => setState(() => _activeTab = i),
+                    courseLabel: l.filterTabCourse,
+                    dietaryLabel: l.filterTabDiet,
+                  ),
+                  const SizedBox(height: 12),
+                  Flexible(
+                    // IndexedStack keeps BOTH accordions alive even
+                    // when only one is rendered. That's intentional —
+                    // it preserves each tab's search query, expanded
+                    // sections, and scroll position so a user who
+                    // ping-pongs between Course and Diet doesn't lose
+                    // their typing or open sections on every switch.
+                    child: IndexedStack(
+                      index: _activeTab,
+                      sizing: StackFit.passthrough,
+                      children: [
+                        _AccordionGlassMenu<Course?>(
+                          key: const ValueKey('tabbed-course-accordion'),
+                          groups: widget.courseGroups,
+                          selectedValue: widget.courseValue,
+                          searchHint: l.filterSearchCourses,
+                          heading: l.filterCourseHeading,
+                          dropFrostedSurface: true,
+                          clearItem: widget.courseClearItem,
+                          onSelected: widget.onCourseSelected,
+                        ),
+                        _AccordionGlassMenu<Dietary?>(
+                          key: const ValueKey('tabbed-diet-accordion'),
+                          groups: widget.dietaryGroups,
+                          selectedValue: widget.dietaryValue,
+                          searchHint: l.filterSearchDietary,
+                          heading: l.filterDietHeading,
+                          dropFrostedSurface: true,
+                          clearItem: widget.dietaryClearItem,
+                          onSelected: widget.onDietarySelected,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+}
+
+/// Two-pill segmented toggle that switches the body between the
+/// Course accordion and the Dietary accordion. Mirrors the screenshot
+/// reference: rounded outer container, white selected pill with a
+/// thin coloured outline, leaf glyph rendered in green to set off the
+/// "Diet & Lifestyle" tab.
+class _FilterTabBar extends StatelessWidget {
+  const _FilterTabBar({
+    required this.activeIndex,
+    required this.onChanged,
+    required this.courseLabel,
+    required this.dietaryLabel,
+  });
+
+  final int activeIndex;
+  final ValueChanged<int> onChanged;
+  final String courseLabel;
+  final String dietaryLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    return Container(
+      decoration: BoxDecoration(
+        color: cs.surface.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: cs.outlineVariant, width: 1),
+      ),
+      padding: const EdgeInsets.all(4),
+      child: Row(
+        children: [
+          Expanded(
+            child: _FilterTab(
+              icon: Icons.timer_outlined,
+              label: courseLabel,
+              active: activeIndex == 0,
+              onTap: () => onChanged(0),
+            ),
+          ),
+          Expanded(
+            child: _FilterTab(
+              icon: Icons.eco,
+              iconColor: const Color(0xFF22A06B),
+              label: dietaryLabel,
+              active: activeIndex == 1,
+              onTap: () => onChanged(1),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FilterTab extends StatelessWidget {
+  const _FilterTab({
+    required this.icon,
+    required this.label,
+    required this.active,
+    required this.onTap,
+    this.iconColor,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool active;
+  final VoidCallback onTap;
+  final Color? iconColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    return Semantics(
+      button: true,
+      selected: active,
+      label: label,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(10),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 140),
+            curve: Curves.easeOut,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            decoration: BoxDecoration(
+              color: active ? cs.surface : Colors.transparent,
+              borderRadius: BorderRadius.circular(10),
+              // Thin border on the active pill to lift it off the
+              // toggle's surfaceContainerHighest fill — without it
+              // the active state reads as faintly tinted air.
+              border: active
+                  ? Border.all(
+                      color: cs.primary.withValues(alpha: 0.22),
+                      width: 1,
+                    )
+                  : null,
+              boxShadow: active
+                  ? [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.04),
+                        blurRadius: 4,
+                        offset: const Offset(0, 1),
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  size: 16,
+                  color: iconColor ?? cs.primary,
+                ),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    label,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: cs.primary,
+                      fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

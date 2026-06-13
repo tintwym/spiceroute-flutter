@@ -96,6 +96,10 @@
 
   "filterSearchCourses": "コースを検索（例：デザート、メイン…）",
   "filterSearchDietary": "食事制限を検索（例：グルテンフリー、ビーガン…）",
+  "filterTabCourse": "コース別",
+  "filterTabDiet": "食事・ライフスタイル別",
+  "filterCourseHeading": "コース選択フィルター",
+  "filterDietHeading": "食事・ライフスタイル制限",
   "filterChoicesCount": "{count, plural, =1{1件} other{{count}件}}",
   "@filterChoicesCount": { "placeholders": { "count": { "type": "int" } } },
   "filterExpandAll": "すべて展開",
