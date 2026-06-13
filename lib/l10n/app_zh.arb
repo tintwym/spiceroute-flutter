@@ -314,7 +314,7 @@
   "communityEmptyTitle": "暂时没有社区照片",
   "communityEmptySubtitle": "成为第一个为这道菜系上传作品照片的人!",
   "communitySharedToast": "已分享到实时墙!",
-  "communityByLine": "by {name}",
+  "communityByLine": "@{name}",
   "@communityByLine": { "placeholders": { "name": { "type": "String" } } },
   "communityRemovePhoto": "重置照片",
   "communityUploading": "正在压缩与分享…",

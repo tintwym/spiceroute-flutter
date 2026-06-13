@@ -176,7 +176,7 @@ class AppL10nKo extends AppL10n {
 
   @override
   String communityByLine(String name) {
-    return 'by $name';
+    return '$name님';
   }
 
   @override
@@ -214,7 +214,7 @@ class AppL10nKo extends AppL10n {
       '하루 한 끼, 식탁 위에 깃든 역사적 배경과 전통 접근법 요약 (카드를 클릭하여 필터링)';
 
   @override
-  String get storiesActiveBadge => 'ACTIVE';
+  String get storiesActiveBadge => '선택됨';
 
   @override
   String get footerBlurb =>
@@ -249,7 +249,7 @@ class AppL10nKo extends AppL10n {
 
   @override
   String footerCopyright(int year, String brand) {
-    return '© $year $brand. All rights reserved.';
+    return '© $year $brand. 모든 권리 보유.';
   }
 
   @override

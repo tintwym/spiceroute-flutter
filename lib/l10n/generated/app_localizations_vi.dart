@@ -320,7 +320,7 @@ class AppL10nVi extends AppL10n {
   String get courseGroupEarlyDay => 'Đầu ngày';
 
   @override
-  String get courseGroupDaytimeCasual => 'Ban ngày / Bữa nhẹ';
+  String get courseGroupDaytimeCasual => 'Ban ngày / bữa nhẹ';
 
   @override
   String get courseGroupBeforeMain => 'Trước món chính';
@@ -338,22 +338,22 @@ class AppL10nVi extends AppL10n {
   String get courseGroupLiquids => 'Đồ uống';
 
   @override
-  String get courseBreakfast => 'Bữa sáng & Bữa xế';
+  String get courseBreakfast => 'Bữa sáng & bữa xế';
 
   @override
-  String get courseHighTea => 'Trà chiều & Tiệc trà';
+  String get courseHighTea => 'Trà chiều & tiệc trà';
 
   @override
-  String get courseLunch => 'Bữa trưa & Cơm hộp';
+  String get courseLunch => 'Bữa trưa & cơm hộp';
 
   @override
-  String get courseSoupsSaladsBowls => 'Súp, Nước dùng & Salad';
+  String get courseSoupsSaladsBowls => 'Súp, nước dùng & salad';
 
   @override
-  String get courseAppetizer => 'Khai vị, Món mở đầu & Đồ ăn tay';
+  String get courseAppetizer => 'Khai vị, món mở đầu & đồ ăn tay';
 
   @override
-  String get courseSharingBoards => 'Khay chia sẻ, Đĩa & Charcuterie';
+  String get courseSharingBoards => 'Khay chia sẻ, đĩa & charcuterie';
 
   @override
   String get courseMainCourse => 'Món chính giàu đạm';
@@ -362,13 +362,13 @@ class AppL10nVi extends AppL10n {
   String get courseSideDish => 'Món phụ';
 
   @override
-  String get courseDessert => 'Tráng miệng & Đồ ngọt';
+  String get courseDessert => 'Tráng miệng & đồ ngọt';
 
   @override
-  String get courseSnack => 'Ăn vặt & Bữa khuya';
+  String get courseSnack => 'Ăn vặt & bữa khuya';
 
   @override
-  String get courseAlcoholicDrinks => 'Đồ uống có cồn & Cocktail';
+  String get courseAlcoholicDrinks => 'Đồ uống có cồn & cocktail';
 
   @override
   String get courseZeroProofDrinks => 'Đồ uống không cồn';
@@ -383,50 +383,50 @@ class AppL10nVi extends AppL10n {
   String get dietaryMealPrep => 'Chuẩn bị sẵn';
 
   @override
-  String get dietaryQuickEasy => 'Nhanh & Dễ';
+  String get dietaryQuickEasy => 'Nhanh & dễ';
 
   @override
-  String get dietaryPastaSoup => 'Pasta & Súp';
+  String get dietaryPastaSoup => 'Pasta & súp';
 
   @override
   String get dietaryBloodSugarBalanced => 'Cân bằng đường huyết';
 
   @override
-  String get dietarySwicy => '\"Swicy\" (Ngọt & Cay)';
+  String get dietarySwicy => '\"Swicy\" (ngọt & cay)';
 
   @override
-  String get dietaryAntiInflammatory => 'Chống viêm & Trường thọ';
+  String get dietaryAntiInflammatory => 'Chống viêm & trường thọ';
 
   @override
-  String get dietaryGlutenFree => 'Không Gluten';
+  String get dietaryGlutenFree => 'Không gluten';
 
   @override
-  String get dietaryDairyFree => 'Không Sữa';
+  String get dietaryDairyFree => 'Không sữa';
 
   @override
-  String get dietaryNutFree => 'Không Hạt';
+  String get dietaryNutFree => 'Không hạt';
 
   @override
-  String get dietaryEggFree => 'Không Trứng';
+  String get dietaryEggFree => 'Không trứng';
 
   @override
-  String get dietaryGroupRestrictions => 'Hạn chế Ăn uống';
+  String get dietaryGroupRestrictions => 'Chế độ ăn kiêng';
 
   @override
-  String get dietaryGroupAllergenFree => 'Không Gây Dị Ứng';
+  String get dietaryGroupAllergenFree => 'Không gây dị ứng';
 
   @override
-  String get dietaryGroupWellness => 'Sức khỏe & Lối sống';
+  String get dietaryGroupWellness => 'Sức khỏe & lối sống';
 
   @override
-  String get dietaryGroupCookingFormats => 'Cách nấu';
+  String get dietaryGroupCookingFormats => 'Hình thức nấu';
 
   @override
   String get filterSearchCourses => 'Tìm bữa ăn (vd: Tráng miệng, Món chính…)';
 
   @override
   String get filterSearchDietary =>
-      'Tìm chế độ ăn (vd: Không Gluten, Thuần chay…)';
+      'Tìm chế độ ăn (vd: Không gluten, Thuần chay…)';
 
   @override
   String filterChoicesCount(int count) {
@@ -709,7 +709,7 @@ class AppL10nVi extends AppL10n {
   String get aiCompanionSuggestion2 => 'Bữa tối không gluten đơn giản?';
 
   @override
-  String get aiCompanionSuggestion3 => 'Cách phi gia vị Ấn Độ?';
+  String get aiCompanionSuggestion3 => 'Cách rang gia vị Ấn Độ?';
 
   @override
   String get aiCompanionSuggestion4 => 'Món gì hợp với kim chi?';

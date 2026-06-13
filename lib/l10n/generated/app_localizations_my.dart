@@ -122,14 +122,14 @@ class AppL10nMy extends AppL10n {
       count,
       locale: localeName,
       other: '$scope တွင် ချက်ပြုတ်နည်း $count ခု ပြသနေသည်',
-      one: '$scope တွင် ချက်ပြုတ်နည်း ၁ ခု ပြသနေသည်',
+      one: '$scope တွင် ချက်ပြုတ်နည်း 1 ခု ပြသနေသည်',
       zero: '$scope တွင် ချက်ပြုတ်နည်း မရှိပါ',
     );
     return '$_temp0';
   }
 
   @override
-  String get communityBadge => 'REAL-TIME SYNC';
+  String get communityBadge => 'တိုက်ရိုက် ထပ်တူပြု';
 
   @override
   String get communityTitle => 'ရပ်ရွာ ချက်ပြုတ်ဘုတ်';
@@ -220,7 +220,7 @@ class AppL10nMy extends AppL10n {
       'ရိုးရာ စားသုံးပုံစံများနှင့် သမိုင်းကြောင်းကို လေ့လာပါ — ဟင်းလျာအမျိုးအစားအလိုက် စစ်ထုတ်ရန် ကတ်ကို နှိပ်ပါ။';
 
   @override
-  String get storiesActiveBadge => 'ACTIVE';
+  String get storiesActiveBadge => 'ရွေးထား';
 
   @override
   String get footerBlurb =>
@@ -580,7 +580,7 @@ class AppL10nMy extends AppL10n {
   String get savedEmptyCta => 'ချက်ပြုတ်နည်းများ ရှာဖွေပါ';
 
   @override
-  String get savedCloudSyncedBadge => 'Cloud Sync';
+  String get savedCloudSyncedBadge => 'တိမ်တိုက် ထပ်တူပြုပြီး';
 
   @override
   String get savedClearAll => 'အားလုံး ရှင်း';

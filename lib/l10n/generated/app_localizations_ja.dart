@@ -176,7 +176,7 @@ class AppL10nJa extends AppL10n {
 
   @override
   String communityByLine(String name) {
-    return 'by $name';
+    return '$nameさん';
   }
 
   @override
@@ -214,7 +214,7 @@ class AppL10nJa extends AppL10n {
   String get storiesSubtitle => '朝食から夜食まで、伝統料理と歴史的な背景を探索（カードをタップでフィルター）';
 
   @override
-  String get storiesActiveBadge => 'ACTIVE';
+  String get storiesActiveBadge => '選択中';
 
   @override
   String get footerBlurb =>
@@ -249,7 +249,7 @@ class AppL10nJa extends AppL10n {
 
   @override
   String footerCopyright(int year, String brand) {
-    return '© $year $brand. All rights reserved.';
+    return '© $year $brand. 全著作権所有。';
   }
 
   @override

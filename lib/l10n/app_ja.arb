@@ -314,7 +314,7 @@
   "communityEmptyTitle": "まだコミュニティ写真はありません",
   "communityEmptySubtitle": "この料理ジャンルの一枚を、いちばん最初にシェアしましょう!",
   "communitySharedToast": "ライブボードに共有しました!",
-  "communityByLine": "by {name}",
+  "communityByLine": "{name}さん",
   "@communityByLine": { "placeholders": { "name": { "type": "String" } } },
   "communityRemovePhoto": "写真を削除",
   "communityUploading": "圧縮中・共有中…",
@@ -328,7 +328,7 @@
   "storiesHeading": "{cuisine}の食文化遺産と世界との繋がり",
   "@storiesHeading": { "placeholders": { "cuisine": { "type": "String" } } },
   "storiesSubtitle": "朝食から夜食まで、伝統料理と歴史的な背景を探索（カードをタップでフィルター）",
-  "storiesActiveBadge": "ACTIVE",
+  "storiesActiveBadge": "選択中",
 
   "footerBlurb": "世界各地の料理伝統から厳選したレシピを揃えた、上品な料理ゲートウェイ。リアルタイム AI と共に、家庭料理を国際的な味へと格上げします。",
   "footerQuickNav": "クイックナビ",
@@ -340,7 +340,7 @@
   "footerEmailHint": "メールアドレス",
   "footerJoin": "参加する",
   "footerJoinedToast": "ご参加ありがとうございます!",
-  "footerCopyright": "© {year} {brand}. All rights reserved.",
+  "footerCopyright": "© {year} {brand}. 全著作権所有。",
   "@footerCopyright": { "placeholders": { "year": { "type": "int" }, "brand": { "type": "String" } } },
   "footerLicense": "MIT ライセンスで公開。",
 

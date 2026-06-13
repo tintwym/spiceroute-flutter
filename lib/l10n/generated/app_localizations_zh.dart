@@ -175,7 +175,7 @@ class AppL10nZh extends AppL10n {
 
   @override
   String communityByLine(String name) {
-    return 'by $name';
+    return '@$name';
   }
 
   @override

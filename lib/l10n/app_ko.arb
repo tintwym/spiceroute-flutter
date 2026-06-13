@@ -314,7 +314,7 @@
   "communityEmptyTitle": "아직 사진이 없어요",
   "communityEmptySubtitle": "이 요리의 첫 번째 작품 사진을 가장 먼저 올려 보세요!",
   "communitySharedToast": "라이브 보드에 공유했어요!",
-  "communityByLine": "by {name}",
+  "communityByLine": "{name}님",
   "@communityByLine": { "placeholders": { "name": { "type": "String" } } },
   "communityRemovePhoto": "사진 삭제",
   "communityUploading": "압축 후 공유 중…",
@@ -328,7 +328,7 @@
   "storiesHeading": "{cuisine}의 식문화 역사와 크로스컬처 연결",
   "@storiesHeading": { "placeholders": { "cuisine": { "type": "String" } } },
   "storiesSubtitle": "하루 한 끼, 식탁 위에 깃든 역사적 배경과 전통 접근법 요약 (카드를 클릭하여 필터링)",
-  "storiesActiveBadge": "ACTIVE",
+  "storiesActiveBadge": "선택됨",
 
   "footerBlurb": "다양한 요리 전통에서 엄선한 레시피를 모은 우아한 미식 게이트웨이. 국제적인 풍미와 실시간 AI 도움으로 가정 요리를 한 단계 끌어올리세요.",
   "footerQuickNav": "퀵 내비게이션",
@@ -340,7 +340,7 @@
   "footerEmailHint": "이메일 주소",
   "footerJoin": "허브 가입",
   "footerJoinedToast": "허브 가입에 감사드려요!",
-  "footerCopyright": "© {year} {brand}. All rights reserved.",
+  "footerCopyright": "© {year} {brand}. 모든 권리 보유.",
   "@footerCopyright": { "placeholders": { "year": { "type": "int" }, "brand": { "type": "String" } } },
   "footerLicense": "MIT 라이선스로 공개됩니다.",
 
