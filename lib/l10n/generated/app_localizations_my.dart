@@ -404,7 +404,22 @@ class AppL10nMy extends AppL10n {
   String get dietaryAntiInflammatory => 'ရောင်ရမ်းမှု ဆန့်ကျင် နှင့် အသက်ရှည်';
 
   @override
+  String get dietaryGlutenFree => 'ဂလူတင် ကင်း';
+
+  @override
+  String get dietaryDairyFree => 'နို့ထွက်ပစ္စည်း ကင်း';
+
+  @override
+  String get dietaryNutFree => 'အခွံမာသီး ကင်း';
+
+  @override
+  String get dietaryEggFree => 'ဥ ကင်း';
+
+  @override
   String get dietaryGroupRestrictions => 'အစားအသောက် ကန့်သတ်ချက်များ';
+
+  @override
+  String get dietaryGroupAllergenFree => 'ဓာတ်မတည့်စရာ ကင်း';
 
   @override
   String get dietaryGroupWellness => 'ကျန်းမာရေး နှင့် ဘဝနေထိုင်မှု';

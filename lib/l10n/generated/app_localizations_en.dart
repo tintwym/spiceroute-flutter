@@ -400,7 +400,22 @@ class AppL10nEn extends AppL10n {
   String get dietaryAntiInflammatory => 'Anti-Inflammatory & Longevity';
 
   @override
+  String get dietaryGlutenFree => 'Gluten-Free';
+
+  @override
+  String get dietaryDairyFree => 'Dairy-Free';
+
+  @override
+  String get dietaryNutFree => 'Nut-Free';
+
+  @override
+  String get dietaryEggFree => 'Egg-Free';
+
+  @override
   String get dietaryGroupRestrictions => 'Dietary Restrictions';
+
+  @override
+  String get dietaryGroupAllergenFree => 'Allergen-Free';
 
   @override
   String get dietaryGroupWellness => 'Wellness & Lifestyles';

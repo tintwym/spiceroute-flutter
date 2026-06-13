@@ -1645,6 +1645,8 @@ String _dietaryGroupLabel(AppL10n l, DietaryGroup g) {
   switch (g) {
     case DietaryGroup.dietaryRestrictions:
       return l.dietaryGroupRestrictions;
+    case DietaryGroup.allergenFree:
+      return l.dietaryGroupAllergenFree;
     case DietaryGroup.wellness:
       return l.dietaryGroupWellness;
     case DietaryGroup.cookingFormats:
@@ -1688,6 +1690,14 @@ String _dietaryLabel(AppL10n l, Dietary d) {
       return l.dietaryVegan;
     case Dietary.vegetarian:
       return l.dietaryVegetarian;
+    case Dietary.glutenFree:
+      return l.dietaryGlutenFree;
+    case Dietary.dairyFree:
+      return l.dietaryDairyFree;
+    case Dietary.nutFree:
+      return l.dietaryNutFree;
+    case Dietary.eggFree:
+      return l.dietaryEggFree;
     case Dietary.mealPrep:
       return l.dietaryMealPrep;
     case Dietary.quickEasy:
@@ -1709,6 +1719,20 @@ String _dietaryEmoji(Dietary d) {
       return '🌱';
     case Dietary.vegetarian:
       return '🥗';
+    // Allergen-free entries use the *allergen* glyph rather than a
+    // "no" overlay because Unicode doesn't have a clean "no-X" food
+    // emoji for any of these. The label disambiguates ("Gluten-Free",
+    // not just the wheat icon), and the visual glance still
+    // communicates the category — wheat = gluten, milk = dairy,
+    // peanut = nuts, egg = egg.
+    case Dietary.glutenFree:
+      return '🌾';
+    case Dietary.dairyFree:
+      return '🥛';
+    case Dietary.nutFree:
+      return '🥜';
+    case Dietary.eggFree:
+      return '🥚';
     case Dietary.mealPrep:
       return '🍱';
     case Dietary.quickEasy:

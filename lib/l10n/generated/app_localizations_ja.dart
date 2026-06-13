@@ -394,7 +394,22 @@ class AppL10nJa extends AppL10n {
   String get dietaryAntiInflammatory => '抗炎症 & 長寿';
 
   @override
+  String get dietaryGlutenFree => 'グルテンフリー';
+
+  @override
+  String get dietaryDairyFree => '乳製品不使用';
+
+  @override
+  String get dietaryNutFree => 'ナッツ不使用';
+
+  @override
+  String get dietaryEggFree => '卵不使用';
+
+  @override
   String get dietaryGroupRestrictions => '食事制限';
+
+  @override
+  String get dietaryGroupAllergenFree => 'アレルゲンフリー';
 
   @override
   String get dietaryGroupWellness => '健康・ライフスタイル';

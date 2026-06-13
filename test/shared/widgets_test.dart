@@ -181,4 +181,48 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets(
+    'card footer keeps kcal visible at typical desktop 4-up widths',
+    (tester) async {
+      // Regression for "cannot see kcal on web layout". On wide-tier
+      // viewports (≥1440 px), the 4-up grid produces card widths
+      // ~300 dp → footer width ~272 dp. The earlier code split
+      // tight/roomy at 230 dp and then hid kcal in roomy mode for
+      // any width <290 dp, which silently dropped the kcal block on
+      // every wide-tier laptop layout. The fix lifts the boundary
+      // so that footer width band lands in tight mode and shows
+      // compact kcal ("620") instead.
+      //
+      // Card widths tested span the desktop / wide tier bands —
+      // 220 dp (1024-px viewport, narrowest 4-up), 270 dp (~1300-px
+      // viewport), and 310 dp (~1920-px viewport on the wide tier).
+      // The compact kcal value MUST appear at all three.
+      for (final cardWidth in [220.0, 270.0, 310.0]) {
+        final r = SpiceRouteSummary(
+          id: 'r-$cardWidth',
+          title: 'A test',
+          description: 'A test description.',
+          prepMinutes: 10,
+          cookMinutes: 20,
+          servings: 2,
+          imageUrl: 'https://example.com/test.jpg',
+          cuisine: Cuisine.italian,
+          caloriesPerServing: 620,
+        );
+        await pumpCard(tester, r, width: cardWidth);
+        expect(
+          find.textContaining('620'),
+          findsOneWidget,
+          reason:
+              'compact kcal "620" must be visible at card width $cardWidth dp',
+        );
+        expect(
+          tester.takeException(),
+          isNull,
+          reason: 'no overflow at card width $cardWidth dp',
+        );
+      }
+    },
+  );
 }

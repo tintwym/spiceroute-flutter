@@ -141,7 +141,13 @@
   "dietarySwicy": "\"Swicy\" (ချို နှင့် စပ်)",
   "dietaryAntiInflammatory": "ရောင်ရမ်းမှု ဆန့်ကျင် နှင့် အသက်ရှည်",
 
+  "dietaryGlutenFree": "ဂလူတင် ကင်း",
+  "dietaryDairyFree": "နို့ထွက်ပစ္စည်း ကင်း",
+  "dietaryNutFree": "အခွံမာသီး ကင်း",
+  "dietaryEggFree": "ဥ ကင်း",
+
   "dietaryGroupRestrictions": "အစားအသောက် ကန့်သတ်ချက်များ",
+  "dietaryGroupAllergenFree": "ဓာတ်မတည့်စရာ ကင်း",
   "dietaryGroupWellness": "ကျန်းမာရေး နှင့် ဘဝနေထိုင်မှု",
   "dietaryGroupCookingFormats": "ချက်ပြုတ်ပုံ စတိုင်",
 

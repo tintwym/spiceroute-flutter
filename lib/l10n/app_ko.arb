@@ -84,7 +84,13 @@
   "dietarySwicy": "\"Swicy\" (달콤+매콤)",
   "dietaryAntiInflammatory": "항염 & 장수",
 
+  "dietaryGlutenFree": "글루텐프리",
+  "dietaryDairyFree": "유제품 무첨가",
+  "dietaryNutFree": "견과류 무첨가",
+  "dietaryEggFree": "달걀 무첨가",
+
   "dietaryGroupRestrictions": "식단 제한",
+  "dietaryGroupAllergenFree": "알레르기 유발 성분 제외",
   "dietaryGroupWellness": "웰니스 & 라이프스타일",
   "dietaryGroupCookingFormats": "조리 형식",
 

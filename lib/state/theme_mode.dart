@@ -22,9 +22,23 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
     _bootstrap();
   }
 
+  /// One-way latch: true once the user has explicitly chosen a
+  /// theme. Suppresses the bootstrap's stored-value restore so a
+  /// slow disk read can't clobber a user tap that landed before
+  /// the read resolved. See `LocaleNotifier._userSet` for the full
+  /// race trace.
+  bool _userSet = false;
+
+  /// Serializes disk writes so two rapid `set()` calls can't land
+  /// on disk in the wrong order. State updates synchronously; the
+  /// persisted side chains off this Future. See
+  /// `LocaleNotifier._writeLock` for the rationale.
+  Future<void> _writeLock = Future<void>.value();
+
   Future<void> _bootstrap() async {
     try {
       final raw = await _storage.read(key: _themeKey);
+      if (_userSet) return;
       final next = _decode(raw);
       if (next != state) state = next;
     } catch (_) {
@@ -33,13 +47,18 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   }
 
   Future<void> set(ThemeMode mode) async {
+    _userSet = true;
     if (mode == state) return;
     state = mode;
-    try {
-      await _storage.write(key: _themeKey, value: _encode(mode));
-    } catch (_) {
-      // ignore: persistence is best-effort.
-    }
+    final next = _writeLock.then((_) async {
+      try {
+        await _storage.write(key: _themeKey, value: _encode(mode));
+      } catch (_) {
+        // best-effort; in-memory state is the live source of truth
+      }
+    });
+    _writeLock = next;
+    return next;
   }
 
   static String _encode(ThemeMode mode) => switch (mode) {

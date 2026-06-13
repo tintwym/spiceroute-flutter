@@ -84,7 +84,13 @@
   "dietarySwicy": "「Swicy」 (甘辛)",
   "dietaryAntiInflammatory": "抗炎症 & 長寿",
 
+  "dietaryGlutenFree": "グルテンフリー",
+  "dietaryDairyFree": "乳製品不使用",
+  "dietaryNutFree": "ナッツ不使用",
+  "dietaryEggFree": "卵不使用",
+
   "dietaryGroupRestrictions": "食事制限",
+  "dietaryGroupAllergenFree": "アレルゲンフリー",
   "dietaryGroupWellness": "健康・ライフスタイル",
   "dietaryGroupCookingFormats": "調理スタイル",
 

@@ -162,6 +162,24 @@ enum Course {
 enum Dietary {
   vegan('vegan', DietaryGroup.dietaryRestrictions),
   vegetarian('vegetarian', DietaryGroup.dietaryRestrictions),
+  // Allergen-free filters. The `tagName` values are the canonical
+  // tag strings the backend seed / writer expects on a recipe row;
+  // the filter is a case-insensitive EXACT tag-name match (see
+  // `ExploreState._matchesDietary`), so the strings here have to
+  // match what the seed actually writes — letter for letter,
+  // hyphen for hyphen.
+  //
+  // The seed (`scripts/seed_curated_recipes.py::_EXTRA_TAGS_BY_TITLE`)
+  // already attaches hyphenated tags like `gluten-free` and
+  // `dairy-free` to qualifying recipes. The hyphenated form is also
+  // consistent with the existing `Dietary.antiInflammatory` whose
+  // tagName is `anti-inflammatory` — using `gluten free` (space)
+  // here would silently filter to ZERO matches against the dozen+
+  // recipes that ARE already tagged `gluten-free`.
+  glutenFree('gluten-free', DietaryGroup.allergenFree),
+  dairyFree('dairy-free', DietaryGroup.allergenFree),
+  nutFree('nut-free', DietaryGroup.allergenFree),
+  eggFree('egg-free', DietaryGroup.allergenFree),
   mealPrep('meal prep', DietaryGroup.cookingFormats),
   quickEasy('quick', DietaryGroup.cookingFormats),
   pastaSoup('pasta soup', DietaryGroup.cookingFormats),
@@ -181,9 +199,12 @@ enum Dietary {
 /// Subcategory groups shown as collapsible accordion sections inside
 /// the dietary filter dropdown. Order here is the order rendered in
 /// the menu (dietary restrictions first because they're the most
-/// commonly-applied filters, then wellness, then format).
+/// commonly-applied filters, then allergen-free which is the next
+/// most-common explicit filter people reach for, then wellness,
+/// then format).
 enum DietaryGroup {
   dietaryRestrictions,
+  allergenFree,
   wellness,
   cookingFormats,
 }

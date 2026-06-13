@@ -84,7 +84,13 @@
   "dietarySwicy": "「Swicy」 (甜辣)",
   "dietaryAntiInflammatory": "抗炎与长寿",
 
+  "dietaryGlutenFree": "无麸质",
+  "dietaryDairyFree": "无乳制品",
+  "dietaryNutFree": "无坚果",
+  "dietaryEggFree": "无鸡蛋",
+
   "dietaryGroupRestrictions": "饮食限制",
+  "dietaryGroupAllergenFree": "无过敏原",
   "dietaryGroupWellness": "健康与生活方式",
   "dietaryGroupCookingFormats": "烹饪方式",
 

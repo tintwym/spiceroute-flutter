@@ -398,7 +398,22 @@ class AppL10nVi extends AppL10n {
   String get dietaryAntiInflammatory => 'Chống viêm & Trường thọ';
 
   @override
+  String get dietaryGlutenFree => 'Không Gluten';
+
+  @override
+  String get dietaryDairyFree => 'Không Sữa';
+
+  @override
+  String get dietaryNutFree => 'Không Hạt';
+
+  @override
+  String get dietaryEggFree => 'Không Trứng';
+
+  @override
   String get dietaryGroupRestrictions => 'Hạn chế Ăn uống';
+
+  @override
+  String get dietaryGroupAllergenFree => 'Không Gây Dị Ứng';
 
   @override
   String get dietaryGroupWellness => 'Sức khỏe & Lối sống';

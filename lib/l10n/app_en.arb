@@ -145,7 +145,13 @@
   "dietarySwicy": "\"Swicy\" (Sweet & Spicy)",
   "dietaryAntiInflammatory": "Anti-Inflammatory & Longevity",
 
+  "dietaryGlutenFree": "Gluten-Free",
+  "dietaryDairyFree": "Dairy-Free",
+  "dietaryNutFree": "Nut-Free",
+  "dietaryEggFree": "Egg-Free",
+
   "dietaryGroupRestrictions": "Dietary Restrictions",
+  "dietaryGroupAllergenFree": "Allergen-Free",
   "dietaryGroupWellness": "Wellness & Lifestyles",
   "dietaryGroupCookingFormats": "Cooking Formats",
 

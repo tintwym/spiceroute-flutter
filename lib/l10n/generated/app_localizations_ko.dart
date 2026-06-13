@@ -394,7 +394,22 @@ class AppL10nKo extends AppL10n {
   String get dietaryAntiInflammatory => '항염 & 장수';
 
   @override
+  String get dietaryGlutenFree => '글루텐프리';
+
+  @override
+  String get dietaryDairyFree => '유제품 무첨가';
+
+  @override
+  String get dietaryNutFree => '견과류 무첨가';
+
+  @override
+  String get dietaryEggFree => '달걀 무첨가';
+
+  @override
   String get dietaryGroupRestrictions => '식단 제한';
+
+  @override
+  String get dietaryGroupAllergenFree => '알레르기 유발 성분 제외';
 
   @override
   String get dietaryGroupWellness => '웰니스 & 라이프스타일';

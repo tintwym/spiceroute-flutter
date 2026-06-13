@@ -84,7 +84,13 @@
   "dietarySwicy": "\"Swicy\" (Ngọt & Cay)",
   "dietaryAntiInflammatory": "Chống viêm & Trường thọ",
 
+  "dietaryGlutenFree": "Không Gluten",
+  "dietaryDairyFree": "Không Sữa",
+  "dietaryNutFree": "Không Hạt",
+  "dietaryEggFree": "Không Trứng",
+
   "dietaryGroupRestrictions": "Hạn chế Ăn uống",
+  "dietaryGroupAllergenFree": "Không Gây Dị Ứng",
   "dietaryGroupWellness": "Sức khỏe & Lối sống",
   "dietaryGroupCookingFormats": "Cách nấu",
 

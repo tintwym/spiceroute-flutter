@@ -819,11 +819,41 @@ abstract class AppL10n {
   /// **'Anti-Inflammatory & Longevity'**
   String get dietaryAntiInflammatory;
 
+  /// No description provided for @dietaryGlutenFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Gluten-Free'**
+  String get dietaryGlutenFree;
+
+  /// No description provided for @dietaryDairyFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Dairy-Free'**
+  String get dietaryDairyFree;
+
+  /// No description provided for @dietaryNutFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Nut-Free'**
+  String get dietaryNutFree;
+
+  /// No description provided for @dietaryEggFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Egg-Free'**
+  String get dietaryEggFree;
+
   /// No description provided for @dietaryGroupRestrictions.
   ///
   /// In en, this message translates to:
   /// **'Dietary Restrictions'**
   String get dietaryGroupRestrictions;
+
+  /// No description provided for @dietaryGroupAllergenFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Allergen-Free'**
+  String get dietaryGroupAllergenFree;
 
   /// No description provided for @dietaryGroupWellness.
   ///

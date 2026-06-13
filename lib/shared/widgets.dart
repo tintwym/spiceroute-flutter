@@ -292,25 +292,43 @@ class RecipeCard extends ConsumerWidget {
 /// Clean footer row: time · servings · calories on the left, a soft
 /// difficulty pill pinned to the far right.
 ///
-/// Two render modes, picked by [LayoutBuilder] from the footer width:
+/// Two render modes, picked by [LayoutBuilder] from the footer width.
 ///
-/// **Roomy mode** (footer ≥ 230 dp — phone single-column, tablet
-/// 2-up, recipe-detail modal). CSS analogue:
-///   - `display: flex; align-items: center;`
-///   - uniform `gap: 24px` between metric blocks (`16px` on the
-///     tighter end of the band so things still fit)
+/// Worst-case glyph budget (English, fontSize 11):
+///   * time "1 h 15 min" + icon  ≈  90 dp
+///   * servings "4" + icon        ≈  35 dp
+///   * compact kcal "620" + icon  ≈  35 dp
+///   * full kcal "620 kcal" + ic. ≈  80 dp
+///   * "MEDIUM" difficulty pill   ≈  70 dp
+///
+/// **Tight mode** (footer < 290 dp — desktop 4-up grid cells run
+/// ~184–280 dp on most laptops, small-tablet 2-up runs ~232–303 dp,
+/// some narrow phone columns dip below 290 too):
+///   - 8-dp gaps
+///   - [Flexible] wrappers on time + kcal so they ellipsize under
+///     pressure rather than overflowing the cell
+///   - kcal stays in compact form ("620"), and is dropped entirely
+///     only below 150 dp (a phone-landscape-with-sidebar edge case)
+///   - difficulty pill is right-pinned with [Spacer]
+///
+/// **Roomy mode** (footer ≥ 290 dp — phone single-column, tablet 2-up
+/// at full width, recipe-detail modal). CSS analogue:
+///   - `display: flex; align-items: center; gap: 16px` (or 24 px
+///     above 360 dp where every metric fits with breathing room)
 ///   - metrics are `flex-shrink: 0` so "1 h 15 min" is never
 ///     ellipsized — previously the time was wrapped in [Flexible]
 ///     and lost the fight for space against the [Spacer] + kcal
 ///     block, truncating to "1 h 15 ...".
-///   - difficulty pill uses `margin-left: auto` (= [Spacer]) to
-///     pin to the far right.
+///   - kcal is full "620 kcal" above 380 dp, compact "620" below;
+///     it's no longer hidden anywhere in this band.
 ///
-/// **Narrow mode** (footer < 230 dp — desktop 4-up grid cells run
-/// 190-220 dp). flex-shrink:0 mathematically cannot fit time + pill
-/// + difficulty here in worst-case locales, so we fall back to the
-/// legacy layout: tight 8-dp gaps and a [Flexible]-wrapped time
-/// that ellipsizes gracefully rather than overflowing the cell.
+/// History: the original split had tight mode at <230 dp and roomy
+/// mode at ≥230 dp with `hideKcal = w < 290` inside roomy. That
+/// produced a dead band at 230–289 dp where kcal silently disappeared
+/// — which is exactly the footer width range every wide-tier 4-up
+/// laptop layout (1280–1880 px viewports) and every small-tablet
+/// 2-up layout (600–744 px) lands in. Lifting the boundary to 290 dp
+/// puts those layouts back in tight mode, where compact kcal fits.
 class _CardFooter extends StatelessWidget {
   const _CardFooter({required this.recipe});
   final SpiceRouteSummary recipe;
@@ -327,16 +345,16 @@ class _CardFooter extends StatelessWidget {
       final kcal = recipe.caloriesPerServing;
 
       // -----------------------------------------------------------
-      // Narrow mode (4-up desktop grid). Keep the original layout
-      // here — flex-shrink:0 is genuinely impossible at <190 dp
-      // when "1 h 15 min" alone wants ~90 dp.
+      // Tight mode (4-up desktop / wide grids, small-tablet 2-up,
+      // and any other layout below the 290-dp threshold). Compact
+      // kcal + Flexible time keeps everything visible without ever
+      // overflowing — the Row distributes the residual space among
+      // the three Flexibles (time, kcal, Spacer) so degraded cases
+      // ellipsize rather than triggering a RenderFlex overflow.
       // -----------------------------------------------------------
-      if (w < 230) {
-        final compactKcal = w < 190;
+      if (w < 290) {
         final hideKcal = w < 150;
-        final kcalText = kcal == null
-            ? null
-            : (compactKcal ? '$kcal' : l.recipeKcal(kcal));
+        final kcalText = kcal == null ? null : '$kcal';
         return Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -360,17 +378,17 @@ class _CardFooter extends StatelessWidget {
       }
 
       // -----------------------------------------------------------
-      // Roomy mode — the user-requested layout. Thresholds chosen
-      // for the worst-case glyph budget:
-      //   - "1 h 15 min" + icon ≈ 90 dp in English at fontSize 11,
-      //     up to ~125 dp under wide-glyph fonts (verbose locales,
-      //     Ahem test font).
-      //   - "MEDIUM" pill ≈ 70 dp (label + pill padding).
-      //   - "620 kcal" + icon ≈ 80 dp; "620" alone ≈ 35 dp.
+      // Roomy mode. flex-shrink: 0 on every metric.
+      //
+      // Gap: 16 dp until we reach 360 dp footer width, where the
+      // worst-case English "1 h 15 min" fits at intrinsic + a
+      // 24 dp-gap layout still leaves comfortable Spacer slack.
+      //
+      // Compact kcal up to 380 dp; above that the full "$kcal kcal"
+      // localized form fits without crowding the difficulty pill.
       // -----------------------------------------------------------
-      final gap = w < 300 ? 16.0 : 24.0;
+      final gap = w < 360 ? 16.0 : 24.0;
       final compactKcal = w < 380;
-      final hideKcal = w < 290;
       final kcalText = kcal == null
           ? null
           : (compactKcal ? '$kcal' : l.recipeKcal(kcal));
@@ -383,12 +401,10 @@ class _CardFooter extends StatelessWidget {
         // the pill would baseline-drift on locales with tall scripts.
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // No outer Flexible: each _MetaItem keeps its intrinsic
-          // width (flex-shrink: 0). This is the core of the fix.
           _MetaItem(icon: Icons.schedule, text: timeText),
           SizedBox(width: gap),
           _MetaItem(icon: Icons.person_outline, text: '${recipe.servings}'),
-          if (kcalText != null && !hideKcal) ...[
+          if (kcalText != null) ...[
             SizedBox(width: gap),
             _MetaItem(
               icon: Icons.local_fire_department_outlined,

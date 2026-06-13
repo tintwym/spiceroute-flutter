@@ -390,7 +390,22 @@ class AppL10nZh extends AppL10n {
   String get dietaryAntiInflammatory => '抗炎与长寿';
 
   @override
+  String get dietaryGlutenFree => '无麸质';
+
+  @override
+  String get dietaryDairyFree => '无乳制品';
+
+  @override
+  String get dietaryNutFree => '无坚果';
+
+  @override
+  String get dietaryEggFree => '无鸡蛋';
+
+  @override
   String get dietaryGroupRestrictions => '饮食限制';
+
+  @override
+  String get dietaryGroupAllergenFree => '无过敏原';
 
   @override
   String get dietaryGroupWellness => '健康与生活方式';

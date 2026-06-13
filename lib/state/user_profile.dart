@@ -24,9 +24,20 @@ class UserProfile {
 
   final Set<String> savedRecipeIds;
 
-  /// Denormalised AI-authored recipes — stored as raw maps so a new client
-  /// can render them without round-tripping to the backend. Each map carries
-  /// the same shape as a [SpiceRouteDetail] JSON payload.
+  /// Skinny references to AI-authored recipes the user has saved.
+  /// Each entry has `{id, title, imageUrl?, createdAt}` — NOT the
+  /// full [SpiceRouteDetail] shape. The full recipe stays on the
+  /// backend and is fetched lazily via `GET /spice_routes/{id}`.
+  ///
+  /// History note: an earlier shape stored the full Gemini payload
+  /// inline. With Gemini occasionally returning ~20 KB recipes, 50
+  /// entries × 20 KB plus the user's `savedRecipeIds` would blow
+  /// past Firestore's 1 MiB document cap and lock the user out of
+  /// their own profile (every subsequent `set(..., merge: true)`
+  /// to this doc would fail). See
+  /// `AiRecipeController._mirrorToCloud` for the writer-side
+  /// constraints; this field is read-mostly and capped at 50
+  /// entries server-side.
   final List<Map<String, dynamic>> customRecipes;
 
   final String? displayName;

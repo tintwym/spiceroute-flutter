@@ -26,6 +26,35 @@ class LocaleNotifier extends StateNotifier<Locale> {
     _bootstrap();
   }
 
+  /// True once the user has explicitly picked a locale via `set()`
+  /// during the lifetime of this notifier. Used as a one-way latch
+  /// to suppress the bootstrap's stored-value restore — if the user
+  /// has already made an explicit choice (typically by tapping a
+  /// language chip while the disk read was still in flight), we MUST
+  /// NOT overwrite it with whatever was on disk from the previous
+  /// session.
+  ///
+  /// Race scenario this guards (real, observed in practice on slow
+  /// web first-loads where the secure-storage IndexedDB call can
+  /// take 100ms+):
+  ///   t=0   constructor sets state = inferDefault() (= 'en')
+  ///   t=1   _bootstrap fires, kicks off `_storage.read(...)`
+  ///   t=2   user taps "Vietnamese" chip → set(vi) → state = vi,
+  ///         persists vi to storage
+  ///   t=3   _storage.read resolves with previous-session 'ja'
+  ///   t=4   bootstrap: `match = ja`, `state != ja` → state = ja
+  ///         (silently overwrites the user's t=2 selection)
+  bool _userSet = false;
+
+  /// Serializes persistence writes so two rapid `set()` calls can't
+  /// race each other on disk. The state field gets updated
+  /// synchronously (so the UI reflects the latest tap immediately),
+  /// but the storage writes chain off this Future so they land in
+  /// call order — without this, write A could finish AFTER write B
+  /// and leave the disk with the wrong value despite the in-memory
+  /// state being correct.
+  Future<void> _writeLock = Future<void>.value();
+
   static Locale _inferDefault() {
     final platform = PlatformDispatcher.instance.locale;
     final code = platform.languageCode.toLowerCase();
@@ -38,6 +67,7 @@ class LocaleNotifier extends StateNotifier<Locale> {
   Future<void> _bootstrap() async {
     try {
       final stored = await _storage.read(key: _localeKey);
+      if (_userSet) return;
       if (stored == null || stored.isEmpty) return;
       final match = supportedLocales.firstWhere(
         (l) => l.languageCode == stored,
@@ -53,12 +83,21 @@ class LocaleNotifier extends StateNotifier<Locale> {
     if (!supportedLocales.any((l) => l.languageCode == locale.languageCode)) {
       return;
     }
+    _userSet = true;
     state = locale;
-    try {
-      await _storage.write(key: _localeKey, value: locale.languageCode);
-    } catch (_) {
-      // ignore: persistence is best-effort
-    }
+    // Chain the disk write so concurrent set() calls land in
+    // call-order and don't race each other on flush. We swap the
+    // lock Future BEFORE awaiting so the next caller sees the new
+    // tail of the chain.
+    final next = _writeLock.then((_) async {
+      try {
+        await _storage.write(key: _localeKey, value: locale.languageCode);
+      } catch (_) {
+        // best-effort; in-memory state is the live source of truth
+      }
+    });
+    _writeLock = next;
+    return next;
   }
 }
 
