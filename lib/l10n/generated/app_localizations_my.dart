@@ -448,6 +448,9 @@ class AppL10nMy extends AppL10n {
   String get filterDietHeading => 'အစားအသောက် နှင့် ဘဝနေထိုင်မှု';
 
   @override
+  String get filterMobilePillHint => 'ဟင်းပွဲများ စစ်ထုတ်ပါ';
+
+  @override
   String filterChoicesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

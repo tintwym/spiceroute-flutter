@@ -57,69 +57,50 @@ class FilterBar extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Below ~560px the two pills next to each other get cramped
-        // (especially the second label "DIETARY, LIFESTYLE & FORMAT
-        // RESTRICTIONS" which is long). Stack vertically on narrow
-        // screens so each column gets the full width.
+        // Below ~560 dp we collapse the two stacked pills into a
+        // single combined trigger pill. Both filter dimensions
+        // (course + diet) live inside one shared tabbed sheet on
+        // mobile, so two visually-separate triggers would be
+        // redundant chrome. Above 560 dp each dimension gets its own
+        // labeled column with its own anchored single-dimension
+        // accordion menu — fits naturally in the wider layout and
+        // matches the existing desktop pattern.
         final stacked = constraints.maxWidth < 560;
 
-        // On mobile, both pills open a single shared tabbed sheet
-        // (matches the iOS-style minimalist filter mockup). The pill
-        // that was tapped pre-selects its own tab, but the user can
-        // switch between "By Course" and "By Diet & Lifestyle" inside
-        // the same sheet without dismissing.
-        //
-        // On desktop we keep the original behaviour: each pill opens
-        // its own single-dimension accordion route anchored beneath
-        // it. The two columns are visually adjacent so a tabbed sheet
-        // would just be redundant chrome.
-        void Function(
-          BuildContext,
-          Offset triggerOrigin,
-          Size triggerSize,
-        )?
-        openCourseOnMobile;
-        void Function(
-          BuildContext,
-          Offset triggerOrigin,
-          Size triggerSize,
-        )?
-        openDietaryOnMobile;
-
         if (stacked) {
-          Future<void> openTabbed(
-            BuildContext ctx,
-            int initialTab,
-            Offset origin,
-            Size size,
-          ) async {
-            final overlay =
-                Navigator.of(ctx).overlay!.context.findRenderObject()
-                    as RenderBox;
-            final dismissLabel = AppL10n.of(ctx).filterDismissMenu;
-            await Navigator.of(ctx).push<void>(
-              _TabbedAccordionMenuRoute(
-                origin: origin,
-                triggerSize: size,
-                viewportSize: overlay.size,
-                initialTab: initialTab,
-                courseValue: course,
-                dietaryValue: dietary,
-                courseGroups: courseGroups,
-                dietaryGroups: dietaryGroups,
-                courseClearItem: courseClearItem,
-                dietaryClearItem: dietaryClearItem,
-                onCourseSelected: onCourseChanged,
-                onDietarySelected: onDietaryChanged,
-                barrierLabelText: dismissLabel,
-              ),
-            );
-          }
-
-          openCourseOnMobile = (ctx, origin, size) =>
-              openTabbed(ctx, 0, origin, size);
-          openDietaryOnMobile = (ctx, origin, size) =>
-              openTabbed(ctx, 1, origin, size);
+          return _MobileCombinedFilterPill(
+            course: course,
+            dietary: dietary,
+            openSheet: (ctx, origin, size) async {
+              final overlay =
+                  Navigator.of(ctx).overlay!.context.findRenderObject()
+                      as RenderBox;
+              final dismissLabel = AppL10n.of(ctx).filterDismissMenu;
+              // Initial tab: prefer Course, but if the user has only
+              // a dietary filter active land them on the Diet tab so
+              // they see their current selection without an extra tap.
+              final initialTab = (dietary != null && course == null)
+                  ? 1
+                  : 0;
+              await Navigator.of(ctx).push<void>(
+                _TabbedAccordionMenuRoute(
+                  origin: origin,
+                  triggerSize: size,
+                  viewportSize: overlay.size,
+                  initialTab: initialTab,
+                  courseValue: course,
+                  dietaryValue: dietary,
+                  courseGroups: courseGroups,
+                  dietaryGroups: dietaryGroups,
+                  courseClearItem: courseClearItem,
+                  dietaryClearItem: dietaryClearItem,
+                  onCourseSelected: onCourseChanged,
+                  onDietarySelected: onDietaryChanged,
+                  barrierLabelText: dismissLabel,
+                ),
+              );
+            },
+          );
         }
 
         final courseCol = _FilterColumn<Course?>(
@@ -132,7 +113,6 @@ class FilterBar extends StatelessWidget {
           groups: courseGroups,
           searchHint: l.filterSearchCourses,
           onChanged: onCourseChanged,
-          customOpen: openCourseOnMobile,
         );
 
         final dietaryCol = _FilterColumn<Dietary?>(
@@ -145,15 +125,8 @@ class FilterBar extends StatelessWidget {
           groups: dietaryGroups,
           searchHint: l.filterSearchDietary,
           onChanged: onDietaryChanged,
-          customOpen: openDietaryOnMobile,
         );
 
-        if (stacked) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [courseCol, const SizedBox(height: 12), dietaryCol],
-          );
-        }
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1913,6 +1886,134 @@ String _dietaryEmoji(Dietary d) {
 //     switches because [IndexedStack] keeps both subtrees alive — a
 //     user who types into the Course search box, switches to Diet,
 //     then switches back, finds their query intact.
+
+/// Single combined pill rendered on mobile (< 560 dp). Replaces the
+/// pair of stacked [_FilterColumn]s — both filter dimensions live
+/// inside the tabbed sheet now, so two visually-separate triggers
+/// would have been redundant chrome.
+///
+/// Visual style matches [_GlassDropdown]'s closed trigger so the
+/// pill feels native to the rest of the filter UI:
+///   - 28-dp rounded surface, surfaceContainerHighest fill
+///   - Leading emoji glyph, summary text, trailing chevron
+///   - 48-dp min height
+///
+/// Summary content reflects the current filter state:
+///   - Both dimensions cleared → hint emoji + [filterMobilePillHint]
+///   - Single active dimension → that selection's emoji + label
+///   - Both active → 🎯 + "{course} · {dietary}", soft-clipped on
+///     overflow so a verbose locale doesn't blow the row out
+class _MobileCombinedFilterPill extends StatefulWidget {
+  const _MobileCombinedFilterPill({
+    required this.course,
+    required this.dietary,
+    required this.openSheet,
+  });
+
+  final Course? course;
+  final Dietary? dietary;
+
+  /// Called with the trigger pill's overlay-space anchor when the
+  /// user taps. Parent positions the [_TabbedAccordionMenuRoute]
+  /// flush beneath the pill using these coordinates.
+  final void Function(BuildContext, Offset triggerOrigin, Size triggerSize)
+  openSheet;
+
+  @override
+  State<_MobileCombinedFilterPill> createState() =>
+      _MobileCombinedFilterPillState();
+}
+
+class _MobileCombinedFilterPillState extends State<_MobileCombinedFilterPill> {
+  final GlobalKey _triggerKey = GlobalKey();
+
+  void _open(BuildContext context) {
+    final triggerBox =
+        _triggerKey.currentContext!.findRenderObject() as RenderBox;
+    final overlay =
+        Navigator.of(context).overlay!.context.findRenderObject() as RenderBox;
+    final origin = triggerBox.localToGlobal(Offset.zero, ancestor: overlay);
+    widget.openSheet(context, origin, triggerBox.size);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final l = AppL10n.of(context);
+
+    final courseActive = widget.course != null;
+    final dietActive = widget.dietary != null;
+
+    final String emoji;
+    final String summary;
+    if (!courseActive && !dietActive) {
+      emoji = _allDietaryEmoji;
+      summary = l.filterMobilePillHint;
+    } else if (courseActive && !dietActive) {
+      emoji = _courseEmoji(widget.course!);
+      summary = _courseLabel(l, widget.course!);
+    } else if (!courseActive && dietActive) {
+      emoji = _dietaryEmoji(widget.dietary!);
+      summary = _dietaryLabel(l, widget.dietary!);
+    } else {
+      // Both set — the per-dimension emojis would be visually noisy
+      // crammed in front of two labels, so fall back to the generic
+      // "filter" hint glyph and let the labels carry the meaning.
+      emoji = _allDietaryEmoji;
+      summary =
+          '${_courseLabel(l, widget.course!)} · '
+          '${_dietaryLabel(l, widget.dietary!)}';
+    }
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        key: _triggerKey,
+        borderRadius: BorderRadius.circular(28),
+        onTap: () => _open(context),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 48),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            color: cs.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(color: cs.outlineVariant, width: 1),
+          ),
+          child: Row(
+            children: [
+              SizedBox(
+                width: 22,
+                child: Text(
+                  emoji,
+                  style: emojiTextStyle(fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  summary,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: cs.onSurface,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Icon(
+                Icons.keyboard_arrow_down,
+                size: 22,
+                color: cs.onSurfaceVariant,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 /// Modal route that renders the tabbed sheet. Mirrors
 /// [_AccordionMenuRoute] but hosts a two-tab body.

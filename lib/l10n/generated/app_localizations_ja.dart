@@ -436,6 +436,9 @@ class AppL10nJa extends AppL10n {
   String get filterDietHeading => '食事・ライフスタイル制限';
 
   @override
+  String get filterMobilePillHint => 'レシピを絞り込む';
+
+  @override
   String filterChoicesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

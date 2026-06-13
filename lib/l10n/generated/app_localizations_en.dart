@@ -442,6 +442,9 @@ class AppL10nEn extends AppL10n {
   String get filterDietHeading => 'DIETARY & LIFESTYLE RESTRICTIONS';
 
   @override
+  String get filterMobilePillHint => 'Filter recipes';
+
+  @override
   String filterChoicesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

@@ -432,6 +432,9 @@ class AppL10nZh extends AppL10n {
   String get filterDietHeading => '饮食与生活方式';
 
   @override
+  String get filterMobilePillHint => '筛选食谱';
+
+  @override
   String filterChoicesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

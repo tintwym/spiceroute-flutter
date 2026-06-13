@@ -903,6 +903,12 @@ abstract class AppL10n {
   /// **'DIETARY & LIFESTYLE RESTRICTIONS'**
   String get filterDietHeading;
 
+  /// No description provided for @filterMobilePillHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter recipes'**
+  String get filterMobilePillHint;
+
   /// No description provided for @filterChoicesCount.
   ///
   /// In en, this message translates to:

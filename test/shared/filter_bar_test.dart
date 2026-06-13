@@ -388,10 +388,10 @@ void main() {
     );
   });
 
-  group('mobile tabbed sheet', () {
+  group('mobile combined pill + tabbed sheet', () {
     /// Pump the filter bar at a phone-class viewport (< 560 dp wide)
-    /// so [FilterBar] swaps each pill's per-dimension accordion route
-    /// for the shared two-tab sheet.
+    /// so [FilterBar] collapses both filter dimensions into a single
+    /// combined trigger pill that opens the shared two-tab sheet.
     Future<void> pumpMobile(
       WidgetTester tester, {
       Course? course,
@@ -414,18 +414,30 @@ void main() {
     }
 
     testWidgets(
-      'tapping the Course pill opens the tabbed sheet on the Course tab',
+      'mobile renders ONE combined pill (no separate Course/Dietary triggers)',
       (tester) async {
         await pumpMobile(tester);
-        await tester.tap(find.text('All Courses'));
+        // The desktop two-pill labels must NOT appear on mobile.
+        expect(find.text('All Courses'), findsNothing);
+        expect(find.text('All Requests'), findsNothing);
+        // The combined-pill hint is the user-visible trigger.
+        expect(find.text('Filter recipes'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'tapping the combined pill opens the tabbed sheet on the Course tab',
+      (tester) async {
+        await pumpMobile(tester);
+        await tester.tap(find.text('Filter recipes'));
         await tester.pumpAndSettle();
         // Both tab labels render — confirms it's the tabbed sheet,
         // not the single-dimension accordion route.
         expect(find.text('By Course'), findsOneWidget);
         expect(find.text('By Diet & Lifestyle'), findsOneWidget);
-        // Course-tab heading is visible (the active tab body).
+        // Course-tab heading is visible (the active tab body) — the
+        // default initial tab when no filter is preselected.
         expect(find.text('COURSE SELECTION FILTERS'), findsOneWidget);
-        // Course-tab search hint is the one rendered.
         expect(
           find.text('Search courses (e.g. Dessert, Main…)'),
           findsOneWidget,
@@ -434,12 +446,16 @@ void main() {
     );
 
     testWidgets(
-      'tapping the Dietary pill opens the tabbed sheet on the Diet tab',
+      'with only a dietary value set the sheet lands on the Diet tab',
       (tester) async {
-        await pumpMobile(tester);
-        await tester.tap(find.text('All Requests'));
+        // No course, but dietary preselected → the user lands on the
+        // tab where their existing selection lives.
+        await pumpMobile(tester, dietary: Dietary.vegan);
+        // The pill summary now reflects the active dietary filter
+        // instead of the generic hint.
+        expect(find.text('Filter recipes'), findsNothing);
+        await tester.tap(find.text('Vegan'));
         await tester.pumpAndSettle();
-        // Same sheet, but the active body is the Dietary one.
         expect(find.text('DIETARY & LIFESTYLE RESTRICTIONS'), findsOneWidget);
         expect(
           find.text('Search diets (e.g. Gluten-Free, Vegan…)'),
@@ -452,13 +468,10 @@ void main() {
       'switching tabs swaps the accordion body without dismissing the sheet',
       (tester) async {
         await pumpMobile(tester);
-        await tester.tap(find.text('All Courses'));
+        await tester.tap(find.text('Filter recipes'));
         await tester.pumpAndSettle();
-        // Course heading visible, Diet heading should be hidden by
-        // the IndexedStack's index=0 state.
         expect(find.text('COURSE SELECTION FILTERS'), findsOneWidget);
 
-        // Tap the "By Diet & Lifestyle" tab.
         await tester.tap(find.text('By Diet & Lifestyle'));
         await tester.pumpAndSettle();
         expect(find.text('DIETARY & LIFESTYLE RESTRICTIONS'), findsOneWidget);
@@ -473,7 +486,7 @@ void main() {
           tester,
           onCourseChanged: (v) => captured = v,
         );
-        await tester.tap(find.text('All Courses'));
+        await tester.tap(find.text('Filter recipes'));
         await tester.pumpAndSettle();
         // Expand the "Sweet Ending" group (rendered uppercase by
         // _AccordionSection) and pick its lone child.
@@ -483,7 +496,6 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(captured, Course.dessert);
-        // Sheet should be dismissed — tab labels gone.
         expect(find.text('By Course'), findsNothing);
       },
     );
@@ -496,9 +508,11 @@ void main() {
           tester,
           onDietaryChanged: (v) => captured = v,
         );
-        await tester.tap(find.text('All Requests'));
+        await tester.tap(find.text('Filter recipes'));
         await tester.pumpAndSettle();
-        // Expand "COOKING FORMATS" and pick "Quick & Easy".
+        // Switch to the Diet tab and pick a value.
+        await tester.tap(find.text('By Diet & Lifestyle'));
+        await tester.pumpAndSettle();
         await tester.tap(find.text('COOKING FORMATS'));
         await tester.pumpAndSettle();
         await tester.tap(find.text('Quick & Easy'));
@@ -513,10 +527,9 @@ void main() {
       'each tab keeps its own search query across tab switches',
       (tester) async {
         await pumpMobile(tester);
-        await tester.tap(find.text('All Courses'));
+        await tester.tap(find.text('Filter recipes'));
         await tester.pumpAndSettle();
 
-        // Type into the Course tab's search field.
         final courseField = find.widgetWithText(
           TextField,
           'Search courses (e.g. Dessert, Main…)',
@@ -524,13 +537,9 @@ void main() {
         await tester.enterText(courseField, 'soup');
         await tester.pump();
 
-        // Switch to the Diet tab — the Course query should still be
-        // "soup" when we come back, because IndexedStack preserves the
-        // subtree's state.
+        // Switch to Diet — its search box should be empty.
         await tester.tap(find.text('By Diet & Lifestyle'));
         await tester.pumpAndSettle();
-
-        // Diet tab's search field should be empty.
         final dietField = find.widgetWithText(
           TextField,
           'Search diets (e.g. Gluten-Free, Vegan…)',
@@ -538,7 +547,8 @@ void main() {
         final dietWidget = tester.widget<TextField>(dietField);
         expect(dietWidget.controller?.text ?? '', isEmpty);
 
-        // Flip back to Course — query should be intact.
+        // Flip back to Course — IndexedStack preserves the subtree
+        // so the typed query is still there.
         await tester.tap(find.text('By Course'));
         await tester.pumpAndSettle();
         final courseAgain = tester.widget<TextField>(
@@ -552,18 +562,23 @@ void main() {
     );
 
     testWidgets(
-      'desktop (>= 560 dp) does NOT use the tabbed sheet',
+      'desktop (>= 560 dp) renders two separate pills, NOT the combined pill',
       (tester) async {
-        // 900 dp viewport → side-by-side columns → each pill opens
-        // its own single-dimension accordion route.
+        // 900 dp viewport → side-by-side columns → each dimension
+        // gets its own labeled pill + its own single-dimension
+        // accordion route. The combined-pill hint must not appear.
         await _pumpFilterBar(tester);
+        expect(find.text('Filter recipes'), findsNothing);
+        // Both desktop pills are present.
+        expect(find.text('All Courses'), findsOneWidget);
+        expect(find.text('All Requests'), findsOneWidget);
+
         await tester.tap(find.text('All Courses'));
         await tester.pumpAndSettle();
         // No tab toggle on desktop.
         expect(find.text('By Course'), findsNothing);
         expect(find.text('By Diet & Lifestyle'), findsNothing);
-        // The Course accordion still opens normally — sanity check.
-        // Section labels render uppercased by _AccordionSection.
+        // The Course accordion still opens normally.
         expect(find.text('SWEET ENDING'), findsOneWidget);
       },
     );

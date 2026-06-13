@@ -100,6 +100,7 @@
   "filterTabDiet": "按饮食偏好",
   "filterCourseHeading": "餐式筛选",
   "filterDietHeading": "饮食与生活方式",
+  "filterMobilePillHint": "筛选食谱",
   "filterChoicesCount": "{count, plural, =1{1 项} other{{count} 项}}",
   "@filterChoicesCount": { "placeholders": { "count": { "type": "int" } } },
   "filterExpandAll": "全部展开",

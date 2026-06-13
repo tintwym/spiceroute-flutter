@@ -100,6 +100,7 @@
   "filterTabDiet": "食事・ライフスタイル別",
   "filterCourseHeading": "コース選択フィルター",
   "filterDietHeading": "食事・ライフスタイル制限",
+  "filterMobilePillHint": "レシピを絞り込む",
   "filterChoicesCount": "{count, plural, =1{1件} other{{count}件}}",
   "@filterChoicesCount": { "placeholders": { "count": { "type": "int" } } },
   "filterExpandAll": "すべて展開",

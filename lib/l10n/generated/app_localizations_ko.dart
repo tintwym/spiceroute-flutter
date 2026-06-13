@@ -436,6 +436,9 @@ class AppL10nKo extends AppL10n {
   String get filterDietHeading => '식단 & 라이프스타일';
 
   @override
+  String get filterMobilePillHint => '레시피 필터';
+
+  @override
   String filterChoicesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

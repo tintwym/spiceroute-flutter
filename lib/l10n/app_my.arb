@@ -157,6 +157,7 @@
   "filterTabDiet": "အစားအသောက် နှင့် ဘဝနေထိုင်မှုအလိုက်",
   "filterCourseHeading": "ဟင်းပွဲ ရွေးချယ်မှု စစ်ထုတ်ချက်",
   "filterDietHeading": "အစားအသောက် နှင့် ဘဝနေထိုင်မှု",
+  "filterMobilePillHint": "ဟင်းပွဲများ စစ်ထုတ်ပါ",
   "filterChoicesCount": "{count, plural, =1{1 ခု} other{{count} ခု}}",
   "@filterChoicesCount": { "placeholders": { "count": { "type": "int" } } },
   "filterExpandAll": "အားလုံး ဖွင့်ပါ",

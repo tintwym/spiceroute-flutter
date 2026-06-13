@@ -161,6 +161,7 @@
   "filterTabDiet": "By Diet & Lifestyle",
   "filterCourseHeading": "COURSE SELECTION FILTERS",
   "filterDietHeading": "DIETARY & LIFESTYLE RESTRICTIONS",
+  "filterMobilePillHint": "Filter recipes",
   "filterChoicesCount": "{count, plural, =1{1 choice} other{{count} choices}}",
   "@filterChoicesCount": { "placeholders": { "count": { "type": "int" } } },
   "filterExpandAll": "EXPAND ALL",

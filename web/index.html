@@ -34,6 +34,58 @@
 </head>
 <body>
   <!--
+    One-time service worker + Cache Storage cleanup.
+
+    Older deploys of this site shipped Flutter's default PWA bundle
+    (`flutter_service_worker.js` with the offline-first strategy).
+    Once that SW is registered in a visitor's browser it keeps
+    intercepting every navigation and serving the cached
+    `main.dart.js` from the deploy that installed it — sometimes for
+    hours or days, especially on iOS Safari. That's why a redeploy
+    can look "missing" on a phone while looking correct on desktop.
+
+    We've now switched the build to `--pwa-strategy=none` (see
+    `build.sh`), so new visitors never register a SW. But existing
+    visitors still have the old one. This snippet:
+
+      1. Unregisters every SW the page is allowed to see.
+      2. Wipes the Cache Storage entries the old SW populated.
+
+    It runs on every page load and is essentially free for fresh
+    visitors (nothing to unregister, nothing to delete). Once a
+    given browser has run it once the next visit's `getRegistrations`
+    returns empty and `caches.keys()` returns []. Safe to leave in
+    place permanently — and worth doing so as cheap insurance
+    against a stray SW ever sneaking back in.
+
+    Kept above the `flutter_bootstrap.js` tag so the cleanup fires
+    BEFORE the Flutter loader makes any network requests, which
+    means the very first uncached request to the new bundle goes
+    straight to the network rather than being served by the
+    soon-to-be-unregistered SW.
+  -->
+  <script>
+    (function () {
+      try {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function (regs) {
+            for (var i = 0; i < regs.length; i++) {
+              regs[i].unregister();
+            }
+          }).catch(function () {});
+        }
+        if ('caches' in window) {
+          caches.keys().then(function (keys) {
+            for (var i = 0; i < keys.length; i++) {
+              caches.delete(keys[i]);
+            }
+          }).catch(function () {});
+        }
+      } catch (_) { /* ignore — old browsers without these APIs */ }
+    })();
+  </script>
+
+  <!--
     You can customize the "flutter_bootstrap.js" script.
     This is useful to provide a custom configuration to the Flutter loader
     or to give the user feedback during the initialization process.

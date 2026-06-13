@@ -441,6 +441,9 @@ class AppL10nVi extends AppL10n {
   String get filterDietHeading => 'CHẾ ĐỘ ĂN & LỐI SỐNG';
 
   @override
+  String get filterMobilePillHint => 'Lọc công thức';
+
+  @override
   String filterChoicesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

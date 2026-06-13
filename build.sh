@@ -35,7 +35,25 @@ flutter pub get
 # `ShellDestination.icon` on the top/bottom nav) defeat the analyzer
 # and end up with blank boxes in production. Disabling tree-shaking
 # adds ~50 KB to the final bundle but guarantees every icon renders.
-BUILD_ARGS=(--release --no-tree-shake-icons)
+#
+# --pwa-strategy=none: Do not ship the default `flutter_service_worker.js`.
+# The default `offline-first` strategy is the #1 source of "I deployed
+# but Safari still shows the old build" reports — iOS Safari caches the
+# service worker very aggressively, and once a SW is registered it
+# intercepts every navigation and serves a stale `main.dart.js` for
+# hours/days after a deploy regardless of CDN cache headers.
+#
+# This app needs the backend for everything (no real offline mode), so
+# the SW buys us nothing functional and costs us deploy reliability.
+# The Vercel cache headers in `vercel.json` (max-age=0, must-revalidate
+# on entry-point files; long max-age on hashed asset directories) are
+# now the only caching layer, which is exactly the right setup for a
+# fast-iteration web client.
+#
+# Existing visitors who already have the old SW registered get a
+# one-time un-registration shim from `web/index.html` so they don't
+# stay stuck on a stale bundle indefinitely.
+BUILD_ARGS=(--release --no-tree-shake-icons --pwa-strategy=none)
 if [ -n "${API_BASE_URL:-}" ]; then
   echo "Building with API_BASE_URL=$API_BASE_URL"
   BUILD_ARGS+=(--dart-define=API_BASE_URL="$API_BASE_URL")

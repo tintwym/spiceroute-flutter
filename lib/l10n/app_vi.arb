@@ -100,6 +100,7 @@
   "filterTabDiet": "Theo chế độ ăn & lối sống",
   "filterCourseHeading": "BỘ LỌC BỮA ĂN",
   "filterDietHeading": "CHẾ ĐỘ ĂN & LỐI SỐNG",
+  "filterMobilePillHint": "Lọc công thức",
   "filterChoicesCount": "{count, plural, =1{1 lựa chọn} other{{count} lựa chọn}}",
   "@filterChoicesCount": { "placeholders": { "count": { "type": "int" } } },
   "filterExpandAll": "MỞ TẤT CẢ",
