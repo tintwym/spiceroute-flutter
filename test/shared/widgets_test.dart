@@ -183,61 +183,63 @@ void main() {
   );
 
   testWidgets(
-    'card footer renders full time on typical desktop 4-up widths',
+    'card footer renders full time + pill on typical desktop 4-up widths',
     (tester) async {
-      // Regression for "we don't see fully time" — on wide-tier 4-up
-      // laptops the footer landed in tight mode with Flexible(time),
-      // Flexible(kcal), and Spacer all competing for residual space,
-      // and time lost: it ellipsized to "1 h 15 …".
+      // Regression for "we don't see fully time" (v2 bug, fixed in
+      // v3) AND "what's missing?" (v3 over-correction, the
+      // difficulty pill silently vanished in tight mode; fixed in
+      // v4). Together these guard the tight-mode invariant: every
+      // metadata item — time, servings, kcal, AND the difficulty
+      // pill — renders without ellipsis on a 280-dp card.
       //
-      // The fix drops the difficulty pill + Spacer in tight mode so
-      // time, servings, and kcal all render at their intrinsic widths.
+      // Card width 280 dp → footer 252 dp (the app's
+      // `cardTheme.margin` is `EdgeInsets.zero`, so the column's
+      // 28-dp horizontal padding is what gets subtracted). That's
+      // safely below the 290-dp tight/roomy split.
       //
-      // We use a 280-dp card width. The app's `cardTheme.margin` is
-      // `EdgeInsets.zero`, so the card takes the full SizedBox width
-      // and the footer ends up at 280 − 28 (column padding) = 252 dp.
-      // That's safely below the 290-dp tight/roomy split (so the
-      // difficulty pill is suppressed) and well above the
-      // ~211-dp floor where Ahem (the test font, 1 em per glyph)
-      // can still fit "1 h 15 min" + servings + compact kcal at
-      // intrinsic widths. Narrower 4-up widths are still covered
-      // by the "no overflow" test below.
-      final long = SpiceRouteSummary(
+      // Recipe is 30 minutes total ("30 min" in en, ~84 dp Ahem)
+      // and EASY difficulty (~52 dp Ahem). Ahem (the test font,
+      // 1 em per glyph) is meaningfully wider than production
+      // Inter, so we keep the time string short here so all four
+      // items fit at intrinsic in tests as well as production.
+      // Long-time cases like "1 h 15 min" are covered separately
+      // by the phone-width test above (footer ~392 dp, roomy mode
+      // where the pill rides on the Spacer-pushed right rail).
+      final r = SpiceRouteSummary(
         id: 'r-time',
-        title: 'Slow braise',
-        description: 'Long cook.',
-        prepMinutes: 15,
-        cookMinutes: 60,
+        title: 'Quick fry',
+        description: 'Fast.',
+        prepMinutes: 10,
+        cookMinutes: 20,
         servings: 6,
-        imageUrl: 'https://example.com/braise.jpg',
+        imageUrl: 'https://example.com/fry.jpg',
         cuisine: Cuisine.italian,
         caloriesPerServing: 620,
       );
-      await pumpCard(tester, long, width: 280);
+      await pumpCard(tester, r, width: 280);
 
       // Time text must contain the minutes portion verbatim — no
-      // ellipsis. We match on the substring "15" because the exact
-      // formatter output depends on locale (e.g. "1 h 15 min" en,
-      // "1時間15分" ja).
+      // ellipsis. We match on the substring "30" because the exact
+      // formatter output depends on locale.
       expect(
-        find.textContaining('15'),
+        find.textContaining('30'),
         findsWidgets,
-        reason: 'time minutes must render verbatim, not as "1 h 15 …"',
+        reason: 'time minutes must render verbatim, not ellipsized',
       );
       expect(
         find.textContaining('…'),
         findsNothing,
         reason: 'no ellipsis should appear in the metadata row',
       );
-      // Kcal must remain visible too — the v2→v3 fix dropped the
-      // pill, not the data.
+      // Kcal must be visible (compact "620" form in tight mode).
       expect(find.textContaining('620'), findsOneWidget);
-      // Difficulty pill should NOT render at this width band — it's
-      // dropped in tight mode to make room for time/servings/kcal.
+      // Difficulty pill MUST render at this width band — v4 brings
+      // it back inline (right of kcal) where v3 had dropped it.
+      // Score 30 → EASY.
       expect(
-        find.textContaining('MEDIUM'),
-        findsNothing,
-        reason: 'difficulty pill is suppressed below 290-dp footer width',
+        find.text('EASY'),
+        findsOneWidget,
+        reason: 'difficulty pill must be visible inline in tight mode',
       );
       expect(tester.takeException(), isNull);
     },

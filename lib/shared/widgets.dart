@@ -344,10 +344,21 @@ class RecipeCard extends ConsumerWidget {
 ///     still kept the difficulty pill + Spacer, leaving Flexible
 ///     time fighting Flexible kcal and Spacer for residual space —
 ///     time ellipsized to "1 h 15 …" on those same layouts.
-///   * v3 (current): tight mode drops the difficulty pill and the
-///     Spacer entirely. Items pack left at intrinsic widths; time
-///     renders fully. The pill returns at ≥290 dp where there's
-///     room to right-pin it without crowding the data.
+///   * v3: tight mode dropped the difficulty pill entirely so
+///     time, servings, and kcal could pack left at intrinsic. Time
+///     was preserved, but the pill silently vanished on every
+///     mobile / 4-up card — visible empty space on the right
+///     where the pill would have fit. Reported as "what's
+///     missing?" with a screenshot.
+///   * v4 (current): tight mode keeps everything packed left at
+///     intrinsic, AND brings the pill back inline (right after
+///     kcal, no Spacer). Time + pill are wrapped in [Flexible]
+///     with weights 4 : 1 so if a verbose locale ever pushes the
+///     row past the viewport, the pill ellipsizes ("INTRICA…")
+///     well before time does. In every realistic production
+///     layout (Inter / Noto fonts) all four items render at
+///     intrinsic with slack to spare; the flex weights are pure
+///     defense-in-depth.
 class _CardFooter extends StatelessWidget {
   const _CardFooter({required this.recipe});
   final SpiceRouteSummary recipe;
@@ -367,13 +378,21 @@ class _CardFooter extends StatelessWidget {
       // Tight mode (4-up desktop / wide grids, small-tablet 2-up,
       // and any other layout below the 290-dp threshold).
       //
-      // Drop the difficulty pill here so the time, servings, and
-      // kcal numerals all render at their intrinsic widths without
-      // ellipsis. Items pack left (no Spacer); freed slack sits on
-      // the right.
+      // Items pack LEFT at intrinsic widths (no Spacer); the
+      // difficulty pill rides at the end of the row.
+      //
+      // Time and pill are wrapped in [Flexible] with weights 4 : 1.
+      // At every realistic production-font width all four items
+      // fit at intrinsic and the Flexibles are no-ops. The weights
+      // only kick in when total intrinsic exceeds the viewport
+      // (verbose locale + degenerate width); when they do, the
+      // pill is allowed to shrink to ~1/5 of the residual budget
+      // and ellipsizes first ("INTRICA…"). Time stays readable
+      // because its 4/5 share is enough for any locale's time
+      // formatter output we ship.
       //
       // Sub-band at < 180 dp drops kcal too — only time + servings
-      // can fit at this floor (90 + 35 + 8 ≈ 133 dp).
+      // + pill can fit at this floor (~140 dp Inter).
       // -----------------------------------------------------------
       if (w < 290) {
         final hideKcal = w < 180;
@@ -381,10 +400,10 @@ class _CardFooter extends StatelessWidget {
         return Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Flexible is a safety net for degenerate viewports
-            // (< 130 dp). At every realistic width the time text
-            // takes its intrinsic size and Flexible is a no-op.
-            Flexible(child: _MetaItem(icon: Icons.schedule, text: timeText)),
+            Flexible(
+              flex: 4,
+              child: _MetaItem(icon: Icons.schedule, text: timeText),
+            ),
             const SizedBox(width: 8),
             _MetaItem(
                 icon: Icons.person_outline, text: '${recipe.servings}'),
@@ -395,6 +414,11 @@ class _CardFooter extends StatelessWidget {
                 text: kcalText,
               ),
             ],
+            const SizedBox(width: 8),
+            Flexible(
+              flex: 1,
+              child: _DifficultyPill(label: difficulty),
+            ),
           ],
         );
       }
