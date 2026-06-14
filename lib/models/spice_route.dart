@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 
 /// One of the 16 cuisines surfaced by Explore. Keep these strings in sync
 /// with the backend `Cuisine` StrEnum in `app/models/cuisine.py` and the
-/// Gemini structured-output schema enum in `app/services/ai/prompts.py`.
+/// LLM JSON-schema enum in `app/services/ai/prompts.py`.
 ///
 /// Order is append-only — DO NOT reorder. Vietnamese was appended after
 /// the original launch catalog (page-1 muscle memory for early users),

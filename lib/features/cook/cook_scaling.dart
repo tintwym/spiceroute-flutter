@@ -29,7 +29,7 @@ class ConvertedQuantity {
 /// `originalServings` of `0` is defensively treated as `1` to avoid a
 /// divide-by-zero from a malformed recipe payload (it should never
 /// happen because the model defaults to 1, but a bad backend write or
-/// an old Gemini response shouldn't crash the cook page).
+/// a stale LLM response shouldn't crash the cook page).
 List<ScaledIngredient> scaleIngredients(
   List<Ingredient> ings, {
   required int originalServings,
@@ -117,8 +117,9 @@ ConvertedQuantity convertQuantity({
 
 // ---------------------------------------------------------------------------
 // Unit normalization. The recipe corpus is a mix of "tbsp" / "Tbsp" /
-// "tablespoon" / "Tablespoons" coming from both Gemini and curated
-// seeds. We map them all to a canonical key for the conversion table.
+// "tablespoon" / "Tablespoons" coming from both LLM-generated payloads
+// and the curated seeds. We map them all to a canonical key for the
+// conversion table.
 // ---------------------------------------------------------------------------
 
 String? _normalizeUnit(String? raw) {

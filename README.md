@@ -4,7 +4,7 @@ Flutter client for **SpiceRoute** — a multilingual recipe explorer with AI-gen
 
 The client talks to two backends:
 
-- **[spiceroute-backend](https://github.com/TintWaiYanMin/spiceroute-backend)** — FastAPI + Postgres for the recipe catalog and the AI endpoints (Gemini).
+- **[spiceroute-backend](https://github.com/TintWaiYanMin/spiceroute-backend)** — FastAPI + Postgres for the recipe catalog and the AI endpoints (Groq's Llama 3.1 by default; any OpenAI-compatible provider works).
 - **Firebase Auth + Firestore** — for sign-in / sign-up and all user-generated content (saved-recipe sync, community photos, reviews).
 
 ## What's in here
@@ -19,7 +19,7 @@ The client talks to two backends:
 │   │   ├── explore/        Home page: hero + cuisine pills + recipe grid
 │   │   │                   + Community Board + Cross-Cultural Stories
 │   │   ├── ai_creator/     AI Recipe Generator (cuisine + idea → recipe)
-│   │   ├── ai_companion/   AI Chef chat (SSE-streamed Gemini deltas)
+│   │   ├── ai_companion/   AI Chef chat (SSE-streamed LLM deltas)
 │   │   ├── recipes/        Recipe detail modal + reviews & photo gallery
 │   │   ├── saved/          Saved recipes screen (mirrored to Firestore)
 │   │   ├── my_recipes/     Auth-gated "my AI-generated recipes" screen

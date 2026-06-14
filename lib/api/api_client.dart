@@ -282,7 +282,7 @@ class ApiClient {
     // the `\n\n` delimiter (rare but real) could otherwise grow the
     // string indefinitely until the browser tab OOMs. 1 MB is far
     // above any legitimate SSE frame size for this app (the largest
-    // delta is a single Gemini chunk, kilobytes at most).
+    // delta is a single LLM chunk, kilobytes at most).
     const maxBufferSize = 1024 * 1024;
     await for (final chunk in raw) {
       buffer += chunk;
@@ -384,7 +384,7 @@ class ApiClient {
 class AiRecipeResult {
   const AiRecipeResult({required this.recipe, this.saved});
 
-  /// Recipe payload exactly as Gemini produced it (or stub equivalent).
+  /// Recipe payload exactly as the LLM produced it (or stub equivalent).
   final Map<String, dynamic> recipe;
 
   /// Persisted detail when `save=true` was requested. Null otherwise.

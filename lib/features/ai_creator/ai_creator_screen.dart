@@ -388,8 +388,8 @@ class _ErrorBanner extends StatelessWidget {
   }
 }
 
-/// Tolerant numeric coercion for fields the Gemini model is *supposed*
-/// to return as integers per our JSON schema, but occasionally emits as
+/// Tolerant numeric coercion for fields the LLM is *supposed* to
+/// return as integers per our JSON schema, but occasionally emits as
 /// floats (e.g. `35.0` instead of `35`). A naked `value as int?` cast
 /// would throw `TypeError: 'double' is not a subtype of 'int?'` and
 /// blow up the entire generation preview, even though the underlying
