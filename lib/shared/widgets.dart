@@ -350,15 +350,24 @@ class RecipeCard extends ConsumerWidget {
 ///     mobile / 4-up card — visible empty space on the right
 ///     where the pill would have fit. Reported as "what's
 ///     missing?" with a screenshot.
-///   * v4 (current): tight mode keeps everything packed left at
-///     intrinsic, AND brings the pill back inline (right after
-///     kcal, no Spacer). Time + pill are wrapped in [Flexible]
-///     with weights 4 : 1 so if a verbose locale ever pushes the
-///     row past the viewport, the pill ellipsizes ("INTRICA…")
-///     well before time does. In every realistic production
-///     layout (Inter / Noto fonts) all four items render at
-///     intrinsic with slack to spare; the flex weights are pure
-///     defense-in-depth.
+///   * v4: brought the pill back inline using
+///     `Flexible(flex: 1)` on the pill and `Flexible(flex: 4)` on
+///     time, expecting the weights to only matter at overflow.
+///     But Flutter's `FlexFit.loose` caps the child's MAX size at
+///     its allocated share — so the pill was capped at 1/5 of the
+///     residual budget even when there was tons of slack from
+///     time using a fraction of its 4/5 share. Result: "MEDIUM"
+///     visibly clipped to "ME…" on every layout that wasn't
+///     bumping right up against the right edge.
+///   * v5 (current): drops the `Flexible` wrapper on the pill —
+///     it renders at INTRINSIC width and shows its full label
+///     whenever the row has room. Time keeps its `Flexible`
+///     wrapper as a final safety net (so a degenerate verbose-
+///     locale viewport can't render-overflow the row). A narrow
+///     gate (`showPill = w >= 200`) ensures cards too small to
+///     fit even the pill at intrinsic don't try — time stays
+///     full and the pill is simply omitted, the same behaviour
+///     v3 had at all tight widths.
 class _CardFooter extends StatelessWidget {
   const _CardFooter({required this.recipe});
   final SpiceRouteSummary recipe;
@@ -381,27 +390,32 @@ class _CardFooter extends StatelessWidget {
       // Items pack LEFT at intrinsic widths (no Spacer); the
       // difficulty pill rides at the end of the row.
       //
-      // Time and pill are wrapped in [Flexible] with weights 4 : 1.
-      // At every realistic production-font width all four items
-      // fit at intrinsic and the Flexibles are no-ops. The weights
-      // only kick in when total intrinsic exceeds the viewport
-      // (verbose locale + degenerate width); when they do, the
-      // pill is allowed to shrink to ~1/5 of the residual budget
-      // and ellipsizes first ("INTRICA…"). Time stays readable
-      // because its 4/5 share is enough for any locale's time
-      // formatter output we ship.
-      //
-      // Sub-band at < 180 dp drops kcal too — only time + servings
-      // + pill can fit at this floor (~140 dp Inter).
+      // Layout rules:
+      //   * Pill renders at INTRINSIC. No `Flexible` wrapper —
+      //     `FlexFit.loose` would cap its max size to its flex
+      //     share and clip "MEDIUM" to "ME…" even when the row
+      //     has slack (the v4 bug).
+      //   * Time wraps in `Flexible` so a degenerately narrow or
+      //     verbose-locale viewport can't render-overflow. At
+      //     every realistic width it gets `available - sum(other
+      //     intrinsic)` and that's far more than its intrinsic, so
+      //     it renders fully.
+      //   * `showPill = w >= 200` skips the pill on cards too
+      //     narrow to fit it without forcing time to ellipsize.
+      //     Below 200 dp time + servings + kcal alone already
+      //     consume ~150 dp; adding a 50-dp pill would push the
+      //     row past 200 dp and time would shrink first.
+      //   * Sub-band at < 180 dp drops kcal too — only time +
+      //     servings + (no pill) can fit at this floor.
       // -----------------------------------------------------------
       if (w < 290) {
         final hideKcal = w < 180;
+        final showPill = w >= 200;
         final kcalText = kcal == null ? null : '$kcal';
         return Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Flexible(
-              flex: 4,
               child: _MetaItem(icon: Icons.schedule, text: timeText),
             ),
             const SizedBox(width: 8),
@@ -414,11 +428,10 @@ class _CardFooter extends StatelessWidget {
                 text: kcalText,
               ),
             ],
-            const SizedBox(width: 8),
-            Flexible(
-              flex: 1,
-              child: _DifficultyPill(label: difficulty),
-            ),
+            if (showPill) ...[
+              const SizedBox(width: 8),
+              _DifficultyPill(label: difficulty),
+            ],
           ],
         );
       }
