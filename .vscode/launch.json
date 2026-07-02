@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "iPhone 17 Pro (simulator)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "iPhone 17 Pro",
+      "args": [
+        "--dart-define=API_BASE_URL=https://spiceroute-backend-ggu5.onrender.com"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="SpiceRoute management app (mobile + web).">
+
+  <!--
+    `viewport-fit=cover` lets the page draw under the iPhone notch /
+    Dynamic Island / home indicator instead of being letterboxed
+    above/below them. Without it, an installed PWA loses ~88 dp of
+    vertical room AND `MediaQuery.viewPaddingOf(context)` returns
+    zero, which silently breaks the notch-aware math in
+    `recipe_detail_screen.dart` and `cook_mode_screen.dart`'s
+    bottom-bar inset. `width=device-width, initial-scale=1` is the
+    standard responsive baseline; not setting it makes iOS Safari
+    default to a 980 px viewport and shrink the whole app.
+  -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <!--
+    `black-translucent` (vs `black`) tells iOS to draw the status bar
+    text over the app instead of as an opaque bar above the app. Pairs
+    with `viewport-fit=cover` above to give us a true edge-to-edge
+    installed PWA. SafeArea + viewPadding on the Dart side then keeps
+    interactive content out of the notch.
+  -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SpiceRoute">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>SpiceRoute</title>
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <!--
+    One-time service worker + Cache Storage cleanup.
+
+    Older deploys of this site shipped Flutter's default PWA bundle
+    (`flutter_service_worker.js` with the offline-first strategy).
+    Once that SW is registered in a visitor's browser it keeps
+    intercepting every navigation and serving the cached
+    `main.dart.js` from the deploy that installed it — sometimes for
+    hours or days, especially on iOS Safari. That's why a redeploy
+    can look "missing" on a phone while looking correct on desktop.
+
+    We've now switched the build to `--pwa-strategy=none` (see
+    `build.sh`), so new visitors never register a SW. But existing
+    visitors still have the old one. This snippet:
+
+      1. Unregisters every SW the page is allowed to see.
+      2. Wipes the Cache Storage entries the old SW populated.
+
+    It runs on every page load and is essentially free for fresh
+    visitors (nothing to unregister, nothing to delete). Once a
+    given browser has run it once the next visit's `getRegistrations`
+    returns empty and `caches.keys()` returns []. Safe to leave in
+    place permanently — and worth doing so as cheap insurance
+    against a stray SW ever sneaking back in.
+
+    Kept above the `flutter_bootstrap.js` tag so the cleanup fires
+    BEFORE the Flutter loader makes any network requests, which
+    means the very first uncached request to the new bundle goes
+    straight to the network rather than being served by the
+    soon-to-be-unregistered SW.
+  -->
+  <script>
+    (function () {
+      try {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function (regs) {
+            for (var i = 0; i < regs.length; i++) {
+              regs[i].unregister();
+            }
+          }).catch(function () {});
+        }
+        if ('caches' in window) {
+          caches.keys().then(function (keys) {
+            for (var i = 0; i < keys.length; i++) {
+              caches.delete(keys[i]);
+            }
+          }).catch(function () {});
+        }
+      } catch (_) { /* ignore — old browsers without these APIs */ }
+    })();
+  </script>
+
+  <!--
+    You can customize the "flutter_bootstrap.js" script.
+    This is useful to provide a custom configuration to the Flutter loader
+    or to give the user feedback during the initialization process.
+
+    For more details:
+    * https://docs.flutter.dev/platform-integration/web/initialization
+  -->
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
