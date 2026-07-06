@@ -48,6 +48,7 @@ dev_dependencies:
   freezed: ^2.5.7
   json_serializable: ^6.9.0
   flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.7
   fake_cloud_firestore: ^3.1.0
   network_image_mock: ^2.1.1
 
@@ -104,3 +105,12 @@ flutter_launcher_icons:
     theme_color: "#5A5A40"
   adaptive_icon_background: "#5A5A40"
   adaptive_icon_foreground: "assets/icon/icon.png"
+
+flutter_native_splash:
+  color: "#5A5A40"
+  image: assets/icon/icon.png
+  web: false
+  android_12:
+    color: "#5A5A40"
+    image: assets/icon/icon.png
+    icon_background_color: "#5A5A40"
