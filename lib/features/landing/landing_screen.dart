@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'landing_palette.dart';
 import 'landing_state.dart';
 import 'widgets/landing_boarding_pass.dart';
@@ -37,6 +38,12 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
   void _openPricing() => setState(() => _pricingOpen = true);
   void _closePricing() => setState(() => _pricingOpen = false);
 
+  Future<void> _enterApp() async {
+    await ref.read(landingGateProvider.notifier).completeOnboarding();
+    if (!mounted) return;
+    context.go('/');
+  }
+
   @override
   Widget build(BuildContext context) {
     final isSubscribed = ref.watch(landingPremiumProvider);
@@ -69,6 +76,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
                       ),
                       onScrollToPricing: () =>
                           _sections.scrollTo(_sections.pricing, _scroll),
+                      onEnterApp: _enterApp,
                       sections: _sections,
                     ),
                   ),
@@ -78,6 +86,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
                     onSpinGlobe: _openSpin,
                     onBrowseMap: () =>
                         _sections.scrollTo(_sections.tasteMap, _scroll),
+                    onEnterApp: _enterApp,
                     sections: _sections,
                   ),
                 ),
@@ -119,10 +128,12 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
                 SliverToBoxAdapter(
                   child: KeyedSubtree(
                     key: _sections.boardingCall,
-                    child: const LandingBoardingPassForm(),
+                    child: LandingBoardingPassForm(onEnteredApp: _enterApp),
                   ),
                 ),
-                const SliverToBoxAdapter(child: LandingFooter()),
+                SliverToBoxAdapter(
+                  child: LandingFooter(onEnterApp: _enterApp),
+                ),
               ],
             ),
             if (_spinOpen)

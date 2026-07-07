@@ -4,7 +4,9 @@ import '../landing_palette.dart';
 import 'landing_shared.dart';
 
 class LandingFooter extends StatelessWidget {
-  const LandingFooter({super.key});
+  const LandingFooter({super.key, required this.onEnterApp});
+
+  final VoidCallback onEnterApp;
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +15,33 @@ class LandingFooter extends StatelessWidget {
       color: LandingPalette.charcoal,
       padding: const EdgeInsets.symmetric(vertical: 32),
       child: LandingMaxWidth(
-        child: wide
+        child: Column(
+          children: [
+            FilledButton.icon(
+              onPressed: onEnterApp,
+              style: FilledButton.styleFrom(
+                backgroundColor: LandingPalette.red,
+                foregroundColor: LandingPalette.cream,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 28,
+                  vertical: 16,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              icon: const Icon(Icons.restaurant_menu, size: 18),
+              label: Text(
+                'ENTER THE KITCHEN',
+                style: LandingPalette.sans(
+                  context,
+                  size: 13,
+                  weight: FontWeight.w700,
+                ).copyWith(letterSpacing: 1.2),
+              ),
+            ),
+            const SizedBox(height: 32),
+            wide
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -78,6 +106,8 @@ class LandingFooter extends StatelessWidget {
                   ),
                 ],
               ),
+          ],
+        ),
       ),
     );
   }

@@ -12,11 +12,13 @@ class LandingHero extends StatelessWidget {
     super.key,
     required this.onSpinGlobe,
     required this.onBrowseMap,
+    required this.onEnterApp,
     required this.sections,
   });
 
   final VoidCallback onSpinGlobe;
   final VoidCallback onBrowseMap;
+  final VoidCallback onEnterApp;
   final LandingSectionKeys sections;
 
   static const _heroImage =
@@ -223,6 +225,19 @@ class LandingHero extends StatelessWidget {
                                 size: 11,
                                 color: LandingPalette.cream.withValues(
                                   alpha: 0.7,
+                                ),
+                              ),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: onEnterApp,
+                            child: Text(
+                              'SKIP TO APP →',
+                              style: LandingPalette.mono(
+                                context,
+                                size: 11,
+                                color: LandingPalette.cream.withValues(
+                                  alpha: 0.55,
                                 ),
                               ),
                             ),

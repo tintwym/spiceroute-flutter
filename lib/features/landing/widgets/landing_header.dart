@@ -12,6 +12,7 @@ class LandingHeader extends StatelessWidget {
     required this.onScrollTo,
     required this.onScrollTop,
     required this.onScrollToPricing,
+    required this.onEnterApp,
     required this.sections,
   });
 
@@ -19,6 +20,7 @@ class LandingHeader extends StatelessWidget {
   final void Function(GlobalKey key) onScrollTo;
   final VoidCallback onScrollTop;
   final VoidCallback onScrollToPricing;
+  final VoidCallback onEnterApp;
   final LandingSectionKeys sections;
 
   @override
@@ -166,8 +168,18 @@ class LandingHeader extends StatelessWidget {
                   ),
                   if (MediaQuery.sizeOf(context).width >= 640) ...[
                     const SizedBox(width: 10),
+                    _EnterAppButton(onTap: onEnterApp),
+                    const SizedBox(width: 10),
                     _BoardingPassButton(
                       onTap: () => onScrollTo(sections.boardingCall),
+                    ),
+                  ] else ...[
+                    const SizedBox(width: 8),
+                    IconButton(
+                      tooltip: 'Start exploring',
+                      onPressed: onEnterApp,
+                      icon: const Icon(Icons.arrow_forward, size: 20),
+                      color: LandingPalette.charcoal,
                     ),
                   ],
                 ],
@@ -235,6 +247,55 @@ class _PremiumBadgePulseState extends State<_PremiumBadgePulse>
           color: widget.active
               ? LandingPalette.red
               : LandingPalette.charcoal.withValues(alpha: 0.6),
+        ),
+      ),
+    );
+  }
+}
+
+class _EnterAppButton extends StatefulWidget {
+  const _EnterAppButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  State<_EnterAppButton> createState() => _EnterAppButtonState();
+}
+
+class _EnterAppButtonState extends State<_EnterAppButton> {
+  var _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: Material(
+        color: _hover
+            ? LandingPalette.red.withValues(alpha: 0.08)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: widget.onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: LandingPalette.charcoal.withValues(alpha: 0.2),
+              ),
+            ),
+            child: Text(
+              'START EXPLORING',
+              style: LandingPalette.sans(
+                context,
+                size: 12,
+                weight: FontWeight.w600,
+                color: LandingPalette.charcoal,
+              ).copyWith(letterSpacing: 1),
+            ),
+          ),
         ),
       ),
     );

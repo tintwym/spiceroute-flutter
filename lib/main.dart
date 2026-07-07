@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'l10n/generated/app_localizations.dart';
+import 'features/landing/landing_palette.dart';
+import 'features/landing/landing_state.dart';
 import 'shared/firebase_options.dart';
 import 'shared/router.dart';
 import 'shared/theme.dart';
@@ -38,6 +40,20 @@ class SpiceRouteApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final gate = ref.watch(landingGateProvider);
+    if (gate == LandingGatePhase.loading) {
+      return MaterialApp(
+        theme: buildTheme(Brightness.light),
+        debugShowCheckedModeBanner: false,
+        home: const Scaffold(
+          backgroundColor: LandingPalette.cream,
+          body: Center(
+            child: CircularProgressIndicator(color: LandingPalette.red),
+          ),
+        ),
+      );
+    }
+
     final router = ref.watch(routerProvider);
     final locale = ref.watch(localeProvider);
     final themeMode = ref.watch(themeModeProvider);

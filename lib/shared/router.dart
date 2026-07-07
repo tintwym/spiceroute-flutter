@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/landing/landing_screen.dart';
+import '../features/landing/landing_state.dart';
 import '../features/ai_companion/ai_companion_screen.dart';
 import '../features/ai_creator/ai_creator_screen.dart';
 import '../features/auth/register_screen.dart';
@@ -25,6 +26,7 @@ class _RouterRefresh extends ChangeNotifier {
 final _routerRefreshProvider = Provider<_RouterRefresh>((ref) {
   final notifier = _RouterRefresh();
   ref.listen(authControllerProvider, (_, _) => notifier.refresh());
+  ref.listen(landingGateProvider, (_, _) => notifier.refresh());
   ref.onDispose(notifier.dispose);
   return notifier;
 });
@@ -39,6 +41,17 @@ final routerProvider = Provider<GoRouter>((ref) {
       final auth = ref.read(authControllerProvider.notifier);
       final user = ref.read(authControllerProvider);
       final loc = state.matchedLocation;
+      final gate = ref.read(landingGateProvider);
+
+      if (gate == LandingGatePhase.loading) return null;
+
+      if (gate == LandingGatePhase.firstVisit && loc != '/landing') {
+        return '/landing';
+      }
+
+      if (gate == LandingGatePhase.returning && loc == '/landing') {
+        return '/';
+      }
 
       // CRITICAL: don't redirect protected routes until Firebase has
       // told us whether there's a restored session. On cold start

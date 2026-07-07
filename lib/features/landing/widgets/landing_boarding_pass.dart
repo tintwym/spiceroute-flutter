@@ -6,7 +6,9 @@ import '../landing_palette.dart';
 import 'landing_shared.dart';
 
 class LandingBoardingPassForm extends StatefulWidget {
-  const LandingBoardingPassForm({super.key});
+  const LandingBoardingPassForm({super.key, this.onEnteredApp});
+
+  final VoidCallback? onEnteredApp;
 
   @override
   State<LandingBoardingPassForm> createState() =>
@@ -58,6 +60,7 @@ class _LandingBoardingPassFormState extends State<LandingBoardingPassForm> {
                   ticketNo: _ticketNo,
                   seatNo: _seatNo,
                   onReset: _reset,
+                  onEnterApp: widget.onEnteredApp,
                 )
               : _FormView(
                   key: const ValueKey('form'),
@@ -142,12 +145,14 @@ class _TicketView extends StatelessWidget {
     required this.ticketNo,
     required this.seatNo,
     required this.onReset,
+    this.onEnterApp,
   });
 
   final String email;
   final String ticketNo;
   final String seatNo;
   final VoidCallback onReset;
+  final VoidCallback? onEnterApp;
 
   @override
   Widget build(BuildContext context) {
@@ -198,6 +203,13 @@ class _TicketView extends StatelessWidget {
                 ),
         ),
         const SizedBox(height: 16),
+        if (onEnterApp != null) ...[
+          LandingBoardingPassButton(
+            label: 'Enter the Kitchen',
+            onPressed: onEnterApp!,
+          ),
+          const SizedBox(height: 8),
+        ],
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

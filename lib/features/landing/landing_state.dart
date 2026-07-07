@@ -9,10 +9,58 @@ import 'landing_models.dart';
 
 const _kPremiumKey = 'spiceroute_premium_subscribed';
 const _kPostsKey = 'spice_route_community_posts';
+const _kLandingCompletedKey = 'spiceroute_landing_completed';
 
 const _storage = FlutterSecureStorage(
   aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  webOptions: WebOptions(dbName: 'savor_settings'),
 );
+
+/// Whether the user has completed the first-run marketing landing.
+enum LandingGatePhase {
+  /// Reading persisted flag — show a brief splash, no route flash.
+  loading,
+
+  /// First open (or flag missing) — show `/landing`.
+  firstVisit,
+
+  /// Returning user — skip landing, go straight to the app.
+  returning,
+}
+
+final landingGateProvider =
+    StateNotifierProvider<LandingGateNotifier, LandingGatePhase>((ref) {
+      return LandingGateNotifier();
+    });
+
+class LandingGateNotifier extends StateNotifier<LandingGatePhase> {
+  LandingGateNotifier() : super(LandingGatePhase.loading) {
+    _bootstrap();
+  }
+
+  Future<void> _bootstrap() async {
+    try {
+      final raw = await _storage.read(key: _kLandingCompletedKey);
+      state = raw == 'true'
+          ? LandingGatePhase.returning
+          : LandingGatePhase.firstVisit;
+    } catch (e, st) {
+      debugPrint('LandingGateNotifier._bootstrap failed: $e\n$st');
+      state = LandingGatePhase.firstVisit;
+    }
+  }
+
+  /// Call when the user leaves the marketing landing for the main app.
+  Future<void> completeOnboarding() async {
+    if (state == LandingGatePhase.returning) return;
+    state = LandingGatePhase.returning;
+    try {
+      await _storage.write(key: _kLandingCompletedKey, value: 'true');
+    } catch (e, st) {
+      debugPrint('LandingGateNotifier.completeOnboarding failed: $e\n$st');
+    }
+  }
+}
 
 final landingPremiumProvider =
     StateNotifierProvider<LandingPremiumNotifier, bool>((ref) {
