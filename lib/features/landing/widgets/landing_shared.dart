@@ -382,6 +382,271 @@ class LandingBoardingPassButton extends StatelessWidget {
 
 String landingFormatMarkdown(String text) => text;
 
+/// Fade + slide-up on first paint — used to stagger the landing hero.
+class LandingEntrance extends StatefulWidget {
+  const LandingEntrance({
+    super.key,
+    required this.child,
+    this.delay = Duration.zero,
+    this.offsetY = 20,
+    this.duration = const Duration(milliseconds: 500),
+  });
+
+  final Widget child;
+  final Duration delay;
+  final double offsetY;
+  final Duration duration;
+
+  @override
+  State<LandingEntrance> createState() => _LandingEntranceState();
+}
+
+class _LandingEntranceState extends State<LandingEntrance>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _fade;
+  late final Animation<double> _offset;
+  var _started = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: widget.duration,
+    );
+    final curved = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutCubic,
+    );
+    _fade = curved;
+    _offset = Tween<double>(begin: widget.offsetY, end: 0).animate(curved);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_started) return;
+    _started = true;
+    if (MediaQuery.of(context).disableAnimations) {
+      _controller.value = 1;
+      return;
+    }
+    Future<void>.delayed(widget.delay, () {
+      if (mounted) _controller.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Opacity(
+          opacity: _fade.value,
+          child: Transform.translate(
+            offset: Offset(0, _offset.value),
+            child: child,
+          ),
+        );
+      },
+      child: widget.child,
+    );
+  }
+}
+
+/// Reveals [child] when it scrolls into the viewport.
+class LandingScrollReveal extends StatefulWidget {
+  const LandingScrollReveal({
+    super.key,
+    required this.scrollController,
+    required this.child,
+    this.delay = Duration.zero,
+    this.offsetY = 24,
+    this.duration = const Duration(milliseconds: 550),
+  });
+
+  final ScrollController scrollController;
+  final Widget child;
+  final Duration delay;
+  final double offsetY;
+  final Duration duration;
+
+  @override
+  State<LandingScrollReveal> createState() => _LandingScrollRevealState();
+}
+
+class _LandingScrollRevealState extends State<LandingScrollReveal>
+    with SingleTickerProviderStateMixin {
+  final _key = GlobalKey();
+  late final AnimationController _controller;
+  late final Animation<double> _fade;
+  late final Animation<double> _offset;
+  var _triggered = false;
+
+  var _layoutChecks = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: widget.duration,
+    );
+    final curved = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutCubic,
+    );
+    _fade = curved;
+    _offset = Tween<double>(begin: widget.offsetY, end: 0).animate(curved);
+    widget.scrollController.addListener(_checkVisibility);
+    _scheduleVisibilityCheck();
+  }
+
+  void _scheduleVisibilityCheck() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _triggered) return;
+      _checkVisibility();
+      if (!_triggered && _layoutChecks++ < 12) {
+        _scheduleVisibilityCheck();
+      }
+    });
+  }
+
+  void _checkVisibility() {
+    if (_triggered || !mounted) return;
+    final box = _key.currentContext?.findRenderObject() as RenderBox?;
+    if (box == null || !box.hasSize) return;
+    final top = box.localToGlobal(Offset.zero).dy;
+    final screenH = MediaQuery.sizeOf(context).height;
+    if (top < screenH * 0.9) {
+      _triggered = true;
+      if (MediaQuery.of(context).disableAnimations) {
+        _controller.value = 1;
+        return;
+      }
+      Future<void>.delayed(widget.delay, () {
+        if (mounted) _controller.forward();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.scrollController.removeListener(_checkVisibility);
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return KeyedSubtree(
+      key: _key,
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          return Opacity(
+            opacity: _fade.value,
+            child: Transform.translate(
+              offset: Offset(0, _offset.value),
+              child: child,
+            ),
+          );
+        },
+        child: widget.child,
+      ),
+    );
+  }
+}
+
+/// Full-screen modal shell with fade + scale enter/exit.
+class LandingModalShell extends StatefulWidget {
+  const LandingModalShell({
+    super.key,
+    required this.onDismissed,
+    required this.builder,
+  });
+
+  final VoidCallback onDismissed;
+  final Widget Function(VoidCallback animatedClose) builder;
+
+  @override
+  State<LandingModalShell> createState() => _LandingModalShellState();
+}
+
+class _LandingModalShellState extends State<LandingModalShell>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _fade;
+  late final Animation<double> _scale;
+  var _closing = false;
+  var _started = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 280),
+      reverseDuration: const Duration(milliseconds: 200),
+    );
+    final curved = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutCubic,
+      reverseCurve: Curves.easeInCubic,
+    );
+    _fade = curved;
+    _scale = Tween<double>(begin: 0.95, end: 1).animate(curved);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_started) return;
+    _started = true;
+    if (MediaQuery.of(context).disableAnimations) {
+      _controller.value = 1;
+    } else {
+      _controller.forward();
+    }
+  }
+
+  void _animatedClose() {
+    if (_closing) return;
+    _closing = true;
+    if (MediaQuery.of(context).disableAnimations) {
+      widget.onDismissed();
+      return;
+    }
+    _controller.reverse().then((_) {
+      if (mounted) widget.onDismissed();
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _fade,
+      child: ScaleTransition(
+        scale: _scale,
+        child: widget.builder(_animatedClose),
+      ),
+    );
+  }
+}
+
 /// Horizontal [Row] + [Expanded] on wide viewports; vertical [Column]
 /// without [Expanded] on narrow (safe inside scroll views).
 class LandingResponsiveRow extends StatelessWidget {

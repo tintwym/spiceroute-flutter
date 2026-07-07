@@ -80,7 +80,8 @@ class LandingHero extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
+                      LandingEntrance(
+                        child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 14,
                           vertical: 6,
@@ -108,8 +109,11 @@ class LandingHero extends StatelessWidget {
                           ],
                         ),
                       ),
+                      ),
                       const SizedBox(height: 24),
-                      Builder(
+                      LandingEntrance(
+                        delay: const Duration(milliseconds: 80),
+                        child: Builder(
                         builder: (context) {
                           final w = MediaQuery.sizeOf(context).width;
                           final h1 = w >= 1024 ? 72.0 : (w >= 640 ? 48.0 : 36.0);
@@ -148,8 +152,11 @@ class LandingHero extends StatelessWidget {
                           );
                         },
                       ),
+                      ),
                       const SizedBox(height: 16),
-                      Text(
+                      LandingEntrance(
+                        delay: const Duration(milliseconds: 160),
+                        child: Text(
                         'Explore authentic heritage recipes, unearth localized cooking secrets, and co-create bespoke spiced menus with Chef Tariq—your interactive virtual travel chef.',
                         style: LandingPalette.sans(
                           context,
@@ -157,8 +164,11 @@ class LandingHero extends StatelessWidget {
                           color: LandingPalette.cream.withValues(alpha: 0.85),
                         ),
                       ),
+                      ),
                       const SizedBox(height: 24),
-                      Wrap(
+                      LandingEntrance(
+                        delay: const Duration(milliseconds: 240),
+                        child: Wrap(
                         spacing: 16,
                         runSpacing: 12,
                         crossAxisAlignment: WrapCrossAlignment.center,
@@ -245,10 +255,13 @@ class LandingHero extends StatelessWidget {
                           const LandingPassportStamp(),
                         ],
                       ),
+                      ),
                       const SizedBox(height: 48),
                       const Divider(color: Color(0x33F9F7F2), height: 1),
                       const SizedBox(height: 24),
-                      Row(
+                      LandingEntrance(
+                        delay: const Duration(milliseconds: 320),
+                        child: Row(
                         children: const [
                           _Stat(value: '30+', label: 'Regional Hubs'),
                           SizedBox(width: 24),
@@ -256,6 +269,7 @@ class LandingHero extends StatelessWidget {
                           SizedBox(width: 24),
                           _Stat(value: '24/7', label: 'AI Chef Support'),
                         ],
+                      ),
                       ),
                     ],
                   ),
@@ -265,9 +279,13 @@ class LandingHero extends StatelessWidget {
                     flex: 5,
                     child: Align(
                       alignment: Alignment.centerRight,
-                      child: Transform.rotate(
+                      child: LandingEntrance(
+                        delay: const Duration(milliseconds: 400),
+                        offsetY: 28,
+                        child: Transform.rotate(
                         angle: 0.035,
                         child: _GatePassCard(),
+                      ),
                       ),
                     ),
                   ),
@@ -278,7 +296,9 @@ class LandingHero extends StatelessWidget {
             left: 0,
             right: 0,
             bottom: 0,
-            child: ClipRect(
+            child: LandingEntrance(
+              delay: const Duration(milliseconds: 480),
+              child: ClipRect(
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                 child: Container(
@@ -330,6 +350,7 @@ class LandingHero extends StatelessWidget {
                   ),
                 ),
               ),
+            ),
             ),
           ),
         ],

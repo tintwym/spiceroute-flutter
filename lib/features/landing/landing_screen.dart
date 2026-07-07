@@ -11,6 +11,7 @@ import 'widgets/landing_header.dart';
 import 'widgets/landing_hero.dart';
 import 'widgets/landing_pricing_modal.dart';
 import 'widgets/landing_pricing_section.dart';
+import 'widgets/landing_shared.dart';
 import 'widgets/landing_spin_modal.dart';
 import 'widgets/landing_taste_map.dart';
 
@@ -66,7 +67,8 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
                 SliverPersistentHeader(
                   pinned: true,
                   delegate: _LandingHeaderDelegate(
-                    child: LandingHeader(
+                    builder: (shrinkOffset, overlapsContent) => LandingHeader(
+                      elevated: shrinkOffset > 8 || overlapsContent,
                       isSubscribed: isSubscribed,
                       onScrollTo: (k) => _sections.scrollTo(k, _scroll),
                       onScrollTop: () => _scroll.animateTo(
@@ -91,13 +93,19 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
                   ),
                 ),
                 SliverToBoxAdapter(
-                  child: KeyedSubtree(
+                  child: LandingScrollReveal(
+                    scrollController: _scroll,
+                    child: KeyedSubtree(
                     key: _sections.tasteMap,
                     child: const LandingTasteMap(),
                   ),
+                  ),
                 ),
                 SliverToBoxAdapter(
-                  child: KeyedSubtree(
+                  child: LandingScrollReveal(
+                    scrollController: _scroll,
+                    delay: const Duration(milliseconds: 60),
+                    child: KeyedSubtree(
                     key: _sections.chefToolkit,
                     child: LandingChefCompanion(
                       isSubscribed: isSubscribed,
@@ -107,15 +115,23 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
                       },
                     ),
                   ),
-                ),
-                SliverToBoxAdapter(
-                  child: KeyedSubtree(
-                    key: _sections.globalTerminal,
-                    child: const LandingGlobalTerminal(),
                   ),
                 ),
                 SliverToBoxAdapter(
-                  child: KeyedSubtree(
+                  child: LandingScrollReveal(
+                    scrollController: _scroll,
+                    delay: const Duration(milliseconds: 60),
+                    child: KeyedSubtree(
+                    key: _sections.globalTerminal,
+                    child: const LandingGlobalTerminal(),
+                  ),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: LandingScrollReveal(
+                    scrollController: _scroll,
+                    delay: const Duration(milliseconds: 60),
+                    child: KeyedSubtree(
                     key: _sections.pricing,
                     child: LandingPricingSection(
                       isSubscribed: isSubscribed,
@@ -124,34 +140,49 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
                           .setSubscribed(v),
                     ),
                   ),
-                ),
-                SliverToBoxAdapter(
-                  child: KeyedSubtree(
-                    key: _sections.boardingCall,
-                    child: LandingBoardingPassForm(onEnteredApp: _enterApp),
                   ),
                 ),
                 SliverToBoxAdapter(
-                  child: LandingFooter(onEnterApp: _enterApp),
+                  child: LandingScrollReveal(
+                    scrollController: _scroll,
+                    delay: const Duration(milliseconds: 60),
+                    child: KeyedSubtree(
+                    key: _sections.boardingCall,
+                    child: LandingBoardingPassForm(onEnteredApp: _enterApp),
+                  ),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: LandingScrollReveal(
+                    scrollController: _scroll,
+                    delay: const Duration(milliseconds: 60),
+                    child: LandingFooter(onEnterApp: _enterApp),
+                  ),
                 ),
               ],
             ),
             if (_spinOpen)
-              LandingSpinModal(
-                onClose: _closeSpin,
-                onExploreMap: () {
-                  _closeSpin();
-                  _sections.scrollTo(_sections.tasteMap, _scroll);
-                },
+              LandingModalShell(
+                onDismissed: _closeSpin,
+                builder: (close) => LandingSpinModal(
+                  onClose: close,
+                  onExploreMap: () {
+                    close();
+                    _sections.scrollTo(_sections.tasteMap, _scroll);
+                  },
+                ),
               ),
             if (_pricingOpen)
-              LandingPricingModal(
-                isSubscribed: isSubscribed,
-                onClose: _closePricing,
-                onSubscribe: (v) {
-                  ref.read(landingPremiumProvider.notifier).setSubscribed(v);
-                  _closePricing();
-                },
+              LandingModalShell(
+                onDismissed: _closePricing,
+                builder: (close) => LandingPricingModal(
+                  isSubscribed: isSubscribed,
+                  onClose: close,
+                  onSubscribe: (v) {
+                    ref.read(landingPremiumProvider.notifier).setSubscribed(v);
+                    close();
+                  },
+                ),
               ),
           ],
         ),
@@ -161,9 +192,9 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
 }
 
 class _LandingHeaderDelegate extends SliverPersistentHeaderDelegate {
-  const _LandingHeaderDelegate({required this.child});
+  const _LandingHeaderDelegate({required this.builder});
 
-  final Widget child;
+  final Widget Function(double shrinkOffset, bool overlapsContent) builder;
 
   @override
   double get minExtent => 72;
@@ -177,11 +208,11 @@ class _LandingHeaderDelegate extends SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
-    return child;
+    return builder(shrinkOffset, overlapsContent);
   }
 
   @override
   bool shouldRebuild(covariant _LandingHeaderDelegate oldDelegate) {
-    return oldDelegate.child != child;
+    return true;
   }
 }

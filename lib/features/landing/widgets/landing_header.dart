@@ -8,6 +8,7 @@ import 'landing_shared.dart';
 class LandingHeader extends StatelessWidget {
   const LandingHeader({
     super.key,
+    this.elevated = false,
     required this.isSubscribed,
     required this.onScrollTo,
     required this.onScrollTop,
@@ -16,6 +17,7 @@ class LandingHeader extends StatelessWidget {
     required this.sections,
   });
 
+  final bool elevated;
   final bool isSubscribed;
   final void Function(GlobalKey key) onScrollTo;
   final VoidCallback onScrollTop;
@@ -30,14 +32,25 @@ class LandingHeader extends StatelessWidget {
     return ClipRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
           decoration: BoxDecoration(
-            color: LandingPalette.cream.withValues(alpha: 0.8),
+            color: LandingPalette.cream.withValues(alpha: elevated ? 0.92 : 0.8),
             border: Border(
               bottom: BorderSide(
                 color: LandingPalette.charcoal.withValues(alpha: 0.05),
               ),
             ),
+            boxShadow: elevated
+                ? [
+                    BoxShadow(
+                      color: LandingPalette.charcoal.withValues(alpha: 0.08),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : const [],
           ),
           child: LandingMaxWidth(
             child: SizedBox(

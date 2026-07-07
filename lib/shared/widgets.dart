@@ -108,19 +108,70 @@ class CenterMessage extends StatelessWidget {
   }
 }
 
-class LoadingShimmer extends StatelessWidget {
+class LoadingShimmer extends StatefulWidget {
   const LoadingShimmer({super.key, this.height = 120});
   final double height;
 
   @override
+  State<LoadingShimmer> createState() => _LoadingShimmerState();
+}
+
+class _LoadingShimmerState extends State<LoadingShimmer>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _sweep;
+  var _started = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _sweep = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_started) return;
+    _started = true;
+    if (MediaQuery.of(context).disableAnimations) {
+      _sweep.value = 0;
+      return;
+    }
+    _sweep.repeat();
+  }
+
+  @override
+  void dispose() {
+    _sweep.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      height: height,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(20),
-      ),
+    final cs = Theme.of(context).colorScheme;
+    final base = cs.surfaceContainerHighest;
+    final highlight = cs.surfaceContainerHigh;
+
+    return AnimatedBuilder(
+      animation: _sweep,
+      builder: (context, _) {
+        final t = _sweep.value;
+        return Container(
+          height: widget.height,
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment(-1.5 + 3 * t, 0),
+              end: Alignment(-0.5 + 3 * t, 0),
+              colors: [base, highlight, base],
+              stops: const [0.0, 0.5, 1.0],
+            ),
+          ),
+        );
+      },
     );
   }
 }
