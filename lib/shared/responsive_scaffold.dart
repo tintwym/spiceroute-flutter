@@ -10,6 +10,11 @@ import 'language_flag_pills.dart';
 import 'nav_search_field.dart';
 import 'top_nav_bar.dart';
 
+/// Last primary-tab path used to keep the bottom nav highlight when
+/// viewing auxiliary routes (Settings, My Recipes) that live in the
+/// shell but aren't tab destinations.
+final shellHighlightPathProvider = StateProvider<String>((ref) => '/');
+
 /// One destination of the bottom navigation / side rail.
 class ShellDestination {
   const ShellDestination({
@@ -75,7 +80,7 @@ class AppShell extends ConsumerWidget {
     ),
   ];
 
-  int _indexFor(List<ShellDestination> dests) {
+  static int indexForPath(List<ShellDestination> dests, String location) {
     for (var i = 0; i < dests.length; i++) {
       if (location == dests[i].path) return i;
       if (dests[i].path != '/' && location.startsWith(dests[i].path)) return i;
@@ -88,7 +93,14 @@ class AppShell extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppL10n.of(context);
     final dests = destinationsOf(l);
-    final index = _indexFor(dests);
+    final auxiliary = location == '/settings' || location == '/my-recipes';
+    if (!auxiliary) {
+      ref.read(shellHighlightPathProvider.notifier).state = location;
+    }
+    final highlightPath = auxiliary
+        ? ref.watch(shellHighlightPathProvider)
+        : location;
+    final index = indexForPath(dests, highlightPath);
     final dc = deviceClassOf(context);
 
     // Single dropdown trigger replaces what used to be three separate

@@ -32,6 +32,50 @@
     default to a 980 px viewport and shrink the whole app.
   -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#5A5A40" media="(max-width: 599px)">
+
+  <!--
+    Mobile web splash: inline critical CSS paints before Flutter JS loads.
+    Phone-only (<600 px) to match `Breakpoints.phone` in Dart. Reuses the
+    PWA icon already shipped in web/icons/ — no extra assets or requests
+  -->
+  <style>
+    #sr-splash {
+      display: none;
+    }
+    @media (max-width: 599px) {
+      html, body {
+        margin: 0;
+        height: 100%;
+        background-color: #5A5A40;
+      }
+      #sr-splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #5A5A40;
+        padding:
+          env(safe-area-inset-top, 0)
+          env(safe-area-inset-right, 0)
+          env(safe-area-inset-bottom, 0)
+          env(safe-area-inset-left, 0);
+        transition: opacity 100ms ease-out;
+      }
+      #sr-splash.sr-splash--gone {
+        opacity: 0;
+        pointer-events: none;
+      }
+      #sr-splash img {
+        width: clamp(72px, 24vw, 120px);
+        height: auto;
+        display: block;
+      }
+    }
+  </style>
+  <link rel="preload" href="icons/Icon-192.png" as="image" media="(max-width: 599px)">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -53,6 +97,10 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
+  <div id="sr-splash" aria-hidden="true">
+    <img src="icons/Icon-192.png" alt="" width="192" height="192" decoding="async" fetchpriority="high">
+  </div>
+
   <!--
     One-time service worker + Cache Storage cleanup.
 
@@ -102,6 +150,25 @@
           }).catch(function () {});
         }
       } catch (_) { /* ignore — old browsers without these APIs */ }
+    })();
+  </script>
+
+  <script>
+    (function () {
+      function hideSplash() {
+        var el = document.getElementById('sr-splash');
+        if (!el || el.dataset.done) return;
+        el.dataset.done = '1';
+        if (window.matchMedia('(min-width: 600px)').matches) {
+          el.remove();
+          return;
+        }
+        el.classList.add('sr-splash--gone');
+        el.addEventListener('transitionend', function () { el.remove(); }, { once: true });
+        setTimeout(function () { el.remove(); }, 150);
+      }
+      window.addEventListener('flutter-first-frame', hideSplash, { once: true });
+      setTimeout(hideSplash, 12000);
     })();
   </script>
 

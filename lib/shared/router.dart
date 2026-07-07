@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/landing/landing_screen.dart';
 import '../features/ai_companion/ai_companion_screen.dart';
 import '../features/ai_creator/ai_creator_screen.dart';
 import '../features/auth/register_screen.dart';
@@ -16,12 +17,23 @@ import '../l10n/generated/app_localizations.dart';
 import '../state/auth.dart';
 import 'responsive_scaffold.dart';
 
-final routerProvider = Provider<GoRouter>((ref) {
-  // The router rebuilds when the user signs in / out so the redirect logic
-  // for `/my-recipes` re-evaluates.
-  ref.watch(authControllerProvider);
+/// Notifies [GoRouter] when auth changes without recreating the router.
+class _RouterRefresh extends ChangeNotifier {
+  void refresh() => notifyListeners();
+}
 
-  return GoRouter(
+final _routerRefreshProvider = Provider<_RouterRefresh>((ref) {
+  final notifier = _RouterRefresh();
+  ref.listen(authControllerProvider, (_, _) => notifier.refresh());
+  ref.onDispose(notifier.dispose);
+  return notifier;
+});
+
+final routerProvider = Provider<GoRouter>((ref) {
+  final refresh = ref.watch(_routerRefreshProvider);
+
+  final router = GoRouter(
+    refreshListenable: refresh,
     initialLocation: '/',
     redirect: (context, state) {
       final auth = ref.read(authControllerProvider.notifier);
@@ -56,6 +68,10 @@ final routerProvider = Provider<GoRouter>((ref) {
     },
     errorBuilder: (context, state) => _NotFoundScreen(uri: state.uri),
     routes: [
+      GoRoute(
+        path: '/landing',
+        builder: (_, _) => const LandingScreen(),
+      ),
       ShellRoute(
         builder: (context, state, child) =>
             AppShell(location: state.matchedLocation, child: child),
@@ -120,6 +136,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
+  ref.onDispose(router.dispose);
+  return router;
 });
 
 /// Wraps [child] in a `CustomTransitionPage` configured as a modal

@@ -73,7 +73,11 @@ class ExploreScreen extends ConsumerWidget {
       onNotification: (n) {
         if (n.depth != 0) return false;
         if (n.metrics.axis != Axis.vertical) return false;
-        if (n.metrics.maxScrollExtent <= _loadMoreThreshold) {
+        // Only prefetch when the viewport is genuinely short *and* the
+        // user has already scrolled — avoids unsolicited page-2 fetches
+        // on first paint when content fits without scrolling.
+        if (n.metrics.pixels > 0 &&
+            n.metrics.maxScrollExtent <= _loadMoreThreshold) {
           controller.loadMore();
         }
         return false;
@@ -309,12 +313,13 @@ class _ExploreRecipeResults extends ConsumerWidget {
     }
 
     if (visible.isEmpty) {
+      final filteredOut = state.items.isNotEmpty;
       return [
         SliverFillRemaining(
           hasScrollBody: false,
           child: CenterMessage(
             icon: Icons.search_off,
-            title: l.exploreEmptyTitle,
+            title: filteredOut ? l.filterNoMatches : l.exploreEmptyTitle,
             subtitle: l.exploreEmptySubtitle,
           ),
         ),

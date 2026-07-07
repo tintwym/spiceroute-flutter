@@ -95,26 +95,15 @@ class CenterMessage extends StatelessWidget {
       ),
     );
 
-    // "Fits when it can, scrolls when it can't." Under
-    // SliverFillRemaining(hasScrollBody: false) the child gets a
-    // fixed viewport-height box, so on tight viewports a pure Column
-    // overflows (the 5 px BOTTOM OVERFLOW warning). Wrapping in a
-    // SingleChildScrollView whose child has minHeight = viewport
-    // height preserves vertical centering for the common case
-    // (content < viewport) and falls back to scrolling when it
-    // doesn't fit.
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (!constraints.maxHeight.isFinite) {
-          return Center(child: content);
-        }
-        return SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: Center(child: content),
-          ),
-        );
-      },
+    // Do not use LayoutBuilder here — SliverFillRemaining asks its child
+    // for intrinsic dimensions, and LayoutBuilder cannot answer that
+    // (runtime assert on web). A plain Center + scrollable content works
+    // in both sliver and box parents.
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+        child: content,
+      ),
     );
   }
 }
