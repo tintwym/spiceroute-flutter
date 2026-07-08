@@ -138,13 +138,13 @@ class _LandingChefCompanionState extends ConsumerState<LandingChefCompanion> {
   Widget build(BuildContext context) {
     final wide = MediaQuery.sizeOf(context).width >= 1024;
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
+        color: LandingPalette.toolkitBg,
         border: Border(
-          top: BorderSide(color: Color(0x1A1A1A1A)),
-          bottom: BorderSide(color: Color(0x1A1A1A1A)),
+          top: BorderSide(color: LandingPalette.charcoal.withValues(alpha: 0.06)),
+          bottom: BorderSide(color: LandingPalette.charcoal.withValues(alpha: 0.06)),
         ),
       ),
-      color: LandingPalette.alabaster,
       padding: const EdgeInsets.symmetric(vertical: 80),
       child: LandingMaxWidth(
         child: Column(

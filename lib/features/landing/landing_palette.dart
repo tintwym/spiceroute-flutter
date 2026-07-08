@@ -4,9 +4,14 @@ import 'package:flutter/material.dart';
 class LandingPalette {
   LandingPalette._();
 
-  static const red = Color(0xFFC25E30);
-  static const charcoal = Color(0xFF1A1A1A);
-  static const cream = Color(0xFFF9F7F2);
+  static const red = Color(0xFFC05621);
+  static const accent = Color(0xFFE28743);
+  static const charcoal = Color(0xFF1E293B);
+  static const cream = Color(0xFFF9F6F0);
+  static const toolkitBg = Color(0xFFFAF7F2);
+  static const heroDark = Color(0xFF18181B);
+  static const quickSectorsBg = Color(0xFF101012);
+  static const boardingPaper = Color(0xFFF4EFE6);
   static const alabaster = Color(0xFFEFEBE4);
   static const saffron = Color(0xFFD4AF37);
   static const cardamom = Color(0xFF5A5A40);

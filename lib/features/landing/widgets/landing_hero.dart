@@ -50,8 +50,8 @@ class LandingHero extends StatelessWidget {
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
                 colors: [
-                  LandingPalette.charcoal,
-                  LandingPalette.charcoal.withValues(alpha: 0.8),
+                  LandingPalette.heroDark,
+                  LandingPalette.heroDark.withValues(alpha: 0.8),
                   wide
                       ? LandingPalette.charcoal.withValues(alpha: 0.1)
                       : LandingPalette.charcoal.withValues(alpha: 0.5),
@@ -64,13 +64,13 @@ class LandingHero extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
-                colors: [LandingPalette.charcoal, Colors.transparent],
+                colors: [LandingPalette.heroDark, Colors.transparent],
                 stops: const [0.0, 0.45],
               ),
             ),
           ),
           LandingMaxWidth(
-            padding: const EdgeInsets.fromLTRB(0, 80, 0, 100),
+            padding: const EdgeInsets.fromLTRB(0, 80, 0, 90),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -78,7 +78,7 @@ class LandingHero extends StatelessWidget {
                   flex: wide ? 7 : 12,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       LandingEntrance(
                         child: Container(
@@ -103,7 +103,7 @@ class LandingHero extends StatelessWidget {
                               style: LandingPalette.mono(
                                 context,
                                 size: 11,
-                                color: LandingPalette.saffron,
+                                color: LandingPalette.accent,
                               ),
                             ),
                           ],
@@ -127,23 +127,22 @@ class LandingHero extends StatelessWidget {
                                 color: LandingPalette.cream,
                               ).copyWith(height: 1.05, letterSpacing: -0.5),
                               children: [
-                                const TextSpan(text: 'Stamp Your '),
+                                const TextSpan(text: 'Stamp Your\n'),
                                 TextSpan(
-                                  text: 'Culinary',
+                                  text: 'Culinary Passport.\n',
                                   style: LandingPalette.serif(
                                     context,
                                     size: h1,
                                     weight: FontWeight.w700,
-                                    color: LandingPalette.red,
+                                    color: LandingPalette.accent,
                                   ),
                                 ),
-                                const TextSpan(text: ' Passport.\n'),
                                 TextSpan(
                                   text: 'No Flight Required.',
                                   style: LandingPalette.serif(
                                     context,
                                     size: h2,
-                                    weight: FontWeight.w300,
+                                    weight: FontWeight.w700,
                                     color: LandingPalette.cream,
                                   ).copyWith(height: 1.2),
                                 ),
@@ -257,7 +256,10 @@ class LandingHero extends StatelessWidget {
                       ),
                       ),
                       const SizedBox(height: 48),
-                      const Divider(color: Color(0x33F9F7F2), height: 1),
+                      Divider(
+                        color: LandingPalette.cream.withValues(alpha: 0.2),
+                        height: 1,
+                      ),
                       const SizedBox(height: 24),
                       LandingEntrance(
                         delay: const Duration(milliseconds: 320),
@@ -304,7 +306,7 @@ class LandingHero extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
-                    color: LandingPalette.charcoal.withValues(alpha: 0.8),
+                    color: LandingPalette.quickSectorsBg.withValues(alpha: 0.95),
                     border: Border(
                       top: BorderSide(
                         color: LandingPalette.cream.withValues(alpha: 0.1),
@@ -439,7 +441,7 @@ class _Stat extends StatelessWidget {
               context,
               size: 24,
               weight: FontWeight.w400,
-              color: LandingPalette.saffron,
+              color: LandingPalette.accent,
             ).copyWith(fontStyle: FontStyle.italic),
           ),
           Text(
@@ -492,7 +494,7 @@ class _GatePassCard extends StatelessWidget {
       constraints: const BoxConstraints(maxWidth: 320),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: LandingPalette.cream,
+        color: LandingPalette.boardingPaper,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
@@ -512,7 +514,7 @@ class _GatePassCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'GATE PASS VOUCHER',
+                    'BOARDING PASS VOUCHER',
                     style: LandingPalette.mono(context, size: 8),
                   ),
                   Text(
@@ -609,7 +611,7 @@ class _GatePassCard extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: LandingPalette.cream,
                 border: Border.all(
-                  color: LandingPalette.saffron,
+                  color: LandingPalette.accent,
                   style: BorderStyle.solid,
                   width: 1,
                 ),

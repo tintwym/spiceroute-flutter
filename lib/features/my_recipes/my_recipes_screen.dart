@@ -145,8 +145,7 @@ class MyRecipesScreen extends ConsumerWidget {
     final pagePad = pagePadding(context);
     final maxW = contentMaxWidth(context);
     return CustomScrollView(
-      scrollCacheExtent: ScrollCacheExtent.pixels(900),
-      physics: const ClampingScrollPhysics(),
+      scrollCacheExtent: const ScrollCacheExtent.pixels(900), physics: const ClampingScrollPhysics(),
       slivers: [
         SliverPadding(
           padding: pagePad.copyWith(top: 16, bottom: 16),

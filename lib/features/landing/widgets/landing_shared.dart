@@ -29,11 +29,8 @@ class LandingSectionHeader extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
           decoration: BoxDecoration(
-            color: LandingPalette.alabaster,
+            color: LandingPalette.red.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(999),
-            border: Border.all(
-              color: LandingPalette.charcoal.withValues(alpha: 0.1),
-            ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,

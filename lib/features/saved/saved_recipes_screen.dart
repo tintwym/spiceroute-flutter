@@ -108,8 +108,7 @@ class SavedRecipesScreen extends ConsumerWidget {
     final hasRecipes = state.recipes.isNotEmpty;
 
     return CustomScrollView(
-      scrollCacheExtent: ScrollCacheExtent.pixels(900),
-      physics: const ClampingScrollPhysics(),
+      scrollCacheExtent: const ScrollCacheExtent.pixels(900), physics: const ClampingScrollPhysics(),
       slivers: [
         SliverPadding(
           padding: pagePad.copyWith(top: 32, bottom: 8),

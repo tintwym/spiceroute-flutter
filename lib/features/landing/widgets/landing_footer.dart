@@ -12,7 +12,7 @@ class LandingFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     final wide = MediaQuery.sizeOf(context).width >= 640;
     return Container(
-      color: LandingPalette.charcoal,
+      color: LandingPalette.heroDark,
       padding: const EdgeInsets.symmetric(vertical: 32),
       child: LandingMaxWidth(
         child: Column(

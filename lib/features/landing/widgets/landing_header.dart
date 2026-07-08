@@ -25,9 +25,9 @@ class LandingHeader extends StatelessWidget {
   final VoidCallback onEnterApp;
   final LandingSectionKeys sections;
 
-  @override
+  @override  
   Widget build(BuildContext context) {
-    final wide = MediaQuery.sizeOf(context).width >= 768;
+    final wide = MediaQuery.sizeOf(context).width >= 1280;
     final lg = MediaQuery.sizeOf(context).width >= 1024;
     return ClipRect(
       child: BackdropFilter(
@@ -36,7 +36,7 @@ class LandingHeader extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOut,
           decoration: BoxDecoration(
-            color: LandingPalette.cream.withValues(alpha: elevated ? 0.92 : 0.8),
+            color: elevated ? Colors.white : Colors.white.withValues(alpha: 0.95),
             border: Border(
               bottom: BorderSide(
                 color: LandingPalette.charcoal.withValues(alpha: 0.05),
@@ -61,36 +61,32 @@ class LandingHeader extends StatelessWidget {
                     onTap: onScrollTop,
                     borderRadius: BorderRadius.circular(8),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.symmetric(vertical: 6),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
                             'THE CULINARY TERMINAL',
                             style: LandingPalette.mono(
                               context,
-                              size: 9,
-                              color: LandingPalette.charcoal.withValues(
-                                alpha: 0.4,
-                              ),
-                              letterSpacing: 3.5,
+                              size: 6,
+                              color: LandingPalette.charcoal.withValues(alpha: 0.4),
+                              letterSpacing: 1.7,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Row(
                             children: [
                               Container(
-                                width: 40,
-                                height: 40,
+                                width: 36,
+                                height: 36,
                                 decoration: BoxDecoration(
                                   color: LandingPalette.red,
                                   borderRadius: BorderRadius.circular(12),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: LandingPalette.red.withValues(
-                                        alpha: 0.1,
-                                      ),
+                                      color: LandingPalette.red.withValues(alpha: 0.1),
                                       blurRadius: 8,
                                       offset: const Offset(0, 2),
                                     ),
@@ -99,27 +95,22 @@ class LandingHeader extends StatelessWidget {
                                 padding: const EdgeInsets.all(6),
                                 child: const _BrandMark(),
                               ),
-                              const SizedBox(width: 10),
+                              const SizedBox(width: 7),
                               Text(
                                 'SpiceRoute',
                                 style: LandingPalette.serif(
                                   context,
-                                  size: 22,
+                                  size: 16,
                                   weight: FontWeight.w700,
                                   color: LandingPalette.charcoal,
-                                ).copyWith(
-                                  fontStyle: FontStyle.italic,
-                                  letterSpacing: -0.5,
-                                ),
+                                ).copyWith(letterSpacing: -0.7),
                               ),
-                              if (lg) ...[
+                              if (lg && wide) ...[
                                 const SizedBox(width: 12),
                                 Container(
-                                  width: 64,
+                                  width: 56,
                                   height: 1,
-                                  color: LandingPalette.charcoal.withValues(
-                                    alpha: 0.15,
-                                  ),
+                                  color: LandingPalette.charcoal.withValues(alpha: 0.15),
                                 ),
                               ],
                             ],
@@ -150,15 +141,15 @@ class LandingHeader extends StatelessWidget {
                       label: 'Pricing Tiers',
                       onTap: () => onScrollTo(sections.pricing),
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 8),
                   ],
                   InkWell(
                     onTap: onScrollToPricing,
                     borderRadius: BorderRadius.circular(999),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
+                        horizontal: 4,
+                        vertical: 2,
                       ),
                       decoration: BoxDecoration(
                         color: isSubscribed
@@ -174,15 +165,15 @@ class LandingHeader extends StatelessWidget {
                       child: _PremiumBadgePulse(
                         active: isSubscribed,
                         label: isSubscribed
-                            ? '✨ Premium Pass'
-                            : '🔓 Free Plan',
+                            ? 'Premium Pass'
+                            : 'Free Plan',
                       ),
                     ),
                   ),
-                  if (MediaQuery.sizeOf(context).width >= 640) ...[
-                    const SizedBox(width: 10),
+                  if (MediaQuery.sizeOf(context).width >= 1280) ...[
+                    const SizedBox(width: 6),
                     _EnterAppButton(onTap: onEnterApp),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: 6),
                     _BoardingPassButton(
                       onTap: () => onScrollTo(sections.boardingCall),
                     ),
@@ -256,7 +247,7 @@ class _PremiumBadgePulseState extends State<_PremiumBadgePulse>
         widget.label,
         style: LandingPalette.mono(
           context,
-          size: 10,
+          size: 5,
           color: widget.active
               ? LandingPalette.red
               : LandingPalette.charcoal.withValues(alpha: 0.6),
@@ -292,7 +283,7 @@ class _EnterAppButtonState extends State<_EnterAppButton> {
           onTap: widget.onTap,
           borderRadius: BorderRadius.circular(12),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
@@ -340,7 +331,7 @@ class _BoardingPassButtonState extends State<_BoardingPassButton> {
           onTap: widget.onTap,
           borderRadius: BorderRadius.circular(12),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -436,12 +427,17 @@ class _NavButtonState extends State<_NavButton> {
       onExit: (_) => setState(() => _hover = false),
       child: TextButton.icon(
         onPressed: widget.onTap,
+        style: TextButton.styleFrom(
+          minimumSize: Size.zero,
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
         icon: Icon(widget.icon, size: 16, color: iconColor),
         label: Text(
           widget.label,
           style: LandingPalette.sans(
             context,
-            size: 14,
+            size: 13,
             weight: FontWeight.w500,
             color: color,
           ),

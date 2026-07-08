@@ -108,8 +108,7 @@ class ExploreScreen extends ConsumerWidget {
           return false;
         },
         child: CustomScrollView(
-          scrollCacheExtent: ScrollCacheExtent.pixels(900),
-          physics: const ClampingScrollPhysics(),
+          scrollCacheExtent: const ScrollCacheExtent.pixels(900), physics: const ClampingScrollPhysics(),
           slivers: [
             // Editorial hero — badge + serif "SpiceRoute" + tagline.
             // Search and result counter USED to live in this hero's

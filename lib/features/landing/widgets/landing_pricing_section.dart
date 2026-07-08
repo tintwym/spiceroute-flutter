@@ -28,7 +28,7 @@ class _LandingPricingSectionState extends State<LandingPricingSection> {
   Widget build(BuildContext context) {
     final wide = MediaQuery.sizeOf(context).width >= 1024;
     return Container(
-      color: LandingPalette.cream,
+      color: LandingPalette.toolkitBg,
       padding: const EdgeInsets.symmetric(vertical: 96),
       child: LandingMaxWidth(
         child: Column(

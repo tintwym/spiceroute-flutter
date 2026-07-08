@@ -21,7 +21,8 @@ enum LandingGatePhase {
   /// Reading persisted flag — show a brief splash, no route flash.
   loading,
 
-  /// First open (or flag missing) — show `/landing`.
+  /// First open (or flag missing) — skip the marketing landing and go straight
+  /// to the app.
   firstVisit,
 
   /// Returning user — skip landing, go straight to the app.

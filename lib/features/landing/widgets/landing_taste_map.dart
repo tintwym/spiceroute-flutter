@@ -210,12 +210,12 @@ List<Widget> _regionHotspots(ValueChanged<String> onSelect, BoxConstraints c) {
 
 String _tasteMapSvg(String activeRegionId) {
   String fillFor(String id) =>
-      activeRegionId == id ? 'rgba(194,94,48,0.35)' : 'rgba(26,26,26,0.15)';
+      activeRegionId == id ? 'rgba(192,86,33,0.35)' : 'rgba(30,41,59,0.15)';
   String strokeFor(String id) =>
-      activeRegionId == id ? 'rgba(194,94,48,0.45)' : 'rgba(26,26,26,0.12)';
+      activeRegionId == id ? 'rgba(192,86,33,0.45)' : 'rgba(30,41,59,0.12)';
   return '''
 <svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
-  <g opacity="0.15" stroke="#1A1A1A" stroke-width="0.5" stroke-dasharray="3,6">
+  <g opacity="0.15" stroke="#1E293B" stroke-width="0.5" stroke-dasharray="3,6">
     <line x1="0" y1="100" x2="1000" y2="100"/><line x1="0" y1="200" x2="1000" y2="200"/>
     <line x1="0" y1="300" x2="1000" y2="300"/><line x1="0" y1="400" x2="1000" y2="400"/>
     <line x1="0" y1="500" x2="1000" y2="500"/><line x1="100" y1="0" x2="100" y2="600"/>
@@ -238,7 +238,7 @@ String _tasteMapSvg(String activeRegionId) {
     d="M 540,150 C 580,140 640,125 700,118 C 760,110 820,105 880,100 C 910,98 940,102 950,115 C 955,122 942,145 935,160 C 928,175 910,185 895,190 C 885,192 870,202 860,208 C 850,212 848,220 845,230 C 842,238 845,242 838,242 C 830,242 825,232 820,240 C 815,248 808,260 798,272 C 788,285 770,285 758,292 C 748,295 735,290 725,288 C 715,285 680,285 650,280 C 620,275 580,265 560,250 C 540,235 535,215 530,195 C 525,175 530,158 540,150 Z" />
   <path fill="${fillFor('maritime-se-asia')}" stroke="${strokeFor('maritime-se-asia')}" stroke-width="1.2"
     d="M 815,495 C 825,485 845,488 855,492 C 860,490 862,482 865,485 C 868,495 860,510 865,520 C 872,530 882,540 885,550 C 888,560 880,570 872,572 C 865,575 860,580 855,572 C 845,565 830,565 820,560 C 812,555 805,545 805,535 C 805,520 810,505 815,495 Z" />
-  <g stroke="#C25E30" stroke-width="1.5" stroke-dasharray="4,6" fill="none" opacity="0.35">
+  <g stroke="#C05621" stroke-width="1.5" stroke-dasharray="4,6" fill="none" opacity="0.35">
     <path d="M180,260 Q340,160 480,180 T680,300 T760,390" />
     <path d="M480,180 Q520,300 535,420" />
     <path d="M680,365 Q740,460 835,480" />
