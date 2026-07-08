@@ -406,6 +406,7 @@ class ApiClient {
       DioExceptionType.connectionTimeout ||
       DioExceptionType.sendTimeout ||
       DioExceptionType.receiveTimeout ||
+      DioExceptionType.transformTimeout ||
       DioExceptionType.connectionError ||
       DioExceptionType.unknown ||
       DioExceptionType.cancel ||

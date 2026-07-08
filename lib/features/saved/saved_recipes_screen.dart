@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -107,8 +108,8 @@ class SavedRecipesScreen extends ConsumerWidget {
     final hasRecipes = state.recipes.isNotEmpty;
 
     return CustomScrollView(
+      scrollCacheExtent: ScrollCacheExtent.pixels(900),
       physics: const ClampingScrollPhysics(),
-      cacheExtent: 900,
       slivers: [
         SliverPadding(
           padding: pagePad.copyWith(top: 32, bottom: 8),

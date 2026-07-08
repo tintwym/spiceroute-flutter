@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../l10n/generated/app_localizations.dart';
@@ -107,10 +108,7 @@ class ExploreScreen extends ConsumerWidget {
           return false;
         },
         child: CustomScrollView(
-          cacheExtent: 900,
-          // ClampingScrollPhysics on web avoids the iOS-style elastic overscroll
-          // that triggers extra repaint passes Chrome already gives us a smooth
-          // momentum scroll for free.
+          scrollCacheExtent: ScrollCacheExtent.pixels(900),
           physics: const ClampingScrollPhysics(),
           slivers: [
             // Editorial hero — badge + serif "SpiceRoute" + tagline.
