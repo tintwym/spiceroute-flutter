@@ -14,42 +14,42 @@ dependencies:
   cupertino_icons: ^1.0.8
 
   flutter_riverpod: ^2.6.1
-  go_router: ^14.6.2
-  dio: ^5.7.0
-  flutter_secure_storage: ^9.2.2
+  go_router: ^14.8.1
+  dio: ^5.10.0
+  flutter_secure_storage: ^9.2.4
   freezed_annotation: ^2.4.4
-  json_annotation: ^4.9.0
+  json_annotation: ^4.12.0
   cached_network_image: ^3.4.1
   # Pinned with a caret range. We were on `any`, which means a fresh
   # `pub get` on a CI machine could pull a newer major version that
   # breaks our l10n generated code without warning. Caret allows
   # minor + patch upgrades within 0.20.x.
-  intl: ^0.20.2
-  characters: ^1.4.0
-  flutter_svg: ^2.0.10
+  intl: ^0.20.3
+  characters: ^1.4.1
+  flutter_svg: ^2.3.0
   flutter_staggered_grid_view: ^0.7.0
 
-  firebase_core: ^3.6.0
-  firebase_auth: ^5.3.1
-  cloud_firestore: ^5.4.4
-  google_sign_in: ^6.2.1
+  firebase_core: ^3.15.2
+  firebase_auth: ^5.7.0
+  cloud_firestore: ^5.6.12
+  google_sign_in: ^6.3.0
 
   # Community board upload: real photo picker + client-side compression
   # so a phone-sized HEIC drops under Firestore's 1 MB document cap
   # before we base64 it into the doc.
-  image_picker: ^1.1.2
-  flutter_image_compress: ^2.3.0
-  native_liquid_glass: ^0.2.10
-  wakelock_plus: ^1.3.2
+  image_picker: ^1.2.3
+  flutter_image_compress: ^2.4.0
+  native_liquid_glass: ^0.2.12
+  wakelock_plus: ^1.6.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  build_runner: ^2.4.13
-  freezed: ^2.5.7
-  json_serializable: ^6.9.0
+  build_runner: ^2.15.0
+  freezed: ^2.5.8
+  json_serializable: ^6.14.0
   flutter_launcher_icons: ^0.14.4
-  flutter_native_splash: ^2.4.7
+  flutter_native_splash: ^2.4.8
   fake_cloud_firestore: ^3.1.0
   network_image_mock: ^2.1.1
 
