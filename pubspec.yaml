@@ -18,7 +18,7 @@ dependencies:
   dio: ^5.10.0
   flutter_secure_storage: ^9.2.4
   freezed_annotation: ^2.4.4
-  json_annotation: ^4.12.0
+  json_annotation: ^4.9.0
   cached_network_image: ^3.4.1
   # Pinned with a caret range. We were on `any`, which means a fresh
   # `pub get` on a CI machine could pull a newer major version that
@@ -45,9 +45,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  build_runner: ^2.15.0
+  build_runner: ^2.5.4
   freezed: ^2.5.8
-  json_serializable: ^6.14.0
+  json_serializable: ^6.9.5
   flutter_launcher_icons: ^0.14.4
   flutter_native_splash: ^2.4.8
   fake_cloud_firestore: ^3.1.0
