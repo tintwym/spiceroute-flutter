@@ -504,10 +504,13 @@ class AppL10nVi extends AppL10n {
   String get filterAllDietary => 'Tất cả yêu cầu';
 
   @override
-  String get exploreRefine => 'LỌC';
+  String get exploreRefine => 'ĐỊA LÝ';
 
   @override
   String get exploreByRegion => 'KHÁM PHÁ THEO KHU VỰC';
+
+  @override
+  String get filterRegionShort => 'Khu vực';
 
   @override
   String get chooseRegion => 'Chọn khu vực';

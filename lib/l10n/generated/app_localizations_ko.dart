@@ -498,10 +498,13 @@ class AppL10nKo extends AppL10n {
   String get filterAllDietary => '모든 조건';
 
   @override
-  String get exploreRefine => '필터';
+  String get exploreRefine => '지역';
 
   @override
   String get exploreByRegion => '지역별로 탐색';
+
+  @override
+  String get filterRegionShort => '지역';
 
   @override
   String get chooseRegion => '지역 선택';

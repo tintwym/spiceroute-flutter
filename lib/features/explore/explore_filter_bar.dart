@@ -18,10 +18,8 @@ import '../../state/explore.dart';
 ///
 /// Three responsive shapes (mirrors the original logic verbatim so
 /// the move is a pure refactor):
-///   * Phone — search lives in the AppBar pill, so we only render
-///     the result counter here. Pinning a single line of secondary
-///     text is still useful: it confirms the active scope while the
-///     user scrolls a long grid.
+///   * Phone — result counter with search directly below (search was
+///     removed from the AppBar so it sits under "Showing N recipes…").
 ///   * Tablet narrow (`< 640 px`) — search above, counter below.
 ///   * Tablet wide / desktop (`>= 640 px`) — search left, counter
 ///     right, on the same row.
@@ -61,7 +59,14 @@ class ExploreFilterRow extends ConsumerWidget {
     );
 
     if (deviceClassOf(context).isPhone) {
-      return Align(alignment: Alignment.centerLeft, child: counter);
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          counter,
+          const SizedBox(height: 10),
+          NavSearchField(maxWidth: double.infinity, dense: true),
+        ],
+      );
     }
 
     return LayoutBuilder(
@@ -111,7 +116,9 @@ class ExploreFilterRow extends ConsumerWidget {
     const verticalPad = 32.0;
 
     if (dc.isPhone) {
-      return counterLine + verticalPad;
+      const searchHeight = 44.0;
+      const rowGap = 10.0;
+      return searchHeight + rowGap + counterLine + verticalPad;
     }
     final contentW = framedContentWidth(context);
     const searchHeight = 48.0;

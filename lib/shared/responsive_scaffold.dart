@@ -6,14 +6,12 @@ import '../l10n/generated/app_localizations.dart';
 import 'account_menu.dart';
 import 'breakpoints.dart';
 import 'ios_liquid_glass.dart';
-import 'nav_search_field.dart';
 import 'shell_create_sheet.dart';
 import 'shell_nav.dart';
 import 'top_nav_bar.dart';
 
 /// Last primary-tab path used to keep the bottom nav highlight when
-/// viewing auxiliary routes (AI Creator, My Recipes) that are not tab
-/// destinations.
+/// viewing AI Creator (opened from the + sheet, not a tab destination).
 final shellHighlightPathProvider = StateProvider<String>((ref) => '/');
 
 /// One destination of the bottom navigation / side rail.
@@ -36,7 +34,7 @@ class ShellDestination {
 /// AI Creator is reached from the center [+] sheet on phone (and the
 /// create button in the tablet header). My Recipes lives under Me and
 /// the create sheet.
-class AppShell extends ConsumerWidget {
+class AppShell extends ConsumerStatefulWidget {
   const AppShell({super.key, required this.child, required this.location});
 
   final Widget child;
@@ -69,36 +67,44 @@ class AppShell extends ConsumerWidget {
     ),
   ];
 
-  static int indexForPath(List<ShellDestination> dests, String location) {
-    for (var i = 0; i < dests.length; i++) {
-      if (location == dests[i].path) return i;
-      if (dests[i].path != '/' && location.startsWith(dests[i].path)) return i;
-    }
-    if (location.startsWith('/recipes/')) return 0;
-    if (location == '/settings' ||
-        location == '/my-recipes') {
-      return dests.indexWhere((d) => d.path == '/me').clamp(0, dests.length - 1);
-    }
-    return 0;
+  @override
+  ConsumerState<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends ConsumerState<AppShell> {
+  @override
+  void initState() {
+    super.initState();
+    _syncHighlight(widget.location);
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l = AppL10n.of(context);
-    final dests = destinationsOf(l);
-    if (!isAuxiliaryShellPath(location) && location != '/settings') {
+  void didUpdateWidget(AppShell oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.location != widget.location) {
+      _syncHighlight(widget.location);
+    }
+  }
+
+  void _syncHighlight(String location) {
+    if (shouldUpdateShellHighlightPath(location)) {
       ref.read(shellHighlightPathProvider.notifier).state = location;
     }
-    final highlightPath = isAuxiliaryShellPath(location) || location == '/settings'
-        ? ref.watch(shellHighlightPathProvider)
-        : location;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    final dests = AppShell.destinationsOf(l);
     final dc = deviceClassOf(context);
 
     if (dc.isPhone) {
-      final barIndex = phoneBarIndexForPath(dests, highlightPath);
+      final storedHighlight = ref.watch(shellHighlightPathProvider);
+      final barHighlight = phoneBarHighlightPath(widget.location, storedHighlight);
+      final barIndex = phoneBarIndexForPath(dests, barHighlight);
 
       return Scaffold(
-        body: SafeArea(child: child),
+        body: SafeArea(child: widget.child),
         bottomNavigationBar: PhoneShellTabBar(
           destinations: dests,
           selectedBarIndex: barIndex,
@@ -107,10 +113,6 @@ class AppShell extends ConsumerWidget {
             if (destIdx >= 0) context.go(dests[destIdx].path);
           },
           onPlusPressed: () => showShellCreateSheet(context),
-        ),
-        appBar: AppBar(
-          titleSpacing: 8,
-          title: const NavSearchField(dense: true),
         ),
       );
     }
@@ -123,7 +125,7 @@ class AppShell extends ConsumerWidget {
 
     return Scaffold(
       appBar: TopNavBar(actions: tabletActions),
-      body: SafeArea(child: child),
+      body: SafeArea(child: widget.child),
     );
   }
 }

@@ -110,8 +110,9 @@
   "exploreErrorTitle": "无法加载食谱",
   "exploreErrorRetry": "重试",
 
-  "exploreRefine": "筛选",
+  "exploreRefine": "地理",
   "exploreByRegion": "按地区探索",
+  "filterRegionShort": "地区",
   "chooseRegion": "选择地区",
   "changeRegion": "更改",
   "selectCuisineTradition": "选择菜系传统",

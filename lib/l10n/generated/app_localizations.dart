@@ -1030,7 +1030,7 @@ abstract class AppL10n {
   /// No description provided for @exploreRefine.
   ///
   /// In en, this message translates to:
-  /// **'REFINE'**
+  /// **'GEOGRAPHIC'**
   String get exploreRefine;
 
   /// No description provided for @exploreByRegion.
@@ -1038,6 +1038,12 @@ abstract class AppL10n {
   /// In en, this message translates to:
   /// **'EXPLORE BY GEOGRAPHIC REGION'**
   String get exploreByRegion;
+
+  /// No description provided for @filterRegionShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Region'**
+  String get filterRegionShort;
 
   /// No description provided for @chooseRegion.
   ///

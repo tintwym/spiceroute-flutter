@@ -110,8 +110,9 @@
   "exploreErrorTitle": "Không tải được công thức",
   "exploreErrorRetry": "Thử lại",
 
-  "exploreRefine": "LỌC",
+  "exploreRefine": "ĐỊA LÝ",
   "exploreByRegion": "KHÁM PHÁ THEO KHU VỰC",
+  "filterRegionShort": "Khu vực",
   "chooseRegion": "Chọn khu vực",
   "changeRegion": "Đổi",
   "selectCuisineTradition": "CHỌN TRUYỀN THỐNG ẨM THỰC",

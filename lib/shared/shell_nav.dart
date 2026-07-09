@@ -14,6 +14,24 @@ int phoneDestIndexForBarIndex(int barIndex) {
   return barIndex - 1;
 }
 
+/// Whether [location] is an auxiliary shell route that should not update the
+/// stored tab highlight (e.g. AI Creator opened from the + sheet).
+bool isAuxiliaryShellPath(String location) => location == '/ai/creator';
+
+/// Whether navigating to [location] should refresh [shellHighlightPathProvider].
+bool shouldUpdateShellHighlightPath(String location) =>
+    !isAuxiliaryShellPath(location) && location != '/settings';
+
+/// Resolves which path the phone bottom bar should treat as selected.
+///
+/// AI Creator keeps the last primary tab; My Recipes and legacy Settings
+/// highlight Me; everything else tracks the current route.
+String phoneBarHighlightPath(String location, String storedHighlight) {
+  if (location == '/ai/creator') return storedHighlight;
+  if (location == '/my-recipes' || location == '/settings') return '/me';
+  return location;
+}
+
 /// Resolves which phone bar slot should appear selected for [location].
 int phoneBarIndexForPath(List<ShellDestination> dests, String location) {
   if (location == '/me' ||
@@ -33,8 +51,3 @@ int phoneBarIndexForPath(List<ShellDestination> dests, String location) {
   }
   return phoneBarIndexForDestIndex(0);
 }
-
-/// Whether [location] is an auxiliary shell route that should not update the
-/// stored tab highlight (e.g. AI Creator opened from the + sheet).
-bool isAuxiliaryShellPath(String location) =>
-    location == '/ai/creator' || location == '/my-recipes';

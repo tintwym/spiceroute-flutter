@@ -177,8 +177,9 @@
   "filterAllCourses": "All Courses",
   "filterAllDietary": "All Preferences",
 
-  "exploreRefine": "REFINE",
+  "exploreRefine": "GEOGRAPHIC",
   "exploreByRegion": "EXPLORE BY GEOGRAPHIC REGION",
+  "filterRegionShort": "Region",
   "chooseRegion": "Choose a region",
   "changeRegion": "Change",
   "selectCuisineTradition": "SELECT CUISINE TRADITION",

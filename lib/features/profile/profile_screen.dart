@@ -175,21 +175,7 @@ class _ProfileHeader extends StatelessWidget {
 
     return Row(
       children: [
-        CircleAvatar(
-          radius: 32,
-          backgroundColor: cs.primaryContainer,
-          backgroundImage:
-              user!.photoUrl != null ? NetworkImage(user!.photoUrl!) : null,
-          child: user!.photoUrl == null
-              ? Text(
-                  user!.initial,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    color: cs.onPrimaryContainer,
-                    fontWeight: FontWeight.w700,
-                  ),
-                )
-              : null,
-        ),
+        _ProfileAvatar(user: user!, cs: cs, theme: theme),
         const SizedBox(width: 16),
         Expanded(
           child: Column(
@@ -214,6 +200,56 @@ class _ProfileHeader extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Signed-in avatar with the same broken-photo fallback used in the
+/// account menu — only shown on the phone Me tab header.
+class _ProfileAvatar extends StatefulWidget {
+  const _ProfileAvatar({
+    required this.user,
+    required this.cs,
+    required this.theme,
+  });
+
+  final AppUser user;
+  final ColorScheme cs;
+  final ThemeData theme;
+
+  @override
+  State<_ProfileAvatar> createState() => _ProfileAvatarState();
+}
+
+class _ProfileAvatarState extends State<_ProfileAvatar> {
+  String? _failedUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    final photoUrl = widget.user.photoUrl;
+    final showImage = photoUrl != null && photoUrl != _failedUrl;
+
+    return CircleAvatar(
+      radius: 32,
+      backgroundColor: widget.cs.primaryContainer,
+      backgroundImage: showImage ? NetworkImage(photoUrl) : null,
+      onBackgroundImageError: showImage
+          ? (_, _) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!mounted) return;
+                setState(() => _failedUrl = photoUrl);
+              });
+            }
+          : null,
+      child: showImage
+          ? null
+          : Text(
+              widget.user.initial,
+              style: widget.theme.textTheme.titleLarge?.copyWith(
+                color: widget.cs.onPrimaryContainer,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
     );
   }
 }

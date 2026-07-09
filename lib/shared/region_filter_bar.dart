@@ -190,7 +190,12 @@ class _RegionFilterBarState extends State<RegionFilterBar> {
         label: _regionLabel(l, activeRegion),
       );
     }
-    return (emoji: _regionEyebrowIcon, label: l.chooseRegion);
+    return (
+      emoji: _regionEyebrowIcon,
+      label: widget.phonePreferencesTrigger != null
+          ? l.filterRegionShort
+          : l.chooseRegion,
+    );
   }
 
   bool _regionTriggerActive(CuisineRegion? activeRegion) =>

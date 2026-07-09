@@ -494,10 +494,13 @@ class AppL10nZh extends AppL10n {
   String get filterAllDietary => '所有偏好';
 
   @override
-  String get exploreRefine => '筛选';
+  String get exploreRefine => '地理';
 
   @override
   String get exploreByRegion => '按地区探索';
+
+  @override
+  String get filterRegionShort => '地区';
 
   @override
   String get chooseRegion => '选择地区';

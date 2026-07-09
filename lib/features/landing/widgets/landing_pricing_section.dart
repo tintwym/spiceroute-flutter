@@ -288,12 +288,17 @@ class _LandingPricingSectionState extends State<LandingPricingSection> {
                             color: LandingPalette.cream.withValues(alpha: 0.45),
                           ),
                         ),
-                        Text(
-                          '\$$_estimatedBilling',
-                          style: LandingPalette.serif(
-                            context,
-                            size: 36,
-                            color: Colors.white,
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            '\$$_estimatedBilling',
+                            maxLines: 1,
+                            style: LandingPalette.serif(
+                              context,
+                              size: 36,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                         Text(
@@ -307,7 +312,9 @@ class _LandingPricingSectionState extends State<LandingPricingSection> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        FilledButton(
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton(
                           onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -322,6 +329,7 @@ class _LandingPricingSectionState extends State<LandingPricingSection> {
                           ),
                           child: const Text('LOCK IN PRICE'),
                         ),
+                      ),
                       ],
                     ),
                   ),

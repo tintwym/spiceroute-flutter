@@ -506,10 +506,13 @@ class AppL10nEn extends AppL10n {
   String get filterAllDietary => 'All Preferences';
 
   @override
-  String get exploreRefine => 'REFINE';
+  String get exploreRefine => 'GEOGRAPHIC';
 
   @override
   String get exploreByRegion => 'EXPLORE BY GEOGRAPHIC REGION';
+
+  @override
+  String get filterRegionShort => 'Region';
 
   @override
   String get chooseRegion => 'Choose a region';

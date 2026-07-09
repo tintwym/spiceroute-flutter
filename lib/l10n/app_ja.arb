@@ -110,8 +110,9 @@
   "exploreErrorTitle": "レシピを読み込めませんでした",
   "exploreErrorRetry": "再試行",
 
-  "exploreRefine": "絞り込み",
+  "exploreRefine": "地理",
   "exploreByRegion": "地域から探す",
+  "filterRegionShort": "地域",
   "chooseRegion": "地域を選ぶ",
   "changeRegion": "変更",
   "selectCuisineTradition": "料理の伝統を選択",

@@ -120,11 +120,8 @@ class ExploreScreen extends ConsumerWidget {
               padding: pagePad.copyWith(top: 32, bottom: 8),
               sliver: SliverToBoxAdapter(child: framed(const PageHero())),
             ),
-            // Pinned search field + result counter. Sticks to the top of
-            // the viewport as soon as the hero scrolls past it. Phone-
-            // class viewports render the counter only (the search input
-            // itself lives in the AppBar pill — see
-            // `responsive_scaffold.dart`).
+            // Pinned result counter + search (phone). Sticks once the hero
+            // scrolls past. Tablet+ keeps search in this row per layout.
             SliverPinnedFilterBar(
               height: ExploreFilterRow.estimatedHeight(context),
               child: Padding(

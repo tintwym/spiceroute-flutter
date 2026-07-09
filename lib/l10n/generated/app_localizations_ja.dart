@@ -498,10 +498,13 @@ class AppL10nJa extends AppL10n {
   String get filterAllDietary => 'すべての条件';
 
   @override
-  String get exploreRefine => '絞り込み';
+  String get exploreRefine => '地理';
 
   @override
   String get exploreByRegion => '地域から探す';
+
+  @override
+  String get filterRegionShort => '地域';
 
   @override
   String get chooseRegion => '地域を選ぶ';

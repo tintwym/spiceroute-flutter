@@ -369,8 +369,8 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpAndSettle();
 
-    expect(find.text('REFINE'), findsOneWidget);
-    expect(find.text('Choose a region'), findsOneWidget);
+    expect(find.text('GEOGRAPHIC'), findsOneWidget);
+    expect(find.text('Region'), findsOneWidget);
     expect(find.text('Preferences'), findsNothing);
     expect(find.text('Course & diet'), findsOneWidget);
     expect(find.text('EXPLORE BY GEOGRAPHIC REGION'), findsNothing);

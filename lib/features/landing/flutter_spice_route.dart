@@ -156,7 +156,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
     {
       'handle': '@marco_eats',
       'dish': 'Risotto alla Milanese',
-      'review': 'Perfecty golden! The saffron aroma is absolutely intoxicating. Grounded it in my stone mortar and did the traditional Lombardo Mantecatura technique.',
+      'review': 'Perfectly golden! The saffron aroma is absolutely intoxicating. Grounded it in my stone mortar and did the traditional Lombardo Mantecatura technique.',
       'time': '2 hours ago',
       'region': 'Europe',
       'stamps': 42,
@@ -1351,91 +1351,168 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
   }
 
   Widget _buildCulinaryBoardRight(BuildContext context) {
+    final isWide = MediaQuery.sizeOf(context).width > 600;
+    if (!isWide) {
+      return Column(
+        children: [
+          for (var idx = 0; idx < socialFeed.length; idx++) ...[
+            if (idx > 0) const SizedBox(height: 16),
+            _buildSocialFeedCard(socialFeed[idx]),
+          ],
+        ],
+      );
+    }
+
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: MediaQuery.of(context).size.width > 600 ? 2 : 1,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
         crossAxisSpacing: 16,
         mainAxisSpacing: 16,
-        childAspectRatio: 0.8,
+        childAspectRatio: 0.92,
       ),
       itemCount: socialFeed.length,
-      itemBuilder: (context, idx) {
-        final item = socialFeed[idx];
-        return Card(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: Colors.black.withValues(alpha: 0.04)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 120,
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
-                  image: DecorationImage(
-                    image: NetworkImage(item['imageUrl']),
-                    fit: BoxFit.cover,
+      itemBuilder: (context, idx) => _buildSocialFeedCard(socialFeed[idx]),
+    );
+  }
+
+  Widget _buildSocialFeedCard(Map<String, dynamic> item) {
+    return Card(
+      elevation: 0,
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.black.withValues(alpha: 0.04)),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSocialFeedImage(item['imageUrl'] as String),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        item['handle'] as String,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFC05621),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      item['time'] as String,
+                      style: const TextStyle(fontSize: 10, color: Colors.grey),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  item['dish'] as String,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1E293B),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
+                const SizedBox(height: 4),
+                Text(
+                  item['review'] as String,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: Color(0xFF475569),
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(item['handle'], style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFFC05621))),
-                        Text(item['time'], style: const TextStyle(fontSize: 10, color: Colors.grey)),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Text(item['dish'], style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
-                    const SizedBox(height: 4),
-                    Text(
-                      item['review'],
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 11, color: Color(0xFF475569), height: 1.4),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Wrap(
-                          spacing: 4,
-                          children: (item['tags'] as List<String>)
-                              .map((t) {
-                            return Text(
-                              '#$t',
-                              style: const TextStyle(
-                                fontSize: 10,
-                                color: Colors.grey,
+                    Expanded(
+                      child: Wrap(
+                        spacing: 4,
+                        runSpacing: 4,
+                        children: (item['tags'] as List<String>)
+                            .map(
+                              (t) => Text(
+                                '#$t',
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.grey,
+                                ),
                               ),
-                            );
-                          }).toList(),
-                        ),
-                        Row(
-                          children: [
-                            const Icon(Icons.stars, size: 12, color: Colors.orange),
-                            const SizedBox(width: 4),
-                            Text('${item['stamps']}', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-                          ],
+                            )
+                            .toList(),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.stars, size: 12, color: Colors.orange),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${item['stamps']}',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
                   ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        );
-      },
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSocialFeedImage(String imageUrl) {
+    return SizedBox(
+      width: double.infinity,
+      height: 140,
+      child: Image.network(
+        imageUrl,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) => Container(
+          color: const Color(0xFFF1F5F9),
+          alignment: Alignment.center,
+          child: const Icon(
+            Icons.restaurant_outlined,
+            size: 36,
+            color: Color(0xFF94A3B8),
+          ),
+        ),
+        loadingBuilder: (context, child, progress) {
+          if (progress == null) return child;
+          return Container(
+            color: const Color(0xFFF1F5F9),
+            alignment: Alignment.center,
+            child: const SizedBox(
+              width: 22,
+              height: 22,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -1559,60 +1636,123 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
                       child: Text('Drag the estimator slider below to calculate precise monthly pricing for your exact staff count.', style: TextStyle(fontSize: 12, color: Colors.grey)),
                     ),
                     const SizedBox(height: 32),
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 3,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Calculated Seats: ${seatsCount.toInt()}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                              Slider(
-                                value: seatsCount,
-                                min: 1,
-                                max: 50,
-                                activeColor: const Color(0xFFC05621),
-                                onChanged: (val) {
-                                  setState(() {
-                                    seatsCount = val;
-                                  });
-                                },
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final stackEstimator = constraints.maxWidth < 560;
+                        final sliderColumn = Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Calculated Seats: ${seatsCount.toInt()}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
                               ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 32),
-                        Expanded(
-                          flex: 2,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF1E293B),
-                              borderRadius: BorderRadius.circular(12),
                             ),
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              children: [
-                                const Text('ESTIMATED BILLING', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 8, color: Colors.grey)),
-                                Text('\$${estimatedMonthly.toStringAsFixed(2)}/mo', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white)),
-                                Text(isAnnualBilling ? 'Billed annually (20% off)' : 'Billed monthly', style: const TextStyle(fontSize: 10, color: Colors.grey)),
-                                const SizedBox(height: 12),
-                                ElevatedButton(
+                            Slider(
+                              value: seatsCount,
+                              min: 1,
+                              max: 50,
+                              activeColor: const Color(0xFFC05621),
+                              onChanged: (val) {
+                                setState(() {
+                                  seatsCount = val;
+                                });
+                              },
+                            ),
+                          ],
+                        );
+                        final billingCard = Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF1E293B),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              const Text(
+                                'ESTIMATED BILLING',
+                                style: TextStyle(
+                                  fontFamily: 'JetBrains Mono',
+                                  fontSize: 8,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  '\$${estimatedMonthly.toStringAsFixed(2)}/mo',
+                                  maxLines: 1,
+                                  style: const TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                isAnnualBilling
+                                    ? 'Billed annually (20% off)'
+                                    : 'Billed monthly',
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
                                   onPressed: () => _toast(
                                     'Locked \$${estimatedMonthly.toStringAsFixed(2)}/mo for ${seatsCount.toInt()} seats.',
                                   ),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color(0xFFC05621),
                                     foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 12,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
                                   ),
-                                  child: const Text('LOCK IN PRICE', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                  child: const Text(
+                                    'LOCK IN PRICE',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
+                        );
+                        if (stackEstimator) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              sliderColumn,
+                              const SizedBox(height: 20),
+                              billingCard,
+                            ],
+                          );
+                        }
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(flex: 3, child: sliderColumn),
+                            const SizedBox(width: 24),
+                            Expanded(flex: 2, child: billingCard),
+                          ],
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -1769,31 +1909,68 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
   }
 
   Widget _buildFooter(BuildContext context) {
+    final wide = MediaQuery.sizeOf(context).width >= 640;
     return Container(
       color: const Color(0xFF18181B),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1200),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                '© 2026 SpiceRoute Airlines. No flight required. Built with premium culinary wisdom.',
-                style: TextStyle(fontSize: 10, color: Colors.grey),
-              ),
-              Row(
-                children: [
-                  const Icon(Icons.verified_user, color: Colors.green, size: 12),
-                  const SizedBox(width: 6),
-                  const Text(
-                    'Secure Server-Side API',
-                    style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 10, color: Colors.green, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ],
-          ),
+          child: wide
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        '© 2026 SpiceRoute Airlines. No flight required. Built with premium culinary wisdom.',
+                        style: TextStyle(fontSize: 10, color: Colors.grey),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.verified_user, color: Colors.green, size: 12),
+                        SizedBox(width: 6),
+                        Text(
+                          'Secure Server-Side API',
+                          style: TextStyle(
+                            fontFamily: 'JetBrains Mono',
+                            fontSize: 10,
+                            color: Colors.green,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                )
+              : Column(
+                  children: const [
+                    Text(
+                      '© 2026 SpiceRoute Airlines. No flight required. Built with premium culinary wisdom.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 10, color: Colors.grey, height: 1.5),
+                    ),
+                    SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.verified_user, color: Colors.green, size: 12),
+                        SizedBox(width: 6),
+                        Text(
+                          'Secure Server-Side API',
+                          style: TextStyle(
+                            fontFamily: 'JetBrains Mono',
+                            fontSize: 10,
+                            color: Colors.green,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
         ),
       ),
     );
