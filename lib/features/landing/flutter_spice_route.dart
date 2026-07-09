@@ -1,86 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-void main() {
-  runApp(const SpiceRouteApp());
-}
+import 'landing_state.dart';
+import 'landing_data.dart';
+import 'widgets/landing_taste_map.dart';
 
-class SpiceRouteApp extends StatelessWidget {
-  const SpiceRouteApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'SpiceRoute - The Culinary Terminal',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        scaffoldBackgroundColor: const Color(0xFFF9F6F0), // Warm Cream background
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFC05621), // Terracotta orange
-          primary: const Color(0xFFC05621),
-          secondary: const Color(0xFF1E293B), // Slate gray
-          surface: Colors.white,
-        ),
-        textTheme: const TextTheme(
-          displayLarge: TextStyle(
-            fontFamily: 'Playfair Display',
-            fontSize: 48,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF1E293B),
-            height: 1.2,
-          ),
-          displayMedium: TextStyle(
-            fontFamily: 'Playfair Display',
-            fontSize: 36,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF1E293B),
-            height: 1.2,
-          ),
-          titleLarge: TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF1E293B),
-          ),
-          bodyLarge: TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 16,
-            color: Color(0xFF475569),
-            height: 1.5,
-          ),
-          bodyMedium: TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 14,
-            color: Color(0xFF64748B),
-          ),
-          labelSmall: TextStyle(
-            fontFamily: 'JetBrains Mono',
-            fontSize: 11,
-            letterSpacing: 1.5,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF94A3B8),
-          ),
-        ),
-      ),
-      home: const SpiceRouteLandingPage(),
-    );
-  }
-}
-
-class SpiceRouteLandingPage extends StatefulWidget {
+class SpiceRouteLandingPage extends ConsumerStatefulWidget {
   const SpiceRouteLandingPage({super.key});
 
   @override
-  State<SpiceRouteLandingPage> createState() => _SpiceRouteLandingPageState();
+  ConsumerState<SpiceRouteLandingPage> createState() =>
+      _SpiceRouteLandingPageState();
 }
 
-class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
+class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
   // Global States matching the web application
   bool isAnnualBilling = false;
   double seatsCount = 5.0;
-  String activeRegion = 'Middle East & Africa';
-  int activeRecipeTab = 0; // 0 = Heritage, 1 = Ingredients, 2 = Preparation
-
+  String activeRegionId = 'me-africa';
   // Dynamic Chat with Chef Tariq mockup state
   final List<Map<String, String>> chatMessages = [
     {
@@ -89,6 +27,117 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
     }
   ];
   final TextEditingController chatController = TextEditingController();
+  final TextEditingController handleController = TextEditingController();
+  final TextEditingController dishController = TextEditingController();
+  final TextEditingController reviewController = TextEditingController();
+  final TextEditingController ingredientsController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+
+  final GlobalKey _tasteMapKey = GlobalKey();
+  final GlobalKey _toolkitKey = GlobalKey();
+  final GlobalKey _terminalKey = GlobalKey();
+  final GlobalKey _pricingKey = GlobalKey();
+
+  String selectedStampRegion = 'Europe';
+  String recipeStyle = '🌏 SE Asia';
+  String heatLevel = 'Hot';
+
+  @override
+  void dispose() {
+    chatController.dispose();
+    handleController.dispose();
+    dishController.dispose();
+    reviewController.dispose();
+    ingredientsController.dispose();
+    emailController.dispose();
+    super.dispose();
+  }
+
+  void _scrollTo(GlobalKey key) {
+    final ctx = key.currentContext;
+    if (ctx == null) return;
+    Scrollable.ensureVisible(
+      ctx,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+      alignment: 0.05,
+    );
+  }
+
+  Future<void> _enterApp() async {
+    await ref.read(landingGateProvider.notifier).completeOnboarding();
+    if (!mounted) return;
+    context.go('/');
+  }
+
+  void _toast(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), behavior: SnackBarBehavior.floating),
+    );
+  }
+
+  void _showChefHelp() {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Chef Tariq'),
+        content: const Text(
+          'Ask about ingredient swaps, spice pairings, or regional cooking '
+          'techniques. Suggestion chips send a starter question for you.',
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('OK')),
+        ],
+      ),
+    );
+  }
+
+  void _submitStamp() {
+    final handle = handleController.text.trim();
+    final dish = dishController.text.trim();
+    final review = reviewController.text.trim();
+    if (handle.isEmpty || dish.isEmpty || review.isEmpty) {
+      _toast('Fill in your handle, dish name, and review before stamping.');
+      return;
+    }
+    setState(() {
+      socialFeed.insert(0, {
+        'handle': handle.startsWith('@') ? handle : '@$handle',
+        'dish': dish,
+        'review': review,
+        'time': 'Just now',
+        'region': selectedStampRegion,
+        'stamps': 0,
+        'imageUrl':
+            'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=60',
+        'tags': [selectedStampRegion.split(' ').first, 'HomeKitchen'],
+      });
+    });
+    handleController.clear();
+    dishController.clear();
+    reviewController.clear();
+    _toast('Stamp posted to the global culinary board!');
+  }
+
+  void _generateRecipe() {
+    final ingredients = ingredientsController.text.trim();
+    if (ingredients.isEmpty) {
+      _toast('List a few ingredients to generate a heritage-style recipe.');
+      return;
+    }
+    _toast(
+      'Generating a $heatLevel $recipeStyle dish with: $ingredients',
+    );
+  }
+
+  void _joinHub() {
+    final email = emailController.text.trim();
+    if (email.isEmpty || !email.contains('@')) {
+      _toast('Enter a valid email to join the hub.');
+      return;
+    }
+    _enterApp();
+  }
 
   // Social feed live list
   final List<Map<String, dynamic>> socialFeed = [
@@ -205,17 +254,22 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
               ),
             ],
           ),
-          // Web Nav mock for Flutter web, hidden on small screens
-          if (MediaQuery.of(context).size.width > 768)
+          if (MediaQuery.of(context).size.width <= 768)
+            IconButton(
+              onPressed: _enterApp,
+              tooltip: 'Get boarding pass',
+              icon: const Icon(Icons.airplane_ticket, color: Color(0xFF1E293B)),
+            )
+          else
             Row(
               children: [
-                _buildHeaderLink('The Taste Map', true),
-                _buildHeaderLink('AI Travel Companion', false),
-                _buildHeaderLink('The Global Terminal', false),
-                _buildHeaderLink('Pricing Tiers', false),
+                _buildHeaderLink('The Taste Map', () => _scrollTo(_tasteMapKey)),
+                _buildHeaderLink('AI Travel Companion', () => _scrollTo(_toolkitKey)),
+                _buildHeaderLink('The Global Terminal', () => _scrollTo(_terminalKey)),
+                _buildHeaderLink('Pricing Tiers', () => _scrollTo(_pricingKey)),
                 const SizedBox(width: 12),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: _enterApp,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF1E293B),
                     foregroundColor: Colors.white,
@@ -239,16 +293,20 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
     );
   }
 
-  Widget _buildHeaderLink(String label, bool active) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontFamily: 'Inter',
-          fontSize: 14,
-          fontWeight: active ? FontWeight.bold : FontWeight.w500,
-          color: active ? const Color(0xFFC05621) : const Color(0xFF64748B),
+  Widget _buildHeaderLink(String label, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(6),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Text(
+          label,
+          style: const TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF64748B),
+          ),
         ),
       ),
     );
@@ -387,7 +445,7 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
               ),
               const SizedBox(height: 16),
               TextButton(
-                onPressed: () {},
+                onPressed: () => _scrollTo(_tasteMapKey),
                 child: Row(
                   children: [
                     Text(
@@ -440,7 +498,7 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
               ),
               const SizedBox(width: 16),
               TextButton(
-                onPressed: () {},
+                onPressed: () => _scrollTo(_tasteMapKey),
                 child: Row(
                   children: [
                     Text(
@@ -626,15 +684,6 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
   }
 
   Widget _buildQuickSectors(BuildContext context) {
-    final sectors = [
-      {'name': 'Middle East & Africa', 'icon': '🕌'},
-      {'name': 'Mainland SE Asia', 'icon': '🍜'},
-      {'name': 'South Asia', 'icon': '🌶️'},
-      {'name': 'East Asia', 'icon': '🍣'},
-      {'name': 'Mediterranean', 'icon': '🫒'},
-      {'name': 'Latin America', 'icon': '🌮'},
-    ];
-
     return Container(
       color: const Color(0xFF101012),
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
@@ -647,16 +696,12 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
               style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey),
             ),
             const SizedBox(width: 12),
-            ...sectors.map((sec) {
-              final isSecActive = activeRegion == sec['name'];
+            ...landingRegionsData.map((region) {
+              final isSecActive = activeRegionId == region.id;
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      activeRegion = sec['name']!;
-                    });
-                  },
+                  onTap: () => setState(() => activeRegionId = region.id),
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
@@ -665,10 +710,10 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
                     ),
                     child: Row(
                       children: [
-                        Text(sec['icon']!),
+                        Text(region.icon),
                         const SizedBox(width: 6),
                         Text(
-                          sec['name']!,
+                          region.name,
                           style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 12,
@@ -689,433 +734,19 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
   }
 
   Widget _buildTasteMapSection(BuildContext context, bool isDesktop) {
-    // Info based on region
-    final Map<String, Map<String, dynamic>> regionDishes = {
-      'Middle East & Africa': {
-        'name': 'Chicken Tagine with Apricots',
-        'sub': 'TRADITIONAL ATLAS MOUNTAIN SLOW BRAISE',
-        'cookTime': '45 MIN',
-        'calories': '585 KCAL',
-        'difficulty': 'MEDIUM',
-        'servings': '4 PAX',
-        'aroma': 'Saffron & Cumin',
-        'heritage': 'An authentic Moroccan masterpiece cooked slowly in an earthen tagine pot. Tender chicken is braised with onions, saffron, ginger, and cinnamon, finished with sweet Turkish apricots and toasted almonds.',
-        'ingredients': ['Chicken thighs (bone-in)', 'Saffron threads', 'Moroccan cinnamon', 'Dried Turkish apricots', 'Toasted almonds', 'Cumin & Ginger'],
-        'prep': ['Bloom the saffron in warm water.', 'Sear chicken thighs in tagine with cumin and olive oil.', 'Slow cook with dried apricots and cinnamon for 45 minutes.', 'Garnish with toasted sliced almonds.'],
-      },
-      'Mainland SE Asia': {
-        'name': 'Cambodian Fish Amok',
-        'sub': 'KHMER STEAMED CURRY SENSATION',
-        'cookTime': '55 MIN',
-        'calories': '420 KCAL',
-        'difficulty': 'HARD',
-        'servings': '3 PAX',
-        'aroma': 'Lemongrass & Kaffir Lime',
-        'heritage': 'A traditional Khmer steamed fish curry. Fresh white fish fillet is coated in a rich, hand-ground Kroeung lemongrass paste, combined with coconut milk and steamed in custom folded banana leaf cups.',
-        'ingredients': ['White fish fillet', 'Lemongrass stalks', 'Galangal root', 'Kaffir lime leaves', 'Coconut cream', 'Banana leaf cups'],
-        'prep': ['Pound fresh lemongrass, galangal, turmeric, and garlic in a mortar.', 'Whisk coconut cream with eggs and the prepared spice paste.', 'Fold fish fillets into the mixture, then scoop into banana leaf cups.', 'Steam for 20 minutes until custardy.'],
-      },
-      'South Asia': {
-        'name': 'Kerala Malabar Prawn Curry',
-        'sub': 'COASTAL INDIAN COCONUT SPICE BLEND',
-        'cookTime': '30 MIN',
-        'calories': '380 KCAL',
-        'difficulty': 'EASY',
-        'servings': '4 PAX',
-        'aroma': 'Mustard seeds & Curry leaves',
-        'heritage': 'A coastal Indian delicacy that combines plump fresh prawns with a spicy, sour tamarind base, tempered with fresh curry leaves and coconut milk for a luxurious texture.',
-        'ingredients': ['King prawns', 'Coconut milk', 'Tamarind paste', 'Black mustard seeds', 'Fresh curry leaves', 'Kashmiri chili powder'],
-        'prep': ['Temper mustard seeds and curry leaves in hot coconut oil.', 'Sauté chopped shallots and green chilies with chili powder.', 'Add tamarind water and coconut milk, simmer.', 'Drop prawns in and cook for 5 minutes.'],
-      }
-    };
-
-    final dish = regionDishes[activeRegion] ?? regionDishes['Middle East & Africa']!;
-
-    return Container(
-      width: double.infinity,
-      color: const Color(0xFFF9F6F0),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 64),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1200),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFC05621).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                child: const Text(
-                  'VISUAL ROUTE NAVIGATOR',
-                  style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFFC05621)),
-                ),
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                'The Taste Map',
-                style: TextStyle(fontFamily: 'Playfair Display', fontSize: 36, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
-              ),
-              const Text(
-                'Select or hover over a region on our digital passport grid to decode its signature spice profile and authentic regional dishes.',
-                style: TextStyle(fontFamily: 'Inter', fontSize: 14, color: Color(0xFF64748B)),
-              ),
-              const SizedBox(height: 40),
-              if (isDesktop)
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(flex: 11, child: _buildTasteMapLeft(context)),
-                    const SizedBox(width: 40),
-                    Expanded(flex: 9, child: _buildTasteMapRight(context, dish)),
-                  ],
-                )
-              else
-                Column(
-                  children: [
-                    _buildTasteMapLeft(context),
-                    const SizedBox(height: 40),
-                    _buildTasteMapRight(context, dish),
-                  ],
-                ),
-            ],
-          ),
-        ),
+    return KeyedSubtree(
+      key: _tasteMapKey,
+      child: LandingTasteMap(
+        embedded: true,
+        activeRegionId: activeRegionId,
+        onRegionChanged: (id) => setState(() => activeRegionId = id),
       ),
     );
-  }
-
-  Widget _buildTasteMapLeft(BuildContext context) {
-    final mapPins = [
-      {'region': 'Europe', 'icon': '🍕', 'left': 0.35, 'top': 0.32},
-      {'region': 'Middle East & Africa', 'icon': '🕌', 'left': 0.48, 'top': 0.48},
-      {'region': 'South Asia', 'icon': '🌶️', 'left': 0.58, 'top': 0.50},
-      {'region': 'Mainland SE Asia', 'icon': '🍜', 'left': 0.65, 'top': 0.55},
-      {'region': 'East Asia', 'icon': '🍣', 'left': 0.70, 'top': 0.40},
-      {'region': 'Latin America', 'icon': '🌮', 'left': 0.25, 'top': 0.60},
-    ];
-
-    return Container(
-      height: 380,
-      decoration: BoxDecoration(
-        color: const Color(0xFFEFEBE4), // Map cardboard background
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
-      ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return Stack(
-            children: [
-              // Grid Background Lines
-              Opacity(
-                opacity: 0.1,
-                child: CustomPaint(
-                  size: Size(constraints.maxWidth, constraints.maxHeight),
-                  painter: GridPainter(),
-                ),
-              ),
-              // Lat / Lng text indicators
-              const Positioned(
-                left: 16,
-                top: 16,
-                child: Text(
-                  'LAT: 25.109N // LNG: 55.138E',
-                  style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 10, color: Colors.grey, letterSpacing: 1.0),
-                ),
-              ),
-              // Map World Outline (Simulated using subtle shaded shapes)
-              Positioned(
-                left: constraints.maxWidth * 0.15,
-                top: constraints.maxHeight * 0.25,
-                child: Container(
-                  width: constraints.maxWidth * 0.7,
-                  height: constraints.maxHeight * 0.55,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.02),
-                    borderRadius: BorderRadius.circular(200),
-                  ),
-                ),
-              ),
-              // Pins
-              ...mapPins.map((pin) {
-                final isSelected = activeRegion == pin['region'];
-                return Positioned(
-                  left: constraints.maxWidth * (pin['left'] as double),
-                  top: constraints.maxHeight * (pin['top'] as double),
-                  child: InkWell(
-                    onTap: () {
-                      setState(() {
-                        activeRegion = pin['region'] as String;
-                      });
-                    },
-                    child: Tooltip(
-                      message: pin['region'] as String,
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xFFC05621) : Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.1),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Text(pin['icon'] as String, style: const TextStyle(fontSize: 18)),
-                      ),
-                    ),
-                  ),
-                );
-              }),
-              // Active Region Banner Overlay
-              Positioned(
-                bottom: 16,
-                left: 16,
-                right: 16,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1E293B),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        'Active Sector: $activeRegion',
-                        style: const TextStyle(fontFamily: 'Inter', fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    const Text(
-                      'GRID SCALE: METRIC // SPICE_ROUTE_V1',
-                      style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 9, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildTasteMapRight(BuildContext context, Map<String, dynamic> dish) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 15,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header banner style image placeholder
-          Container(
-            height: 180,
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
-              image: const DecorationImage(
-                image: NetworkImage('https://images.unsplash.com/photo-1541518763669-27fef04b14ea?w=800&auto=format&fit=crop&q=80'),
-                fit: BoxFit.cover,
-              ),
-            ),
-            padding: const EdgeInsets.all(16),
-            alignment: Alignment.bottomLeft,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: const Color(0xFFC05621),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                dish['sub']!,
-                style: const TextStyle(fontFamily: 'JetBrains Mono', fontSize: 9, fontWeight: FontWeight.bold, color: Colors.white),
-              ),
-            ),
-          ),
-          // Content
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  dish['name']!,
-                  style: const TextStyle(fontFamily: 'Playfair Display', fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
-                ),
-                const SizedBox(height: 16),
-                // Cooking stats grid
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildCurryStat(Icons.schedule, 'COOK TIME', dish['cookTime']!),
-                    _buildCurryStat(Icons.local_fire_department, 'CALORIES', dish['calories']!),
-                    _buildCurryStat(Icons.analytics, 'DIFFICULTY', dish['difficulty']!),
-                    _buildCurryStat(Icons.people, 'SERVINGS', dish['servings']!),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                // Tabs header
-                Row(
-                  children: [
-                    _buildRecipeTabButton('The Heritage', 0),
-                    _buildRecipeTabButton('Ingredients', 1),
-                    _buildRecipeTabButton('Preparation', 2),
-                  ],
-                ),
-                const Divider(height: 1, thickness: 1, color: Colors.black12),
-                const SizedBox(height: 16),
-                // Dynamic tab content
-                _buildActiveTabContent(dish),
-                const SizedBox(height: 24),
-                // Aroma Profile Panel
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFAF7F2),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: const Color(0xFFE28743).withValues(alpha: 0.15)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('AROMA PROFILE:', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
-                          Text(dish['aroma']!, style: const TextStyle(fontFamily: 'Inter', fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFFC05621))),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('SPICE INTENSITY:', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
-                          Text('MEDIUM', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 10, fontWeight: FontWeight.bold, color: Colors.orange)),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCurryStat(IconData icon, String label, String val) {
-    return Column(
-      children: [
-        Icon(icon, size: 16, color: Colors.grey.shade500),
-        const SizedBox(height: 4),
-        Text(label, style: const TextStyle(fontFamily: 'JetBrains Mono', fontSize: 8, color: Colors.grey)),
-        Text(val, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
-      ],
-    );
-  }
-
-  Widget _buildRecipeTabButton(String label, int idx) {
-    final isSelected = activeRecipeTab == idx;
-    return InkWell(
-      onTap: () {
-        setState(() {
-          activeRecipeTab = idx;
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: isSelected ? const Color(0xFFC05621) : Colors.transparent,
-              width: 2,
-            ),
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            color: isSelected ? const Color(0xFFC05621) : Colors.grey,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActiveTabContent(Map<String, dynamic> dish) {
-    if (activeRecipeTab == 0) {
-      return Text(
-        dish['heritage']!,
-        style: const TextStyle(fontSize: 13, height: 1.5, color: Color(0xFF475569)),
-      );
-    } else if (activeRecipeTab == 1) {
-      final List<String> list = dish['ingredients'] as List<String>;
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: list.map((ing) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Row(
-              children: [
-                const Icon(Icons.check_circle_outline,
-                    size: 14, color: Color(0xFFC05621)),
-                const SizedBox(width: 8),
-                Text(
-                  ing,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: Color(0xFF475569),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }).toList(),
-      );
-    } else {
-      final List<String> list = dish['prep'] as List<String>;
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: List.generate(list.length, (index) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${index + 1}. ',
-                  style: const TextStyle(fontFamily: 'JetBrains Mono', fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFFC05621)),
-                ),
-                Expanded(
-                  child: Text(
-                    list[index],
-                    style: const TextStyle(fontSize: 13, color: Color(0xFF475569)),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }),
-      );
-    }
   }
 
   Widget _buildInteractiveToolkitSection(BuildContext context, bool isDesktop) {
     return Container(
+      key: _toolkitKey,
       color: const Color(0xFFFAF7F2), // Very soft cream tint
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 64),
       child: Center(
@@ -1203,7 +834,7 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
           _buildDetailRow('🍂', 'Ancient spice route timelines & tracing'),
           const Spacer(),
           TextButton(
-            onPressed: () {},
+            onPressed: () => _scrollTo(_tasteMapKey),
             child: const Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -1261,7 +892,10 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
                   ],
                 ),
                 const Spacer(),
-                IconButton(onPressed: () {}, icon: const Icon(Icons.help_outline, size: 18)),
+                IconButton(
+                  onPressed: _showChefHelp,
+                  icon: const Icon(Icons.help_outline, size: 18),
+                ),
               ],
             ),
           ),
@@ -1407,6 +1041,7 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
           const Text('WHAT INGREDIENTS DO YOU HAVE?', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 9, color: Colors.grey)),
           const SizedBox(height: 6),
           TextField(
+            controller: ingredientsController,
             decoration: InputDecoration(
               hintText: 'e.g. Organic Tofu & Mushrooms',
               hintStyle: const TextStyle(fontSize: 12),
@@ -1422,10 +1057,10 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
             spacing: 6,
             runSpacing: 6,
             children: [
-              _buildStyleChip('🌏 SE Asia', true),
-              _buildStyleChip('🌾 South Asia', false),
-              _buildStyleChip('🕌 Mid East', false),
-              _buildStyleChip('🥢 East Asia', false),
+              _buildStyleChip('🌏 SE Asia'),
+              _buildStyleChip('🌾 South Asia'),
+              _buildStyleChip('🕌 Mid East'),
+              _buildStyleChip('🥢 East Asia'),
             ],
           ),
           const Spacer(),
@@ -1433,17 +1068,17 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
           const SizedBox(height: 6),
           Row(
             children: [
-              _buildHeatChip('Mild', false),
-              _buildHeatChip('Medium', false),
-              _buildHeatChip('Hot', true),
-              _buildHeatChip('Numbing', false),
+              _buildHeatChip('Mild'),
+              _buildHeatChip('Medium'),
+              _buildHeatChip('Hot'),
+              _buildHeatChip('Numbing'),
             ],
           ),
           const Spacer(),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: _generateRecipe,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFC05621),
                 foregroundColor: Colors.white,
@@ -1465,35 +1100,45 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
     );
   }
 
-  Widget _buildStyleChip(String label, bool active) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: active ? const Color(0xFF1E293B) : Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: active ? Colors.transparent : Colors.grey.shade300),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: active ? Colors.white : const Color(0xFF1E293B)),
+  Widget _buildStyleChip(String label) {
+    final active = recipeStyle == label;
+    return InkWell(
+      onTap: () => setState(() => recipeStyle = label),
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: active ? const Color(0xFF1E293B) : Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: active ? Colors.transparent : Colors.grey.shade300),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: active ? Colors.white : const Color(0xFF1E293B)),
+        ),
       ),
     );
   }
 
-  Widget _buildHeatChip(String label, bool active) {
+  Widget _buildHeatChip(String label) {
+    final active = heatLevel == label;
     return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 2),
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          color: active ? const Color(0xFFC05621) : Colors.white,
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: active ? Colors.transparent : Colors.grey.shade300),
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: active ? Colors.white : Colors.black87),
+      child: InkWell(
+        onTap: () => setState(() => heatLevel = label),
+        borderRadius: BorderRadius.circular(6),
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 2),
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: active ? const Color(0xFFC05621) : Colors.white,
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: active ? Colors.transparent : Colors.grey.shade300),
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: active ? Colors.white : Colors.black87),
+            ),
           ),
         ),
       ),
@@ -1502,6 +1147,7 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
 
   Widget _buildCulinaryBoardSection(BuildContext context, bool isDesktop) {
     return Container(
+      key: _terminalKey,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 64),
       color: Colors.white,
       child: Center(
@@ -1572,6 +1218,7 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
           const Text('COOK PROFILE HANDLE', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 9, color: Colors.grey)),
           const SizedBox(height: 6),
           TextField(
+            controller: handleController,
             decoration: InputDecoration(
               hintText: 'e.g. @chef_clara',
               hintStyle: const TextStyle(fontSize: 12),
@@ -1596,6 +1243,7 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
           const Text('DISH NAME', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 9, color: Colors.grey)),
           const SizedBox(height: 6),
           TextField(
+            controller: dishController,
             decoration: InputDecoration(
               hintText: 'Risotto alla Milanese',
               hintStyle: const TextStyle(fontSize: 12),
@@ -1608,6 +1256,7 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
           const Text('REVIEW & EXPERIENCE', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 9, color: Colors.grey)),
           const SizedBox(height: 6),
           TextField(
+            controller: reviewController,
             maxLines: 3,
             decoration: InputDecoration(
               hintText: 'Describe your kitchen departure experience...',
@@ -1621,7 +1270,7 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: _submitStamp,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF1E293B),
                 foregroundColor: Colors.white,
@@ -1644,9 +1293,10 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
   }
 
   Widget _buildStampSel(String label, String emoji) {
-    final isSelected = label == 'Europe';
+    final isSelected = selectedStampRegion == label;
     return InkWell(
-      onTap: () {},
+      onTap: () => setState(() => selectedStampRegion = label),
+      borderRadius: BorderRadius.circular(100),
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
@@ -1756,6 +1406,7 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
     }
 
     return Container(
+      key: _pricingKey,
       color: const Color(0xFFFAF7F2),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 64),
       child: Center(
@@ -1817,21 +1468,27 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(child: _buildPriceCard('GROWTH / FREE', '\$0', 'Perfect for casual home cooks exploring authentic heritage recipes and our Interactive world map.', ['View complete heritage recipes', 'Interactive world map', 'AI Chatbot with Chef Tariq', 'Custom AI Recipe Generator'], 'ACTIVE PLAN', false)),
+                    Expanded(child: _buildPriceCard('GROWTH / FREE', '\$0', 'Perfect for casual home cooks exploring authentic heritage recipes and our Interactive world map.', ['View complete heritage recipes', 'Interactive world map', 'AI Chatbot with Chef Tariq', 'Custom AI Recipe Generator'], 'ACTIVE PLAN', false, _enterApp)),
                     const SizedBox(width: 24),
-                    Expanded(child: _buildPriceCard('PRO / PASS', isAnnualBilling ? '\$7.99' : '\$9.99', 'The standard choice for curious epicureans seeking Instant culinary knowledge, custom menus, and unlimited co-creation.', ['Everything in Growth Free Pass', 'Unlimited AI Chat with Chef Tariq', 'Custom AI Recipe Generator', 'Unlimited Spin the Globe draws'], 'START PREMIUM TRIAL', true)),
+                    Expanded(child: _buildPriceCard('PRO / PASS', isAnnualBilling ? '\$7.99' : '\$9.99', 'The standard choice for curious epicureans seeking Instant culinary knowledge, custom menus, and unlimited co-creation.', ['Everything in Growth Free Pass', 'Unlimited AI Chat with Chef Tariq', 'Custom AI Recipe Generator', 'Unlimited Spin the Globe draws'], 'START PREMIUM TRIAL', true, () {
+                      _toast('Premium trial started — welcome aboard!');
+                      _enterApp();
+                    })),
                     const SizedBox(width: 24),
-                    Expanded(child: _buildPriceCard('ENTERPRISE', 'Custom', 'Custom setups for culinary schools, commercial kitchens, and restaurant chains requiring private API limits.', ['Everything in Premium Pass', 'Dedicated Private Server Nodes', 'Localized menu database sync', 'Shared workspace & custom billing'], 'CONTACT SALES', false)),
+                    Expanded(child: _buildPriceCard('ENTERPRISE', 'Custom', 'Custom setups for culinary schools, commercial kitchens, and restaurant chains requiring private API limits.', ['Everything in Premium Pass', 'Dedicated Private Server Nodes', 'Localized menu database sync', 'Shared workspace & custom billing'], 'CONTACT SALES', false, () => _toast('Email sales@spiceroute.app for enterprise pricing.'))),
                   ],
                 )
               else
                 Column(
                   children: [
-                    _buildPriceCard('GROWTH / FREE', '\$0', 'Perfect for casual home cooks exploring authentic heritage recipes.', ['View complete heritage recipes', 'Interactive world map', 'AI Chatbot with Chef Tariq', 'Custom AI Recipe Generator'], 'ACTIVE PLAN', false),
+                    _buildPriceCard('GROWTH / FREE', '\$0', 'Perfect for casual home cooks exploring authentic heritage recipes.', ['View complete heritage recipes', 'Interactive world map', 'AI Chatbot with Chef Tariq', 'Custom AI Recipe Generator'], 'ACTIVE PLAN', false, _enterApp),
                     const SizedBox(height: 24),
-                    _buildPriceCard('PRO / PASS', isAnnualBilling ? '\$7.99' : '\$9.99', 'The standard choice for curious epicureans.', ['Everything in Growth Free Pass', 'Unlimited AI Chat with Chef Tariq', 'Custom AI Recipe Generator', 'Unlimited Spin the Globe draws'], 'START PREMIUM TRIAL', true),
+                    _buildPriceCard('PRO / PASS', isAnnualBilling ? '\$7.99' : '\$9.99', 'The standard choice for curious epicureans.', ['Everything in Growth Free Pass', 'Unlimited AI Chat with Chef Tariq', 'Custom AI Recipe Generator', 'Unlimited Spin the Globe draws'], 'START PREMIUM TRIAL', true, () {
+                      _toast('Premium trial started — welcome aboard!');
+                      _enterApp();
+                    }),
                     const SizedBox(height: 24),
-                    _buildPriceCard('ENTERPRISE', 'Custom', 'Custom setups for culinary schools.', ['Everything in Premium Pass', 'Dedicated Private Server Nodes', 'Localized menu database sync', 'Shared workspace & custom billing'], 'CONTACT SALES', false),
+                    _buildPriceCard('ENTERPRISE', 'Custom', 'Custom setups for culinary schools.', ['Everything in Premium Pass', 'Dedicated Private Server Nodes', 'Localized menu database sync', 'Shared workspace & custom billing'], 'CONTACT SALES', false, () => _toast('Email sales@spiceroute.app for enterprise pricing.')),
                   ],
                 ),
               const SizedBox(height: 64),
@@ -1899,7 +1556,9 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
                                 Text(isAnnualBilling ? 'Billed annually (20% off)' : 'Billed monthly', style: const TextStyle(fontSize: 10, color: Colors.grey)),
                                 const SizedBox(height: 12),
                                 ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () => _toast(
+                                    'Locked \$${estimatedMonthly.toStringAsFixed(2)}/mo for ${seatsCount.toInt()} seats.',
+                                  ),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color(0xFFC05621),
                                     foregroundColor: Colors.white,
@@ -1925,7 +1584,7 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
     );
   }
 
-  Widget _buildPriceCard(String tier, String price, String desc, List<String> bulletPoints, String btnLabel, bool isPopular) {
+  Widget _buildPriceCard(String tier, String price, String desc, List<String> bulletPoints, String btnLabel, bool isPopular, VoidCallback onPressed) {
     return Container(
       height: 480,
       decoration: BoxDecoration(
@@ -1980,7 +1639,7 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: onPressed,
               style: ElevatedButton.styleFrom(
                 backgroundColor: isPopular ? const Color(0xFFC05621) : const Color(0xFF1E293B),
                 foregroundColor: Colors.white,
@@ -2032,6 +1691,7 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
                 children: [
                   Expanded(
                     child: TextField(
+                      controller: emailController,
                       decoration: InputDecoration(
                         hintText: 'Enter your email address...',
                         hintStyle: const TextStyle(fontSize: 13),
@@ -2044,7 +1704,7 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
                   ),
                   const SizedBox(width: 12),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: _joinHub,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFC05621),
                       foregroundColor: Colors.white,
@@ -2097,24 +1757,4 @@ class _SpiceRouteLandingPageState extends State<SpiceRouteLandingPage> {
       ),
     );
   }
-}
-
-class GridPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.black54
-      ..strokeWidth = 0.5;
-
-    final double step = 20.0;
-    for (double i = 0; i < size.width; i += step) {
-      canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
-    }
-    for (double i = 0; i < size.height; i += step) {
-      canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

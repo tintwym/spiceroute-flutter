@@ -8,16 +8,30 @@ import '../landing_palette.dart';
 import 'landing_shared.dart';
 
 class LandingTasteMap extends StatefulWidget {
-  const LandingTasteMap({super.key});
+  const LandingTasteMap({
+    super.key,
+    this.activeRegionId,
+    this.onRegionChanged,
+    this.embedded = false,
+  });
+
+  /// When set, region selection is driven by the parent (e.g. quick sectors).
+  final String? activeRegionId;
+  final ValueChanged<String>? onRegionChanged;
+
+  /// Lays out inside the monolithic landing page shell instead of [LandingMaxWidth].
+  final bool embedded;
 
   @override
   State<LandingTasteMap> createState() => _LandingTasteMapState();
 }
 
 class _LandingTasteMapState extends State<LandingTasteMap> {
-  String _activeRegionId = 'me-africa';
+  String _internalRegionId = 'me-africa';
   LandingRecipeTab _tab = LandingRecipeTab.heritage;
   final _checkedIngredients = <int>{};
+
+  String get _activeRegionId => widget.activeRegionId ?? _internalRegionId;
 
   LandingRegion get _region => landingRegionsData.firstWhere(
     (r) => r.id == _activeRegionId,
@@ -27,54 +41,87 @@ class _LandingTasteMapState extends State<LandingTasteMap> {
   LandingRecipe get _recipe => _region.recipes.first;
 
   void _selectRegion(String id) {
-    setState(() {
-      _activeRegionId = id;
+    widget.onRegionChanged?.call(id);
+    if (widget.activeRegionId == null) {
+      setState(() {
+        _internalRegionId = id;
+        _tab = LandingRecipeTab.heritage;
+        _checkedIngredients.clear();
+      });
+    } else {
+      setState(() {
+        _tab = LandingRecipeTab.heritage;
+        _checkedIngredients.clear();
+      });
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant LandingTasteMap oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.activeRegionId != oldWidget.activeRegionId) {
       _tab = LandingRecipeTab.heritage;
       _checkedIngredients.clear();
-    });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final wide = MediaQuery.sizeOf(context).width >= 1024;
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const LandingSectionHeader(
+          badge: 'Visual Route Navigator',
+          title: 'The Taste Map',
+          subtitle:
+              'Select a region on our digital passport grid to decode its signature spice profile and authentic regional dishes.',
+          icon: Icons.map_outlined,
+        ),
+        const SizedBox(height: 40),
+        LandingResponsiveRow(
+          wide: wide,
+          spacing: 48,
+          children: [
+            _MapPanel(
+              activeRegionId: _activeRegionId,
+              onSelect: _selectRegion,
+            ),
+            _RecipePassCard(
+              recipe: _recipe,
+              tab: _tab,
+              onTab: (t) => setState(() => _tab = t),
+              checked: _checkedIngredients,
+              onToggleIngredient: (i) => setState(() {
+                if (_checkedIngredients.contains(i)) {
+                  _checkedIngredients.remove(i);
+                } else {
+                  _checkedIngredients.add(i);
+                }
+              }),
+            ),
+          ],
+        ),
+      ],
+    );
+
+    if (widget.embedded) {
+      return Container(
+        width: double.infinity,
+        color: const Color(0xFFF9F6F0),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 64),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1200),
+            child: content,
+          ),
+        ),
+      );
+    }
+
     return LandingMaxWidth(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 80),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const LandingSectionHeader(
-            badge: 'Visual Route Navigator',
-            title: 'The Taste Map',
-            subtitle:
-                'Select a region on our digital passport grid to decode its signature spice profile and authentic regional dishes.',
-            icon: Icons.map_outlined,
-          ),
-          const SizedBox(height: 40),
-          LandingResponsiveRow(
-            wide: wide,
-            spacing: 48,
-            children: [
-              _MapPanel(
-                activeRegionId: _activeRegionId,
-                onSelect: _selectRegion,
-              ),
-              _RecipePassCard(
-                recipe: _recipe,
-                tab: _tab,
-                onTab: (t) => setState(() => _tab = t),
-                checked: _checkedIngredients,
-                onToggleIngredient: (i) => setState(() {
-                  if (_checkedIngredients.contains(i)) {
-                    _checkedIngredients.remove(i);
-                  } else {
-                    _checkedIngredients.add(i);
-                  }
-                }),
-              ),
-            ],
-          ),
-        ],
-      ),
+      child: content,
     );
   }
 }
