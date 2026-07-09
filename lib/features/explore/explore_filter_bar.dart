@@ -18,8 +18,8 @@ import '../../state/explore.dart';
 ///
 /// Three responsive shapes (mirrors the original logic verbatim so
 /// the move is a pure refactor):
-///   * Phone — result counter with search directly below (search was
-///     removed from the AppBar so it sits under "Showing N recipes…").
+///   * Phone — result counter with search directly below (brand mark
+///     lives in [PhoneShellBrandBar]; search sits under the counter).
 ///   * Tablet narrow (`< 640 px`) — search above, counter below.
 ///   * Tablet wide / desktop (`>= 640 px`) — search left, counter
 ///     right, on the same row.
@@ -28,6 +28,10 @@ import '../../state/explore.dart';
 /// sliver can hand a fixed extent to the framework without having to
 /// measure dynamically (which `SliverPersistentHeaderDelegate` can't
 /// do).
+/// Phone vertical padding around the pinned filter row — keep in sync
+/// with [ExploreScreen]'s `SliverPinnedFilterBar` padding (top 8 + bottom 4).
+const double _kPhoneFilterRowVerticalPad = 12;
+
 class ExploreFilterRow extends ConsumerWidget {
   const ExploreFilterRow({super.key});
 
@@ -118,7 +122,7 @@ class ExploreFilterRow extends ConsumerWidget {
     if (dc.isPhone) {
       const searchHeight = 44.0;
       const rowGap = 10.0;
-      return searchHeight + rowGap + counterLine + verticalPad;
+      return searchHeight + rowGap + counterLine + _kPhoneFilterRowVerticalPad;
     }
     final contentW = framedContentWidth(context);
     const searchHeight = 48.0;

@@ -6,6 +6,7 @@ import '../l10n/generated/app_localizations.dart';
 import 'account_menu.dart';
 import 'breakpoints.dart';
 import 'ios_liquid_glass.dart';
+import 'phone_shell_brand_bar.dart';
 import 'shell_create_sheet.dart';
 import 'shell_nav.dart';
 import 'top_nav_bar.dart';
@@ -104,7 +105,11 @@ class _AppShellState extends ConsumerState<AppShell> {
       final barIndex = phoneBarIndexForPath(dests, barHighlight);
 
       return Scaffold(
-        body: SafeArea(child: widget.child),
+        appBar: const PhoneShellBrandBar(),
+        body: SafeArea(
+          top: false,
+          child: widget.child,
+        ),
         bottomNavigationBar: PhoneShellTabBar(
           destinations: dests,
           selectedBarIndex: barIndex,

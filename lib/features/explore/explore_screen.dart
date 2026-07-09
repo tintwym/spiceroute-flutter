@@ -11,7 +11,6 @@ import '../../shared/page_tabs.dart';
 import '../../shared/region_filter_bar.dart';
 import '../../shared/site_footer.dart';
 import '../../shared/sliver_pinned_filter_bar.dart';
-import '../../shared/top_nav_bar.dart' show BrandLogo;
 import '../../shared/widgets.dart';
 import '../../state/explore.dart';
 import 'community_board.dart';
@@ -118,7 +117,7 @@ class ExploreScreen extends ConsumerWidget {
             // requires scrolling back up. The hero stays a one-time
             // welcome that's free to leave the viewport.
             SliverPadding(
-              padding: pagePad.copyWith(top: isPhone ? 12 : 32, bottom: 8),
+              padding: pagePad.copyWith(top: isPhone ? 16 : 32, bottom: 8),
               sliver: SliverToBoxAdapter(
                 child: framed(
                   isPhone ? const _ExplorePhoneHeader() : const PageHero(),
@@ -211,8 +210,8 @@ class ExploreScreen extends ConsumerWidget {
   }
 }
 
-/// Phone Explore header — brand logo on top, then badge + subtitle (no
-/// duplicate large serif title; the wordmark in the header row is enough).
+/// Phone Explore intro — badge + subtitle only; brand mark lives in
+/// [PhoneShellBrandBar] above the scroll view.
 class _ExplorePhoneHeader extends StatelessWidget {
   const _ExplorePhoneHeader();
 
@@ -227,24 +226,6 @@ class _ExplorePhoneHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const BrandLogo(size: 32),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  l.heroTitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: cs.onSurface,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
           HeroBadge(text: l.heroBadge),
           const SizedBox(height: 12),
           ConstrainedBox(
