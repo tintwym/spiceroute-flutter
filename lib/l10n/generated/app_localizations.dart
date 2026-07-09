@@ -1036,7 +1036,7 @@ abstract class AppL10n {
   /// No description provided for @exploreByRegion.
   ///
   /// In en, this message translates to:
-  /// **'EXPLORE BY GEOGRAPHIC REGION'**
+  /// **'Explore by Geographic Region'**
   String get exploreByRegion;
 
   /// No description provided for @filterRegionShort.

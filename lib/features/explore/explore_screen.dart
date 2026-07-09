@@ -11,6 +11,7 @@ import '../../shared/page_tabs.dart';
 import '../../shared/region_filter_bar.dart';
 import '../../shared/site_footer.dart';
 import '../../shared/sliver_pinned_filter_bar.dart';
+import '../../shared/top_nav_bar.dart' show BrandLogo;
 import '../../shared/widgets.dart';
 import '../../state/explore.dart';
 import 'community_board.dart';
@@ -117,15 +118,22 @@ class ExploreScreen extends ConsumerWidget {
             // requires scrolling back up. The hero stays a one-time
             // welcome that's free to leave the viewport.
             SliverPadding(
-              padding: pagePad.copyWith(top: 32, bottom: 8),
-              sliver: SliverToBoxAdapter(child: framed(const PageHero())),
+              padding: pagePad.copyWith(top: isPhone ? 12 : 32, bottom: 8),
+              sliver: SliverToBoxAdapter(
+                child: framed(
+                  isPhone ? const _ExplorePhoneHeader() : const PageHero(),
+                ),
+              ),
             ),
             // Pinned result counter + search (phone). Sticks once the hero
             // scrolls past. Tablet+ keeps search in this row per layout.
             SliverPinnedFilterBar(
               height: ExploreFilterRow.estimatedHeight(context),
               child: Padding(
-                padding: pagePad.copyWith(top: 16, bottom: 16),
+                padding: pagePad.copyWith(
+                  top: isPhone ? 8 : 16,
+                  bottom: isPhone ? 4 : 16,
+                ),
                 child: framed(const ExploreFilterRow()),
               ),
             ),
@@ -141,7 +149,7 @@ class ExploreScreen extends ConsumerWidget {
             // with the region trigger (Option A); tablet+ keeps separate
             // [FilterBar] below.
             SliverPadding(
-              padding: pagePad.copyWith(top: 20),
+              padding: pagePad.copyWith(top: isPhone ? 4 : 20),
               sliver: SliverToBoxAdapter(
                 child: framed(
                   RegionFilterBar(
@@ -198,6 +206,58 @@ class ExploreScreen extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Phone Explore header — brand logo on top, then badge + subtitle (no
+/// duplicate large serif title; the wordmark in the header row is enough).
+class _ExplorePhoneHeader extends StatelessWidget {
+  const _ExplorePhoneHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
+    return SizedBox(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const BrandLogo(size: 32),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  l.heroTitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: cs.onSurface,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          HeroBadge(text: l.heroBadge),
+          const SizedBox(height: 12),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 560),
+            child: Text(
+              l.heroSubtitle,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: cs.onSurfaceVariant,
+                height: 1.5,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

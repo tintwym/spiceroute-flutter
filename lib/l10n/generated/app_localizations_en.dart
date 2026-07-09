@@ -509,7 +509,7 @@ class AppL10nEn extends AppL10n {
   String get exploreRefine => 'GEOGRAPHIC';
 
   @override
-  String get exploreByRegion => 'EXPLORE BY GEOGRAPHIC REGION';
+  String get exploreByRegion => 'Explore by Geographic Region';
 
   @override
   String get filterRegionShort => 'Region';

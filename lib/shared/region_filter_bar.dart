@@ -289,7 +289,7 @@ class _RegionFilterBarState extends State<RegionFilterBar> {
           : const SizedBox.shrink(),
     );
 
-    final eyebrowText = combined ? l.exploreRefine : l.exploreByRegion;
+    final eyebrowText = l.exploreByRegion;
 
     if (activeRegion == null) {
       return Column(

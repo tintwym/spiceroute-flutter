@@ -369,7 +369,7 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpAndSettle();
 
-    expect(find.text('GEOGRAPHIC'), findsOneWidget);
+    expect(find.text('Explore by Geographic Region'), findsOneWidget);
     expect(find.text('Region'), findsOneWidget);
     expect(find.text('Preferences'), findsNothing);
     expect(find.text('Course & diet'), findsOneWidget);
