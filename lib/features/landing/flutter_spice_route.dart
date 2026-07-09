@@ -696,41 +696,72 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
   }
 
   Widget _buildQuickSectors(BuildContext context) {
+    final wide = MediaQuery.sizeOf(context).width > 900;
+
+    const label = Padding(
+      padding: EdgeInsets.only(right: 12),
+      child: Text(
+        'QUICK SECTORS:',
+        style: TextStyle(
+          fontFamily: 'JetBrains Mono',
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF9CA3AF),
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+
+    final chips = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var i = 0; i < _quickSectorTicker.length; i++) ...[
+          if (i > 0) const SizedBox(width: 8),
+          _buildQuickSectorChip(_quickSectorTicker[i]),
+        ],
+      ],
+    );
+
     return ColoredBox(
       color: LandingPalette.quickSectorsBg,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 14),
-        child: Row(
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(left: 24, right: 12),
-              child: Text(
-                'QUICK SECTORS:',
-                style: TextStyle(
-                  fontFamily: 'JetBrains Mono',
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF9CA3AF),
-                  letterSpacing: 0.5,
+        child: wide
+            ? Center(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [label, chips],
+                  ),
                 ),
+              )
+            : Row(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 24),
+                    child: Text(
+                      'QUICK SECTORS:',
+                      style: TextStyle(
+                        fontFamily: 'JetBrains Mono',
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF9CA3AF),
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.only(right: 24),
+                      child: chips,
+                    ),
+                  ),
+                ],
               ),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.only(right: 24),
-                child: Row(
-                  children: [
-                    for (var i = 0; i < _quickSectorTicker.length; i++) ...[
-                      if (i > 0) const SizedBox(width: 8),
-                      _buildQuickSectorChip(_quickSectorTicker[i]),
-                    ],
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
