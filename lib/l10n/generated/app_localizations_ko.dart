@@ -21,7 +21,40 @@ class AppL10nKo extends AppL10n {
   String get navAiCompanion => '도우미';
 
   @override
+  String get navChat => '채팅';
+
+  @override
   String get navSaved => '저장';
+
+  @override
+  String get navMe => '내 정보';
+
+  @override
+  String get createSheetTitle => '만들기';
+
+  @override
+  String get createSheetAiTitle => 'AI로 생성';
+
+  @override
+  String get createSheetAiSubtitle => 'AI Creator로 전통 레시피 만들기';
+
+  @override
+  String get createSheetMyRecipesTitle => '내 레시피';
+
+  @override
+  String get createSheetMyRecipesSubtitle => '게시하거나 저장한 레시피';
+
+  @override
+  String get profileTitle => '내 정보';
+
+  @override
+  String get profileWelcome => 'SpiceRoute에 오신 것을 환영합니다';
+
+  @override
+  String get profileWelcomeSubtitle => '로그인하여 레시피를 저장하고 게시하세요.';
+
+  @override
+  String get profileYourKitchen => '내 주방';
 
   @override
   String get languageEnglish => '영어';

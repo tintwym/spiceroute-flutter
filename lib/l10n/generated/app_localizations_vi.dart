@@ -21,7 +21,42 @@ class AppL10nVi extends AppL10n {
   String get navAiCompanion => 'Trợ lý';
 
   @override
+  String get navChat => 'Trò chuyện';
+
+  @override
   String get navSaved => 'Đã lưu';
+
+  @override
+  String get navMe => 'Tôi';
+
+  @override
+  String get createSheetTitle => 'Tạo mới';
+
+  @override
+  String get createSheetAiTitle => 'Tạo bằng AI';
+
+  @override
+  String get createSheetAiSubtitle =>
+      'Tạo công thức truyền thống với AI Creator';
+
+  @override
+  String get createSheetMyRecipesTitle => 'Công thức của tôi';
+
+  @override
+  String get createSheetMyRecipesSubtitle => 'Công thức bạn đã đăng hoặc lưu';
+
+  @override
+  String get profileTitle => 'Tôi';
+
+  @override
+  String get profileWelcome => 'Chào mừng đến SpiceRoute';
+
+  @override
+  String get profileWelcomeSubtitle =>
+      'Đăng nhập để lưu và đăng công thức của bạn.';
+
+  @override
+  String get profileYourKitchen => 'Nhà bếp của bạn';
 
   @override
   String get languageEnglish => 'Tiếng Anh';

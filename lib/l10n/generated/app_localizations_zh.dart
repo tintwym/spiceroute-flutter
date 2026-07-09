@@ -21,7 +21,40 @@ class AppL10nZh extends AppL10n {
   String get navAiCompanion => '帮手';
 
   @override
+  String get navChat => '聊天';
+
+  @override
   String get navSaved => '收藏';
+
+  @override
+  String get navMe => '我的';
+
+  @override
+  String get createSheetTitle => '创建';
+
+  @override
+  String get createSheetAiTitle => 'AI 生成菜谱';
+
+  @override
+  String get createSheetAiSubtitle => '用 AI Creator 创作传统风味菜谱';
+
+  @override
+  String get createSheetMyRecipesTitle => '我的菜谱';
+
+  @override
+  String get createSheetMyRecipesSubtitle => '你发布或保存的菜谱';
+
+  @override
+  String get profileTitle => '我的';
+
+  @override
+  String get profileWelcome => '欢迎使用 SpiceRoute';
+
+  @override
+  String get profileWelcomeSubtitle => '登录以保存菜谱并发布你的作品。';
+
+  @override
+  String get profileYourKitchen => '你的厨房';
 
   @override
   String get languageEnglish => '英语';

@@ -21,7 +21,42 @@ class AppL10nEn extends AppL10n {
   String get navAiCompanion => 'Companion';
 
   @override
+  String get navChat => 'Chat';
+
+  @override
   String get navSaved => 'Saved';
+
+  @override
+  String get navMe => 'Me';
+
+  @override
+  String get createSheetTitle => 'Create';
+
+  @override
+  String get createSheetAiTitle => 'Generate with AI';
+
+  @override
+  String get createSheetAiSubtitle => 'Build a heritage recipe with AI Creator';
+
+  @override
+  String get createSheetMyRecipesTitle => 'My Recipes';
+
+  @override
+  String get createSheetMyRecipesSubtitle =>
+      'Recipes you\'ve published or saved';
+
+  @override
+  String get profileTitle => 'Me';
+
+  @override
+  String get profileWelcome => 'Welcome to SpiceRoute';
+
+  @override
+  String get profileWelcomeSubtitle =>
+      'Sign in to save recipes and publish your own.';
+
+  @override
+  String get profileYourKitchen => 'Your kitchen';
 
   @override
   String get languageEnglish => 'English';

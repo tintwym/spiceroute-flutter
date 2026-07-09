@@ -5,7 +5,20 @@
   "navExplore": "탐색",
   "navAiCreator": "만들기",
   "navAiCompanion": "도우미",
+  "navChat": "채팅",
   "navSaved": "저장",
+  "navMe": "내 정보",
+
+  "createSheetTitle": "만들기",
+  "createSheetAiTitle": "AI로 생성",
+  "createSheetAiSubtitle": "AI Creator로 전통 레시피 만들기",
+  "createSheetMyRecipesTitle": "내 레시피",
+  "createSheetMyRecipesSubtitle": "게시하거나 저장한 레시피",
+
+  "profileTitle": "내 정보",
+  "profileWelcome": "SpiceRoute에 오신 것을 환영합니다",
+  "profileWelcomeSubtitle": "로그인하여 레시피를 저장하고 게시하세요.",
+  "profileYourKitchen": "내 주방",
 
   "languageEnglish": "영어",
   "languageChinese": "중국어",

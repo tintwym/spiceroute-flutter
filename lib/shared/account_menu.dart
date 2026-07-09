@@ -106,7 +106,7 @@ class _AccountMenuButtonState extends ConsumerState<AccountMenuButton> {
         ),
         MenuItemButton(
           leadingIcon: const Icon(Icons.settings_outlined),
-          onPressed: () => context.go('/settings'),
+          onPressed: () => context.go('/me'),
           child: Text(l.settingsTitle),
         ),
         // Language was previously a submenu here. It was removed once

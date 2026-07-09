@@ -5,7 +5,20 @@
   "navExplore": "探す",
   "navAiCreator": "作成",
   "navAiCompanion": "アシスタント",
+  "navChat": "チャット",
   "navSaved": "保存",
+  "navMe": "マイページ",
+
+  "createSheetTitle": "作成",
+  "createSheetAiTitle": "AIで生成",
+  "createSheetAiSubtitle": "AI Creatorで伝統レシピを作成",
+  "createSheetMyRecipesTitle": "マイレシピ",
+  "createSheetMyRecipesSubtitle": "公開・保存したレシピ",
+
+  "profileTitle": "マイページ",
+  "profileWelcome": "SpiceRouteへようこそ",
+  "profileWelcomeSubtitle": "サインインしてレシピを保存・公開しましょう。",
+  "profileYourKitchen": "あなたのキッチン",
 
   "languageEnglish": "英語",
   "languageChinese": "中国語",

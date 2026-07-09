@@ -5,7 +5,20 @@
   "navExplore": "Khám phá",
   "navAiCreator": "Sáng tạo",
   "navAiCompanion": "Trợ lý",
+  "navChat": "Trò chuyện",
   "navSaved": "Đã lưu",
+  "navMe": "Tôi",
+
+  "createSheetTitle": "Tạo mới",
+  "createSheetAiTitle": "Tạo bằng AI",
+  "createSheetAiSubtitle": "Tạo công thức truyền thống với AI Creator",
+  "createSheetMyRecipesTitle": "Công thức của tôi",
+  "createSheetMyRecipesSubtitle": "Công thức bạn đã đăng hoặc lưu",
+
+  "profileTitle": "Tôi",
+  "profileWelcome": "Chào mừng đến SpiceRoute",
+  "profileWelcomeSubtitle": "Đăng nhập để lưu và đăng công thức của bạn.",
+  "profileYourKitchen": "Nhà bếp của bạn",
 
   "languageEnglish": "Tiếng Anh",
   "languageChinese": "Tiếng Trung",

@@ -23,7 +23,7 @@ import 'responsive_scaffold.dart';
 class PageTabs extends StatelessWidget {
   const PageTabs({super.key});
 
-  static const _rightPaths = {'/saved'};
+  static const _rightPaths = {'/saved', '/me'};
 
   /// Same selection logic used by [AppShell] — keep the active tab in
   /// sync no matter which page mounted this widget.

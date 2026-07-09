@@ -21,7 +21,40 @@ class AppL10nJa extends AppL10n {
   String get navAiCompanion => 'アシスタント';
 
   @override
+  String get navChat => 'チャット';
+
+  @override
   String get navSaved => '保存';
+
+  @override
+  String get navMe => 'マイページ';
+
+  @override
+  String get createSheetTitle => '作成';
+
+  @override
+  String get createSheetAiTitle => 'AIで生成';
+
+  @override
+  String get createSheetAiSubtitle => 'AI Creatorで伝統レシピを作成';
+
+  @override
+  String get createSheetMyRecipesTitle => 'マイレシピ';
+
+  @override
+  String get createSheetMyRecipesSubtitle => '公開・保存したレシピ';
+
+  @override
+  String get profileTitle => 'マイページ';
+
+  @override
+  String get profileWelcome => 'SpiceRouteへようこそ';
+
+  @override
+  String get profileWelcomeSubtitle => 'サインインしてレシピを保存・公開しましょう。';
+
+  @override
+  String get profileYourKitchen => 'あなたのキッチン';
 
   @override
   String get languageEnglish => '英語';

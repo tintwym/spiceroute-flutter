@@ -17,193 +17,150 @@ bool get preferIosLiquidGlass =>
 bool get preferAndroidMaterial =>
     defaultTargetPlatform == TargetPlatform.android;
 
-/// Bottom tab bar for the phone shell.
-///
-///   * iOS → native [LiquidGlassTabBar] (Liquid Glass on iOS 26+)
-///   * Android → Material 3 [NavigationBar] with brand-tuned theme
-///   * Web / desktop → shared Material [NavigationBar]
+/// Bottom tab bar for the phone shell: Explore · Chat · + · Saved · Me.
 class PhoneShellTabBar extends StatelessWidget {
   const PhoneShellTabBar({
     super.key,
     required this.destinations,
-    required this.selectedIndex,
-    required this.onDestinationSelected,
+    required this.selectedBarIndex,
+    required this.onBarIndexSelected,
+    required this.onPlusPressed,
   });
 
+  /// Four tab destinations (Explore, Chat, Saved, Me) — not including [+].
   final List<ShellDestination> destinations;
-  final int selectedIndex;
-  final ValueChanged<int> onDestinationSelected;
+  final int selectedBarIndex;
+  final ValueChanged<int> onBarIndexSelected;
+  final VoidCallback onPlusPressed;
 
   @override
   Widget build(BuildContext context) {
-    if (preferIosLiquidGlass &&
-        NativeLiquidGlassUtils.supportsLiquidGlass) {
-      return _iosLiquidGlassTabBar(context);
-    }
-    if (!kIsWeb && preferAndroidMaterial) {
-      return _androidMaterialTabBar(context);
-    }
-    return _materialTabBar(context);
-  }
-
-  Widget _iosLiquidGlassTabBar(BuildContext context) {
-    final theme = Theme.of(context);
-    final cs = theme.colorScheme;
-    final baseLabelStyle = (theme.textTheme.labelMedium ?? const TextStyle())
-        .copyWith(fontSize: 12, height: 1.15, letterSpacing: 0.1);
-
-    return LiquidGlassTabBar(
-      items: [
-        for (final d in destinations) _liquidGlassTabItem(d),
-      ],
-      currentIndex: selectedIndex.clamp(0, destinations.length - 1),
-      onTabSelected: onDestinationSelected,
-      height: 56,
-      selectedItemColor: SpiceRoutePalette.naturalSage,
-      labelTextStyle: baseLabelStyle.copyWith(
-        color: cs.onSurfaceVariant,
-        fontWeight: FontWeight.w500,
-      ),
-    );
-  }
-
-  /// Material 3 bottom nav tuned for Android (system gesture inset + M3
-  /// indicator / label behavior).
-  Widget _androidMaterialTabBar(BuildContext context) {
-    final theme = Theme.of(context);
-    final cs = theme.colorScheme;
-    final baseLabelStyle = (theme.textTheme.labelMedium ?? const TextStyle())
-        .copyWith(fontSize: 12, height: 1.15, letterSpacing: 0.1);
-
     return Material(
-      color: cs.surface,
+      color: Theme.of(context).colorScheme.surface,
       elevation: 3,
-      shadowColor: cs.shadow.withValues(alpha: 0.12),
+      shadowColor: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.12),
       child: SafeArea(
         top: false,
-        child: NavigationBarTheme(
-          data: NavigationBarThemeData(
-            height: 80,
-            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-            indicatorColor: cs.primary.withValues(alpha: 0.14),
-            iconTheme: WidgetStateProperty.resolveWith((states) {
-              final selected = states.contains(WidgetState.selected);
-              return IconThemeData(
-                color: selected ? cs.primary : cs.onSurfaceVariant,
-                size: 24,
-              );
-            }),
-            labelTextStyle: WidgetStateProperty.resolveWith((states) {
-              final selected = states.contains(WidgetState.selected);
-              return baseLabelStyle.copyWith(
-                color: selected ? cs.primary : cs.onSurfaceVariant,
-                fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-              );
-            }),
-            overlayColor: WidgetStateProperty.resolveWith((states) {
-              if (states.contains(WidgetState.pressed)) {
-                return cs.primary.withValues(alpha: 0.08);
-              }
-              return null;
-            }),
-          ),
-          child: NavigationBar(
-            selectedIndex: selectedIndex.clamp(0, destinations.length - 1),
-            onDestinationSelected: onDestinationSelected,
-            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-            animationDuration: const Duration(milliseconds: 250),
-            destinations: [
-              for (final d in destinations)
-                NavigationDestination(
-                  icon: Icon(d.icon),
-                  selectedIcon: Icon(d.selectedIcon),
-                  label: d.label,
-                ),
+        child: SizedBox(
+          height: 64,
+          child: Row(
+            children: [
+              Expanded(child: _TabSlot(
+                destination: destinations[0],
+                selected: selectedBarIndex == 0,
+                onTap: () => onBarIndexSelected(0),
+              )),
+              Expanded(child: _TabSlot(
+                destination: destinations[1],
+                selected: selectedBarIndex == 1,
+                onTap: () => onBarIndexSelected(1),
+              )),
+              _PlusSlot(onPressed: onPlusPressed),
+              Expanded(child: _TabSlot(
+                destination: destinations[2],
+                selected: selectedBarIndex == 3,
+                onTap: () => onBarIndexSelected(3),
+              )),
+              Expanded(child: _TabSlot(
+                destination: destinations[3],
+                selected: selectedBarIndex == 4,
+                onTap: () => onBarIndexSelected(4),
+              )),
             ],
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _materialTabBar(BuildContext context) {
+class _TabSlot extends StatelessWidget {
+  const _TabSlot({
+    required this.destination,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final ShellDestination destination;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
-    final baseLabelStyle = (theme.textTheme.labelMedium ?? const TextStyle())
-        .copyWith(fontSize: 12, height: 1.15, letterSpacing: 0.1);
-
-    final bar = NavigationBarTheme(
-      data: NavigationBarThemeData(
-        height: 80,
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        labelTextStyle: WidgetStateProperty.resolveWith((states) {
-          final selected = states.contains(WidgetState.selected);
-          return baseLabelStyle.copyWith(
-            color: selected ? cs.onSurface : cs.onSurfaceVariant,
-            fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-          );
-        }),
-      ),
-      child: NavigationBar(
-        selectedIndex: selectedIndex.clamp(0, destinations.length - 1),
-        onDestinationSelected: onDestinationSelected,
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        destinations: [
-          for (final d in destinations)
-            NavigationDestination(
-              icon: Icon(d.icon),
-              selectedIcon: Icon(d.selectedIcon),
-              label: d.label,
-            ),
-        ],
-      ),
+    final fg = selected ? cs.onSurface : cs.onSurfaceVariant;
+    final labelStyle = (theme.textTheme.labelSmall ?? const TextStyle()).copyWith(
+      fontSize: 11,
+      height: 1.1,
+      fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+      color: fg,
     );
 
-    // Web (incl. mobile Safari) doesn't get the native shell's safe-area
-    // handling. Without this the bar often renders under the browser's
-    // URL/home toolbar and looks like "no tab bar".
     return Material(
-      color: cs.surface,
-      elevation: 3,
-      shadowColor: cs.shadow.withValues(alpha: 0.12),
-      child: SafeArea(top: false, child: bar),
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              decoration: BoxDecoration(
+                color: selected
+                    ? cs.primary.withValues(alpha: 0.12)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(
+                selected ? destination.selectedIcon : destination.icon,
+                size: 22,
+                color: selected ? cs.primary : cs.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              destination.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: labelStyle,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
 
-LiquidGlassTabItem _liquidGlassTabItem(ShellDestination d) {
-  final selectedSf = _sfSymbolForPath(d.path, selected: true);
-  final unselectedSf = _sfSymbolForPath(d.path, selected: false);
-  return LiquidGlassTabItem(
-    label: d.label,
-    icon: selectedSf != null
-        ? NativeLiquidGlassIcon.sfSymbol(unselectedSf ?? selectedSf)
-        : NativeLiquidGlassIcon.iconData(d.icon),
-    selectedIcon: selectedSf != null
-        ? NativeLiquidGlassIcon.sfSymbol(selectedSf)
-        : NativeLiquidGlassIcon.iconData(d.selectedIcon),
-    selectedItemColor: SpiceRoutePalette.naturalSage,
-  );
-}
+class _PlusSlot extends StatelessWidget {
+  const _PlusSlot({required this.onPressed});
 
-/// SF Symbol names per primary route — reads closer to Apple's system
-/// tab vocabulary than Material icons rasterized into the glass bar.
-String? _sfSymbolForPath(String path, {required bool selected}) {
-  switch (path) {
-    case '/':
-      return selected ? 'safari.fill' : 'safari';
-    case '/ai/creator':
-      return selected ? 'sparkles' : 'sparkle';
-    case '/ai/companion':
-      return selected
-          ? 'bubble.left.and.bubble.right.fill'
-          : 'bubble.left.and.bubble.right';
-    case '/saved':
-      return selected ? 'bookmark.fill' : 'bookmark';
-    case '/my-recipes':
-      return selected ? 'fork.knife' : 'fork.knife';
-    default:
-      return null;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return SizedBox(
+      width: 56,
+      child: Center(
+        child: Material(
+          color: SpiceRoutePalette.naturalSage,
+          elevation: 2,
+          shadowColor: cs.shadow.withValues(alpha: 0.2),
+          shape: const CircleBorder(),
+          child: InkWell(
+            onTap: onPressed,
+            customBorder: const CircleBorder(),
+            child: const SizedBox(
+              width: 44,
+              height: 44,
+              child: Icon(Icons.add, color: Colors.white, size: 26),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 

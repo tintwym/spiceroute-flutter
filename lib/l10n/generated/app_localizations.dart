@@ -127,11 +127,77 @@ abstract class AppL10n {
   /// **'Companion'**
   String get navAiCompanion;
 
+  /// No description provided for @navChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get navChat;
+
   /// No description provided for @navSaved.
   ///
   /// In en, this message translates to:
   /// **'Saved'**
   String get navSaved;
+
+  /// No description provided for @navMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Me'**
+  String get navMe;
+
+  /// No description provided for @createSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get createSheetTitle;
+
+  /// No description provided for @createSheetAiTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate with AI'**
+  String get createSheetAiTitle;
+
+  /// No description provided for @createSheetAiSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Build a heritage recipe with AI Creator'**
+  String get createSheetAiSubtitle;
+
+  /// No description provided for @createSheetMyRecipesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My Recipes'**
+  String get createSheetMyRecipesTitle;
+
+  /// No description provided for @createSheetMyRecipesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipes you\'ve published or saved'**
+  String get createSheetMyRecipesSubtitle;
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Me'**
+  String get profileTitle;
+
+  /// No description provided for @profileWelcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to SpiceRoute'**
+  String get profileWelcome;
+
+  /// No description provided for @profileWelcomeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to save recipes and publish your own.'**
+  String get profileWelcomeSubtitle;
+
+  /// No description provided for @profileYourKitchen.
+  ///
+  /// In en, this message translates to:
+  /// **'Your kitchen'**
+  String get profileYourKitchen;
 
   /// No description provided for @languageEnglish.
   ///

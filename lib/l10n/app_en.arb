@@ -5,7 +5,20 @@
   "navExplore": "Explore",
   "navAiCreator": "Creator",
   "navAiCompanion": "Companion",
+  "navChat": "Chat",
   "navSaved": "Saved",
+  "navMe": "Me",
+
+  "createSheetTitle": "Create",
+  "createSheetAiTitle": "Generate with AI",
+  "createSheetAiSubtitle": "Build a heritage recipe with AI Creator",
+  "createSheetMyRecipesTitle": "My Recipes",
+  "createSheetMyRecipesSubtitle": "Recipes you've published or saved",
+
+  "profileTitle": "Me",
+  "profileWelcome": "Welcome to SpiceRoute",
+  "profileWelcomeSubtitle": "Sign in to save recipes and publish your own.",
+  "profileYourKitchen": "Your kitchen",
 
   "languageEnglish": "English",
   "languageChinese": "Chinese",

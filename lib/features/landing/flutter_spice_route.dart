@@ -4,7 +4,19 @@ import 'package:go_router/go_router.dart';
 
 import 'landing_state.dart';
 import 'landing_data.dart';
+import 'landing_palette.dart';
 import 'widgets/landing_taste_map.dart';
+
+/// Compact labels for the hero quick-sectors ticker (full names live on the map).
+const _quickSectorTicker = <({String id, String label})>[
+  (id: 'europe', label: 'Europe'),
+  (id: 'me-africa', label: 'Mid East & Africa'),
+  (id: 'south-asia', label: 'South Asia'),
+  (id: 'se-asia', label: 'Mainland SE Asia'),
+  (id: 'maritime-se-asia', label: 'Maritime SE Asia'),
+  (id: 'east-asia', label: 'East Asia'),
+  (id: 'americas', label: 'Americas'),
+];
 
 class SpiceRouteLandingPage extends ConsumerStatefulWidget {
   const SpiceRouteLandingPage({super.key});
@@ -684,49 +696,78 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
   }
 
   Widget _buildQuickSectors(BuildContext context) {
-    return Container(
-      color: const Color(0xFF101012),
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
+    return ColoredBox(
+      color: LandingPalette.quickSectorsBg,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 14),
         child: Row(
           children: [
-            const Text(
-              'QUICK SECTORS: ',
-              style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey),
-            ),
-            const SizedBox(width: 12),
-            ...landingRegionsData.map((region) {
-              final isSecActive = activeRegionId == region.id;
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: InkWell(
-                  onTap: () => setState(() => activeRegionId = region.id),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: isSecActive ? const Color(0xFFC05621) : Colors.white.withValues(alpha: 0.05),
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: Row(
-                      children: [
-                        Text(region.icon),
-                        const SizedBox(width: 6),
-                        Text(
-                          region.name,
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 12,
-                            fontWeight: isSecActive ? FontWeight.bold : FontWeight.w500,
-                            color: isSecActive ? Colors.white : Colors.grey.shade400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+            const Padding(
+              padding: EdgeInsets.only(left: 24, right: 12),
+              child: Text(
+                'QUICK SECTORS:',
+                style: TextStyle(
+                  fontFamily: 'JetBrains Mono',
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF9CA3AF),
+                  letterSpacing: 0.5,
                 ),
-              );
-            }),
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.only(right: 24),
+                child: Row(
+                  children: [
+                    for (var i = 0; i < _quickSectorTicker.length; i++) ...[
+                      if (i > 0) const SizedBox(width: 8),
+                      _buildQuickSectorChip(_quickSectorTicker[i]),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickSectorChip(({String id, String label}) sector) {
+    final region = landingRegionsData.firstWhere((r) => r.id == sector.id);
+    final isActive = activeRegionId == sector.id;
+    return InkWell(
+      onTap: () => setState(() => activeRegionId = sector.id),
+      borderRadius: BorderRadius.circular(100),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: isActive
+              ? const Color(0xFFC05621)
+              : Colors.white.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(100),
+          border: Border.all(
+            color: isActive
+                ? const Color(0xFFC05621)
+                : Colors.white.withValues(alpha: 0.08),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(region.icon),
+            const SizedBox(width: 6),
+            Text(
+              sector.label,
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 12,
+                fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
+                color: isActive ? Colors.white : const Color(0xFF9CA3AF),
+              ),
+            ),
           ],
         ),
       ),
