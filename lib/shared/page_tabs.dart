@@ -6,20 +6,16 @@ import 'breakpoints.dart';
 import 'responsive_scaffold.dart';
 
 /// Underlined-tab row that sits *below the hero* on each main page
-/// (Explore / AI Creator / AI Companion / Saved). Replaces the row that
-/// used to live in the sticky [TopNavBar] — the reference design puts the
-/// tabs inside the body, right under the editorial headline, so the
-/// header stays focused on brand + identity + sign-in.
+/// (Explore / Chat / Saved / Me). Replaces the row that used to live
+/// in the sticky [TopNavBar] — the reference design puts the tabs
+/// inside the body, right under the editorial headline.
 ///
-/// Primary destinations (Explore, AI Creator, AI Companion) cluster on
-/// the left; Saved docks to the far right. My Recipes lives in the
-/// account menu, not in this row.
+/// Primary destinations (Explore, Chat) cluster on the left; Saved and
+/// Me dock to the far right. My Recipes is reached from Me / the create
+/// sheet and highlights the Me tab when open.
 ///
-/// Hidden on phone-width layouts: a 4-tab row on a sub-400 px screen
-/// produced overflow ellipses ("AI CREAT…") and competed visually with
-/// the bottom nav rail that [AppShell] already shows on mobile. The
-/// nav rail is the canonical destination switcher on phones; the
-/// in-body tabs only earn their keep on tablet+.
+/// Hidden on phone-width layouts: the bottom nav rail from [AppShell]
+/// is the canonical destination switcher on phones.
 class PageTabs extends StatelessWidget {
   const PageTabs({super.key});
 
@@ -28,11 +24,16 @@ class PageTabs extends StatelessWidget {
   /// Same selection logic used by [AppShell] — keep the active tab in
   /// sync no matter which page mounted this widget.
   int _indexFor(List<ShellDestination> dests, String location) {
+    if (location == '/my-recipes' || location == '/settings') {
+      final me = dests.indexWhere((d) => d.path == '/me');
+      return me >= 0 ? me : 0;
+    }
     for (var i = 0; i < dests.length; i++) {
       if (location == dests[i].path) return i;
       if (dests[i].path != '/' && location.startsWith(dests[i].path)) return i;
     }
     if (location.startsWith('/recipes/')) return 0;
+    if (location == '/ai/creator') return 0;
     return 0;
   }
 

@@ -136,19 +136,18 @@ class ExploreScreen extends ConsumerWidget {
                 child: framed(const ExploreFilterRow()),
               ),
             ),
-            // Page-level tab row sits between the hero and the filter bar —
-            // mirrors the reference design's banded sub-nav under the
-            // editorial headline.
-            SliverPadding(
-              padding: pagePad.copyWith(top: 12, bottom: 0),
-              sliver: SliverToBoxAdapter(child: framed(const PageTabs())),
-            ),
+            // Page-level tab row — tablet+ only (PageTabs shrinks on phone).
+            if (!isPhone)
+              SliverPadding(
+                padding: pagePad.copyWith(top: 12, bottom: 0),
+                sliver: SliverToBoxAdapter(child: framed(const PageTabs())),
+              ),
             // Visual cuisine picker — two-tier (region → cuisine) pill UI.
             // On phone, course + dietary share one combined refine row
             // with the region trigger (Option A); tablet+ keeps separate
             // [FilterBar] below.
             SliverPadding(
-              padding: pagePad.copyWith(top: isPhone ? 4 : 20),
+              padding: pagePad.copyWith(top: isPhone ? 8 : 20),
               sliver: SliverToBoxAdapter(
                 child: framed(
                   RegionFilterBar(

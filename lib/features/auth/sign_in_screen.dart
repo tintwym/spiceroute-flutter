@@ -148,21 +148,24 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   }
 
   void _goNext() {
-    // Preserve the underlying modal stack whenever possible. The auth
-    // modal is typically PUSHED on top of an existing route (e.g. a
-    // recipe-detail modal opened from the explore grid), so popping
-    // restores the user to exactly where they tapped "Sign in" with
-    // their checklist state intact.
-    //
-    // The `redirectTo` fallback only fires for the direct-URL case
-    // (e.g. /sign-in?next=/my-recipes followed in a fresh tab), where
-    // there's nothing on the Navigator to pop back to.
+    // Prefer an explicit `next` destination (e.g. + sheet → My Recipes).
+    // Exception: recipe-detail sign-in — the detail modal is already under
+    // us, so pop to keep checklist / review draft state instead of remounting.
+    final next = widget.redirectTo;
     final navigator = Navigator.of(context);
+    if (next != null && next.isNotEmpty) {
+      if (navigator.canPop() && next.startsWith('/recipes/')) {
+        navigator.pop();
+        return;
+      }
+      context.go(next);
+      return;
+    }
     if (navigator.canPop()) {
       navigator.pop();
       return;
     }
-    context.go(widget.redirectTo ?? '/');
+    context.go('/');
   }
 
   @override

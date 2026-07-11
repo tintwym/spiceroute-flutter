@@ -332,14 +332,18 @@ class LandingBoardingPassButton extends StatelessWidget {
     required this.label,
     required this.onPressed,
     this.pulse = false,
+    this.compact = false,
   });
 
   final String label;
   final VoidCallback onPressed;
   final bool pulse;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
+    final hPad = compact ? 14.0 : 32.0;
+    final vPad = compact ? 10.0 : 12.0;
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -363,11 +367,12 @@ class LandingBoardingPassButton extends StatelessWidget {
           style: FilledButton.styleFrom(
             backgroundColor: LandingPalette.red,
             foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+            padding: EdgeInsets.symmetric(horizontal: hPad, vertical: vPad),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-            textStyle: const TextStyle(
+            textStyle: TextStyle(
               fontWeight: FontWeight.w600,
               letterSpacing: 1,
+              fontSize: compact ? 11 : 13,
             ),
           ),
           child: Text(label.toUpperCase()),

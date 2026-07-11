@@ -178,7 +178,7 @@ class _LandingGlobalTerminalState extends ConsumerState<LandingGlobalTerminal> {
             badge: 'The Culinary Board',
             title: 'Live From Kitchens Around the Globe',
             subtitle:
-                'See how our virtual boarding tier is performing. Real cooks stamping their physical culinary passports and cooking real dishes right now.',
+                'See how cooks around the world are stamping their culinary passports and sharing real dishes from their kitchens.',
             icon: Icons.forum_outlined,
             center: true,
           ),

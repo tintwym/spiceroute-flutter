@@ -38,10 +38,13 @@ class ExploreFilterRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppL10n.of(context);
-    final count = ref.watch(
-      exploreProvider.select((s) => s.visibleItems.length),
-    );
-    final cuisine = ref.watch(exploreProvider.select((s) => s.cuisine));
+    final state = ref.watch(exploreProvider);
+    // Prefer API total when no client-side course/dietary filter is
+    // active — otherwise the counter only shows the loaded page size.
+    final count = (state.course == null && state.dietary == null)
+        ? (state.total > 0 ? state.total : state.visibleItems.length)
+        : state.visibleItems.length;
+    final cuisine = state.cuisine;
     final scope = cuisine == null
         ? l.filterAllCuisines
         : CuisinePillBar.labelFor(l, cuisineForDisplay(cuisine));

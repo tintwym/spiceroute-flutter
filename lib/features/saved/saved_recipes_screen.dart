@@ -36,9 +36,16 @@ class SavedRecipesScreen extends ConsumerWidget {
       ),
     );
 
-    // Same shared SpiceRoute hero as every other page — the page-specific
-    // heading lives in the section header below the tab row.
-    const hero = PageHero();
+    final isPhone = deviceClassOf(context).isPhone;
+
+    // Phone: brand lives in PhoneShellBrandBar — skip duplicate SpiceRoute hero.
+    // Tablet+: full editorial hero with page-scoped copy.
+    final hero = isPhone
+        ? null
+        : PageHero(
+            title: l.savedTitle,
+            subtitle: l.savedHeroSubtitle,
+          );
 
     // Section heading: "Saved (3)" + cloud-synced badge when
     // signed in + the profile doc has been fetched + optional Clear-all
@@ -110,16 +117,18 @@ class SavedRecipesScreen extends ConsumerWidget {
     return CustomScrollView(
       scrollCacheExtent: const ScrollCacheExtent.pixels(900), physics: const ClampingScrollPhysics(),
       slivers: [
+        if (hero != null)
+          SliverPadding(
+            padding: pagePad.copyWith(top: 32, bottom: 8),
+            sliver: SliverToBoxAdapter(child: framed(hero)),
+          ),
+        if (!isPhone)
+          SliverPadding(
+            padding: pagePad.copyWith(top: 12, bottom: 0),
+            sliver: SliverToBoxAdapter(child: framed(const PageTabs())),
+          ),
         SliverPadding(
-          padding: pagePad.copyWith(top: 32, bottom: 8),
-          sliver: SliverToBoxAdapter(child: framed(hero)),
-        ),
-        SliverPadding(
-          padding: pagePad.copyWith(top: 12, bottom: 0),
-          sliver: SliverToBoxAdapter(child: framed(const PageTabs())),
-        ),
-        SliverPadding(
-          padding: pagePad.copyWith(top: 24, bottom: 12),
+          padding: pagePad.copyWith(top: isPhone ? 16 : 24, bottom: 12),
           sliver: SliverToBoxAdapter(child: framed(sectionHeader)),
         ),
         if (state.loading && state.recipes.isEmpty)

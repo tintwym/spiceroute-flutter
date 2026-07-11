@@ -201,7 +201,11 @@ class _AiCompanionScreenState extends ConsumerState<AiCompanionScreen> {
       ),
     );
 
-    return StudioPage(child: card);
+    return StudioPage(
+      heroTitle: l.aiCompanionTitle,
+      heroSubtitle: l.aiCompanionGreeting,
+      child: card,
+    );
   }
 }
 

@@ -92,7 +92,7 @@ class ProfileScreen extends ConsumerWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: Text(
-                    l.settingsVersion('0.3.0'),
+                    l.settingsVersion('1.0.0'),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: cs.outline,
                     ),

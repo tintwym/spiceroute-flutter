@@ -56,27 +56,34 @@ class StudioPage extends StatelessWidget {
     // scrollExtent so the user can flick up to reach the button.
     final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
 
+    final isPhone = deviceClassOf(context).isPhone;
+
     return ListView(
       padding: EdgeInsets.only(bottom: keyboardInset),
       physics: const ClampingScrollPhysics(),
       children: [
-        if (showHero)
+        if (showHero && !isPhone)
           Padding(
             padding: pad.copyWith(top: 32, bottom: 8),
             child: framed(PageHero(title: heroTitle, subtitle: heroSubtitle)),
           ),
         // Page-level tab row sits between the hero and the page body,
-        // matching the reference design where "EXPLORE / AI CREATOR / ..."
-        // run as a banded sub-nav under the editorial headline.
+        // matching the reference design where tabs run as a banded
+        // sub-nav under the editorial headline. Hidden on phone.
+        if (!isPhone)
+          Padding(
+            padding: pad.copyWith(top: showHero ? 12 : 24, bottom: 0),
+            child: framed(const PageTabs()),
+          ),
         Padding(
-          padding: pad.copyWith(top: showHero ? 12 : 24, bottom: 0),
-          child: framed(const PageTabs()),
+          padding: pad.copyWith(top: isPhone ? 16 : 24),
+          child: framed(child),
         ),
-        Padding(padding: pad.copyWith(top: 24), child: framed(child)),
-        Padding(
-          padding: pad.copyWith(top: 48, bottom: 28),
-          child: framed(const SiteFooter()),
-        ),
+        if (!isPhone)
+          Padding(
+            padding: pad.copyWith(top: 48, bottom: 28),
+            child: framed(const SiteFooter()),
+          ),
       ],
     );
   }

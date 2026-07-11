@@ -53,6 +53,8 @@ class _AiCreatorScreenState extends ConsumerState<AiCreatorScreen> {
     });
 
     return StudioPage(
+      heroTitle: l.aiCreatorTitle,
+      heroSubtitle: l.aiCreatorCardSubtitle,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

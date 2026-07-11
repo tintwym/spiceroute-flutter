@@ -51,7 +51,7 @@ class _LandingPricingSectionState extends State<LandingPricingSection> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Predictable passport tiers scaled to fits cooks of all sizes.',
+              'Predictable passport tiers scaled to fit cooks of all sizes.',
               textAlign: TextAlign.center,
               style: LandingPalette.serif(context, size: 32),
             ),

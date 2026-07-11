@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'landing_state.dart';
 import 'landing_data.dart';
 import 'landing_palette.dart';
+import 'widgets/landing_shared.dart';
 import 'widgets/landing_taste_map.dart';
 
 /// Compact labels for the hero quick-sectors ticker (full names live on the map).
@@ -18,15 +19,15 @@ const _quickSectorTicker = <({String id, String label})>[
   (id: 'americas', label: 'Americas'),
 ];
 
-class SpiceRouteLandingPage extends ConsumerStatefulWidget {
-  const SpiceRouteLandingPage({super.key});
+class LandingScreen extends ConsumerStatefulWidget {
+  const LandingScreen({super.key});
 
   @override
-  ConsumerState<SpiceRouteLandingPage> createState() =>
-      _SpiceRouteLandingPageState();
+  ConsumerState<LandingScreen> createState() =>
+      _LandingScreenState();
 }
 
-class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
+class _LandingScreenState extends ConsumerState<LandingScreen> {
   // Global States matching the web application
   bool isAnnualBilling = false;
   double seatsCount = 5.0;
@@ -49,6 +50,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
   final GlobalKey _toolkitKey = GlobalKey();
   final GlobalKey _terminalKey = GlobalKey();
   final GlobalKey _pricingKey = GlobalKey();
+  final GlobalKey _boardingKey = GlobalKey();
 
   String selectedStampRegion = 'Europe';
   String recipeStyle = '🌏 SE Asia';
@@ -131,15 +133,21 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
     _toast('Stamp posted to the global culinary board!');
   }
 
+  Future<void> _openAiCreator() async {
+    await ref.read(landingGateProvider.notifier).completeOnboarding();
+    if (!mounted) return;
+    context.go('/ai/creator');
+  }
+
+  Future<void> _openAiCompanion() async {
+    await ref.read(landingGateProvider.notifier).completeOnboarding();
+    if (!mounted) return;
+    context.go('/ai/companion');
+  }
+
   void _generateRecipe() {
-    final ingredients = ingredientsController.text.trim();
-    if (ingredients.isEmpty) {
-      _toast('List a few ingredients to generate a heritage-style recipe.');
-      return;
-    }
-    _toast(
-      'Generating a $heatLevel $recipeStyle dish with: $ingredients',
-    );
+    // Landing form is a preview — open the real AI Creator in-app.
+    _openAiCreator();
   }
 
   void _joinHub() {
@@ -188,7 +196,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
       'dish': 'West Sumatran Beef Rendang',
       'review': 'Took 3 hours but absolutely worth every second. The toasted kerisik and coconut oil caramelization coated the beef in the most delicious mahogany crust!',
       'time': '3 days ago',
-      'region': 'Mainland SE Asia',
+      'region': 'Maritime SE Asia',
       'stamps': 198,
       'imageUrl': 'https://images.unsplash.com/photo-1601050690597-df056fb4ce78?w=600&auto=format&fit=crop&q=60',
       'tags': ['BeefRendang', 'Sumatra', 'SpiceIslands']
@@ -221,82 +229,149 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
     final isDesktop = MediaQuery.of(context).size.width > 900;
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildHeader(context),
-            _buildHero(context, isDesktop),
-            _buildQuickSectors(context),
-            _buildTasteMapSection(context, isDesktop),
-            _buildInteractiveToolkitSection(context, isDesktop),
-            _buildCulinaryBoardSection(context, isDesktop),
-            _buildPricingSection(context, isDesktop),
-            _buildReadyToDepartSection(context),
-            _buildFooter(context),
-          ],
+      body: SafeArea(
+        bottom: false,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              _buildHeader(context),
+              _buildHero(context, isDesktop),
+              _buildQuickSectors(context),
+              _buildTasteMapSection(context, isDesktop),
+              _buildInteractiveToolkitSection(context, isDesktop),
+              _buildCulinaryBoardSection(context, isDesktop),
+              _buildPricingSection(context, isDesktop),
+              _buildReadyToDepartSection(context),
+              _buildFooter(context),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildHeader(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    final showFullNav = width >= 1100;
+    final showCompactActions = width <= 768;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       color: Colors.white,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFC05621),
+          Expanded(
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFC05621),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.restaurant, color: Colors.white, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Flexible(
+                  child: Text(
+                    'SpiceRoute',
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFF1E293B),
+                        ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (showCompactActions) ...[
+            PopupMenuButton<String>(
+              tooltip: 'Sections',
+              icon: const Icon(Icons.menu, color: Color(0xFF1E293B)),
+              onSelected: (value) {
+                switch (value) {
+                  case 'map':
+                    _scrollTo(_tasteMapKey);
+                  case 'toolkit':
+                    _scrollTo(_toolkitKey);
+                  case 'terminal':
+                    _scrollTo(_terminalKey);
+                  case 'pricing':
+                    _scrollTo(_pricingKey);
+                  case 'boarding':
+                    _scrollTo(_boardingKey);
+                  case 'enter':
+                    _enterApp();
+                }
+              },
+              itemBuilder: (context) => const [
+                PopupMenuItem(value: 'map', child: Text('The Taste Map')),
+                PopupMenuItem(value: 'toolkit', child: Text('AI Travel Companion')),
+                PopupMenuItem(value: 'terminal', child: Text('The Global Terminal')),
+                PopupMenuItem(value: 'pricing', child: Text('Pricing Tiers')),
+                PopupMenuItem(value: 'boarding', child: Text('Get Boarding Pass')),
+                PopupMenuDivider(),
+                PopupMenuItem(value: 'enter', child: Text('Start exploring')),
+              ],
+            ),
+            const SizedBox(width: 4),
+            FilledButton.icon(
+              onPressed: () => _scrollTo(_boardingKey),
+              style: FilledButton.styleFrom(
+                backgroundColor: LandingPalette.red,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(Icons.restaurant, color: Colors.white, size: 20),
               ),
-              const SizedBox(width: 12),
-              Text(
-                'SpiceRoute',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w900,
-                      color: const Color(0xFF1E293B),
+              icon: const Icon(Icons.airplane_ticket_outlined, size: 18),
+              label: const Text(
+                'GET PASS',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 11, letterSpacing: 0.8),
+              ),
+            ),
+          ] else if (showFullNav)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildHeaderLink('The Taste Map', () => _scrollTo(_tasteMapKey)),
+                _buildHeaderLink('AI Companion', () => _scrollTo(_toolkitKey)),
+                _buildHeaderLink('Global Terminal', () => _scrollTo(_terminalKey)),
+                _buildHeaderLink('Pricing', () => _scrollTo(_pricingKey)),
+                const SizedBox(width: 8),
+                TextButton(
+                  onPressed: _enterApp,
+                  child: const Text(
+                    'Start exploring',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF1E293B),
                     ),
-              ),
-            ],
-          ),
-          if (MediaQuery.of(context).size.width <= 768)
-            IconButton(
-              onPressed: _enterApp,
-              tooltip: 'Get boarding pass',
-              icon: const Icon(Icons.airplane_ticket, color: Color(0xFF1E293B)),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                LandingBoardingPassButton(
+                  label: 'Get Boarding Pass',
+                  compact: true,
+                  onPressed: () => _scrollTo(_boardingKey),
+                ),
+              ],
             )
           else
             Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                _buildHeaderLink('The Taste Map', () => _scrollTo(_tasteMapKey)),
-                _buildHeaderLink('AI Travel Companion', () => _scrollTo(_toolkitKey)),
-                _buildHeaderLink('The Global Terminal', () => _scrollTo(_terminalKey)),
-                _buildHeaderLink('Pricing Tiers', () => _scrollTo(_pricingKey)),
-                const SizedBox(width: 12),
-                ElevatedButton(
+                IconButton(
+                  tooltip: 'Start exploring',
                   onPressed: _enterApp,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1E293B),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Row(
-                    children: [
-                      Icon(Icons.airplane_ticket, size: 16),
-                      SizedBox(width: 8),
-                      Text('GET BOARDING PASS', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                    ],
-                  ),
+                  icon: const Icon(Icons.arrow_forward, color: Color(0xFF1E293B)),
+                ),
+                LandingBoardingPassButton(
+                  label: 'Get Boarding Pass',
+                  compact: true,
+                  onPressed: () => _scrollTo(_boardingKey),
                 ),
               ],
             ),
@@ -357,7 +432,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
                     const Text(
                       'SOCIETY OF GLOBAL COOKS',
                       style: TextStyle(
-                        fontFamily: 'JetBrains Mono',
+                        fontFamily: 'JetBrainsMono',
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -400,7 +475,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
         RichText(
           text: const TextSpan(
             style: TextStyle(
-              fontFamily: 'Playfair Display',
+              fontFamily: 'PlayfairDisplay',
               fontSize: 52,
               fontWeight: FontWeight.w900,
               color: Colors.white,
@@ -566,7 +641,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
         Text(
           val,
           style: const TextStyle(
-            fontFamily: 'Playfair Display',
+            fontFamily: 'PlayfairDisplay',
             fontSize: 28,
             fontWeight: FontWeight.bold,
             color: Color(0xFFE28743),
@@ -575,7 +650,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
         Text(
           label,
           style: const TextStyle(
-            fontFamily: 'JetBrains Mono',
+            fontFamily: 'JetBrainsMono',
             fontSize: 9,
             fontWeight: FontWeight.w600,
             color: Colors.grey,
@@ -609,7 +684,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
               const Text(
                 'BOARDING PASS VOUCHER',
                 style: TextStyle(
-                  fontFamily: 'JetBrains Mono',
+                  fontFamily: 'JetBrainsMono',
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFFC05621),
@@ -618,7 +693,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
               Text(
                 'SPICEROUTE',
                 style: TextStyle(
-                  fontFamily: 'Playfair Display',
+                  fontFamily: 'PlayfairDisplay',
                   fontSize: 14,
                   fontWeight: FontWeight.w900,
                   color: Colors.grey.shade800,
@@ -628,7 +703,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
           ),
           const Divider(height: 24, thickness: 1, color: Colors.black12),
           const SizedBox(height: 8),
-          const Text('PASSENGER LEVEL', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 9, color: Colors.grey)),
+          const Text('PASSENGER LEVEL', style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, color: Colors.grey)),
           const Text('Culinary Enthusiast', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
           const SizedBox(height: 16),
           Row(
@@ -637,7 +712,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('FLIGHT ROUTE DESTINATION', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 9, color: Colors.grey)),
+                  const Text('FLIGHT ROUTE DESTINATION', style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, color: Colors.grey)),
                   Row(
                     children: [
                       const Icon(Icons.location_on, size: 14, color: Color(0xFFC05621)),
@@ -650,14 +725,14 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  const Text('FLIGHT GATE', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 9, color: Colors.grey)),
+                  const Text('FLIGHT GATE', style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, color: Colors.grey)),
                   Text(ticketGate, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFFC05621))),
                 ],
               ),
             ],
           ),
           const SizedBox(height: 16),
-          const Text('DURATION ESTIMATE', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 9, color: Colors.grey)),
+          const Text('DURATION ESTIMATE', style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, color: Colors.grey)),
           Text('$ticketDuration // READY FOR IMMERSIVE TASTE', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF1E293B))),
           const SizedBox(height: 24),
           // Barcode representation
@@ -687,7 +762,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
           const Center(
             child: Text(
               'SR-PASS-2026-IMMERSIVE-PORTAL',
-              style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 8, letterSpacing: 1.0, color: Colors.grey),
+              style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 8, letterSpacing: 1.0, color: Colors.grey),
             ),
           ),
         ],
@@ -703,7 +778,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
       child: Text(
         'QUICK SECTORS:',
         style: TextStyle(
-          fontFamily: 'JetBrains Mono',
+          fontFamily: 'JetBrainsMono',
           fontSize: 10,
           fontWeight: FontWeight.bold,
           color: Color(0xFF9CA3AF),
@@ -744,7 +819,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
                     child: Text(
                       'QUICK SECTORS:',
                       style: TextStyle(
-                        fontFamily: 'JetBrains Mono',
+                        fontFamily: 'JetBrainsMono',
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF9CA3AF),
@@ -770,7 +845,10 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
     final region = landingRegionsData.firstWhere((r) => r.id == sector.id);
     final isActive = activeRegionId == sector.id;
     return InkWell(
-      onTap: () => setState(() => activeRegionId = sector.id),
+      onTap: () {
+        setState(() => activeRegionId = sector.id);
+        _scrollTo(_tasteMapKey);
+      },
       borderRadius: BorderRadius.circular(100),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -834,16 +912,16 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
                 ),
                 child: const Text(
                   'TRAVEL TOOLKIT',
-                  style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFFC05621)),
+                  style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFFC05621)),
                 ),
               ),
               const SizedBox(height: 12),
               const Text(
                 'Interactive Travel Toolkit',
-                style: TextStyle(fontFamily: 'Playfair Display', fontSize: 36, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                style: TextStyle(fontFamily: 'PlayfairDisplay', fontSize: 36, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
               ),
               const Text(
-                'Step away from generic static lists. Experiment with modular AI engines crafted to deliver personalized, heritage-informed culinary guidance.',
+                'Go beyond static recipe lists. Use modular AI tools for personalized, heritage-informed cooking guidance.',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontFamily: 'Inter', fontSize: 14, color: Color(0xFF64748B)),
               ),
@@ -960,10 +1038,17 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Chef Tariq 🌟', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                    Text('AI CHAT COMPANION', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 8, color: Colors.grey)),
+                    Text('AI CHAT COMPANION', style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 8, color: Colors.grey)),
                   ],
                 ),
                 const Spacer(),
+                TextButton(
+                  onPressed: _openAiCompanion,
+                  child: const Text(
+                    'Open chat',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                  ),
+                ),
                 IconButton(
                   onPressed: _showChefHelp,
                   icon: const Icon(Icons.help_outline, size: 18),
@@ -1104,13 +1189,13 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Recipe Generator', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                  Text('CO-CREATE HERITAGE DISHES', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 8, color: Colors.grey)),
+                  Text('CO-CREATE HERITAGE DISHES', style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 8, color: Colors.grey)),
                 ],
               ),
             ],
           ),
           const Spacer(),
-          const Text('WHAT INGREDIENTS DO YOU HAVE?', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 9, color: Colors.grey)),
+          const Text('WHAT INGREDIENTS DO YOU HAVE?', style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, color: Colors.grey)),
           const SizedBox(height: 6),
           TextField(
             controller: ingredientsController,
@@ -1123,7 +1208,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
             ),
           ),
           const Spacer(),
-          const Text('PREFERRED REGIONAL STYLE', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 9, color: Colors.grey)),
+          const Text('PREFERRED REGIONAL STYLE', style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, color: Colors.grey)),
           const SizedBox(height: 6),
           Wrap(
             spacing: 6,
@@ -1136,7 +1221,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
             ],
           ),
           const Spacer(),
-          const Text('HEAT & SPICE LEVEL', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 9, color: Colors.grey)),
+          const Text('HEAT & SPICE LEVEL', style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, color: Colors.grey)),
           const SizedBox(height: 6),
           Row(
             children: [
@@ -1235,16 +1320,16 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
                 ),
                 child: const Text(
                   'THE CULINARY BOARD',
-                  style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFFC05621)),
+                  style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFFC05621)),
                 ),
               ),
               const SizedBox(height: 12),
               const Text(
                 'Live From Kitchens Around the Globe',
-                style: TextStyle(fontFamily: 'Playfair Display', fontSize: 36, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                style: TextStyle(fontFamily: 'PlayfairDisplay', fontSize: 36, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
               ),
               const Text(
-                'See how our virtual boarding tier is performing. Real cooks stamping their physical culinary passports and cooking real dishes right now.',
+                'See how cooks around the world are stamping their culinary passports and sharing real dishes from their kitchens.',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontFamily: 'Inter', fontSize: 14, color: Color(0xFF64748B)),
               ),
@@ -1285,9 +1370,9 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('Share Your Culinary Stamp', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
-          const Text('POST TO THE GLOBAL BOARD', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 8, color: Colors.grey)),
+          const Text('POST TO THE GLOBAL BOARD', style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 8, color: Colors.grey)),
           const SizedBox(height: 24),
-          const Text('COOK PROFILE HANDLE', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 9, color: Colors.grey)),
+          const Text('COOK PROFILE HANDLE', style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, color: Colors.grey)),
           const SizedBox(height: 6),
           TextField(
             controller: handleController,
@@ -1300,7 +1385,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
             ),
           ),
           const SizedBox(height: 16),
-          const Text('SELECT PASSPORT STAMP', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 9, color: Colors.grey)),
+          const Text('SELECT PASSPORT STAMP', style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, color: Colors.grey)),
           const SizedBox(height: 6),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -1312,7 +1397,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
             ],
           ),
           const SizedBox(height: 16),
-          const Text('DISH NAME', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 9, color: Colors.grey)),
+          const Text('DISH NAME', style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, color: Colors.grey)),
           const SizedBox(height: 6),
           TextField(
             controller: dishController,
@@ -1325,7 +1410,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
             ),
           ),
           const SizedBox(height: 16),
-          const Text('REVIEW & EXPERIENCE', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 9, color: Colors.grey)),
+          const Text('REVIEW & EXPERIENCE', style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, color: Colors.grey)),
           const SizedBox(height: 6),
           TextField(
             controller: reviewController,
@@ -1571,16 +1656,17 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
                 ),
                 child: const Text(
                   'TRANSPARENT PRICING',
-                  style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFFC05621)),
+                  style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFFC05621)),
                 ),
               ),
               const SizedBox(height: 12),
               const Text(
-                'Predictable passport tiers scaled to fits cooks of all sizes.',
-                style: TextStyle(fontFamily: 'Playfair Display', fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                'Passport tiers for home cooks and kitchen teams.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontFamily: 'PlayfairDisplay', fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
               ),
               const Text(
-                'Choose a fixed package or estimate your custom restaurant crew size below. No hidden fees. Lock in the annual savings discount today.',
+                'Pick a fixed package or estimate crew size below. No hidden fees — lock in annual savings when you are ready.',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontFamily: 'Inter', fontSize: 14, color: Color(0xFF64748B)),
               ),
@@ -1617,27 +1703,111 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(child: _buildPriceCard('GROWTH / FREE', '\$0', 'Perfect for casual home cooks exploring authentic heritage recipes and our Interactive world map.', ['View complete heritage recipes', 'Interactive world map', 'AI Chatbot with Chef Tariq', 'Custom AI Recipe Generator'], 'ACTIVE PLAN', false, _enterApp)),
+                    Expanded(
+                      child: _buildPriceCard(
+                        'GROWTH / FREE',
+                        '\$0',
+                        'For casual home cooks exploring heritage recipes and the interactive world map.',
+                        const [
+                          'Full heritage recipe library',
+                          'Interactive world map',
+                          'Limited AI Companion chats',
+                          'Preview AI Recipe Generator',
+                        ],
+                        'ACTIVE PLAN',
+                        false,
+                        _enterApp,
+                      ),
+                    ),
                     const SizedBox(width: 24),
-                    Expanded(child: _buildPriceCard('PRO / PASS', isAnnualBilling ? '\$7.99' : '\$9.99', 'The standard choice for curious epicureans seeking Instant culinary knowledge, custom menus, and unlimited co-creation.', ['Everything in Growth Free Pass', 'Unlimited AI Chat with Chef Tariq', 'Custom AI Recipe Generator', 'Unlimited Spin the Globe draws'], 'START PREMIUM TRIAL', true, () {
-                      _toast('Premium trial started — welcome aboard!');
-                      _enterApp();
-                    })),
+                    Expanded(
+                      child: _buildPriceCard(
+                        'PRO / PASS',
+                        isAnnualBilling ? '\$7.99' : '\$9.99',
+                        'For curious cooks who want instant guidance, custom menus, and unlimited co-creation.',
+                        const [
+                          'Everything in Growth',
+                          'Unlimited AI chat with Chef Tariq',
+                          'Full AI Recipe Generator',
+                          'Unlimited Spin the Globe draws',
+                        ],
+                        'START PREMIUM TRIAL',
+                        true,
+                        () {
+                          _toast('Premium trial is a demo on this page — enter the app to explore.');
+                          _enterApp();
+                        },
+                      ),
+                    ),
                     const SizedBox(width: 24),
-                    Expanded(child: _buildPriceCard('ENTERPRISE', 'Custom', 'Custom setups for culinary schools, commercial kitchens, and restaurant chains requiring private API limits.', ['Everything in Premium Pass', 'Dedicated Private Server Nodes', 'Localized menu database sync', 'Shared workspace & custom billing'], 'CONTACT SALES', false, () => _toast('Email sales@spiceroute.app for enterprise pricing.'))),
+                    Expanded(
+                      child: _buildPriceCard(
+                        'ENTERPRISE',
+                        'Custom',
+                        'For culinary schools, commercial kitchens, and restaurant chains that need private API limits.',
+                        const [
+                          'Everything in Pro',
+                          'Dedicated private server nodes',
+                          'Localized menu database sync',
+                          'Shared workspace & custom billing',
+                        ],
+                        'CONTACT SALES',
+                        false,
+                        () => _toast('Email sales@spiceroute.app for enterprise pricing.'),
+                      ),
+                    ),
                   ],
                 )
               else
                 Column(
                   children: [
-                    _buildPriceCard('GROWTH / FREE', '\$0', 'Perfect for casual home cooks exploring authentic heritage recipes.', ['View complete heritage recipes', 'Interactive world map', 'AI Chatbot with Chef Tariq', 'Custom AI Recipe Generator'], 'ACTIVE PLAN', false, _enterApp),
+                    _buildPriceCard(
+                      'GROWTH / FREE',
+                      '\$0',
+                      'For casual home cooks exploring heritage recipes.',
+                      const [
+                        'Full heritage recipe library',
+                        'Interactive world map',
+                        'Limited AI Companion chats',
+                        'Preview AI Recipe Generator',
+                      ],
+                      'ACTIVE PLAN',
+                      false,
+                      _enterApp,
+                    ),
                     const SizedBox(height: 24),
-                    _buildPriceCard('PRO / PASS', isAnnualBilling ? '\$7.99' : '\$9.99', 'The standard choice for curious epicureans.', ['Everything in Growth Free Pass', 'Unlimited AI Chat with Chef Tariq', 'Custom AI Recipe Generator', 'Unlimited Spin the Globe draws'], 'START PREMIUM TRIAL', true, () {
-                      _toast('Premium trial started — welcome aboard!');
-                      _enterApp();
-                    }),
+                    _buildPriceCard(
+                      'PRO / PASS',
+                      isAnnualBilling ? '\$7.99' : '\$9.99',
+                      'For curious cooks who want unlimited AI co-creation.',
+                      const [
+                        'Everything in Growth',
+                        'Unlimited AI chat with Chef Tariq',
+                        'Full AI Recipe Generator',
+                        'Unlimited Spin the Globe draws',
+                      ],
+                      'START PREMIUM TRIAL',
+                      true,
+                      () {
+                        _toast('Premium trial is a demo on this page — enter the app to explore.');
+                        _enterApp();
+                      },
+                    ),
                     const SizedBox(height: 24),
-                    _buildPriceCard('ENTERPRISE', 'Custom', 'Custom setups for culinary schools.', ['Everything in Premium Pass', 'Dedicated Private Server Nodes', 'Localized menu database sync', 'Shared workspace & custom billing'], 'CONTACT SALES', false, () => _toast('Email sales@spiceroute.app for enterprise pricing.')),
+                    _buildPriceCard(
+                      'ENTERPRISE',
+                      'Custom',
+                      'Custom setups for culinary schools and restaurant chains.',
+                      const [
+                        'Everything in Pro',
+                        'Dedicated private server nodes',
+                        'Localized menu database sync',
+                        'Shared workspace & custom billing',
+                      ],
+                      'CONTACT SALES',
+                      false,
+                      () => _toast('Email sales@spiceroute.app for enterprise pricing.'),
+                    ),
                   ],
                 ),
               const SizedBox(height: 64),
@@ -1655,7 +1825,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
                   children: [
                     const Align(
                       alignment: Alignment.centerLeft,
-                      child: Text('CUSTOM ESTIMATOR', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 9, color: Colors.grey)),
+                      child: Text('CUSTOM ESTIMATOR', style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, color: Colors.grey)),
                     ),
                     const SizedBox(height: 8),
                     const Align(
@@ -1706,7 +1876,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
                               const Text(
                                 'ESTIMATED BILLING',
                                 style: TextStyle(
-                                  fontFamily: 'JetBrains Mono',
+                                  fontFamily: 'JetBrainsMono',
                                   fontSize: 8,
                                   color: Colors.grey,
                                 ),
@@ -1738,7 +1908,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   onPressed: () => _toast(
-                                    'Locked \$${estimatedMonthly.toStringAsFixed(2)}/mo for ${seatsCount.toInt()} seats.',
+                                    'Estimate only — \$${estimatedMonthly.toStringAsFixed(2)}/mo for ${seatsCount.toInt()} seats. Contact sales to lock a real plan.',
                                   ),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color(0xFFC05621),
@@ -1819,7 +1989,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(tier, style: const TextStyle(fontFamily: 'JetBrains Mono', fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
+              Text(tier, style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
               if (isPopular)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -1829,7 +1999,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
             ],
           ),
           const SizedBox(height: 16),
-          Text(price, style: const TextStyle(fontFamily: 'Playfair Display', fontSize: 36, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+          Text(price, style: const TextStyle(fontFamily: 'PlayfairDisplay', fontSize: 36, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
           const SizedBox(height: 12),
           Text(desc, style: const TextStyle(fontSize: 12, color: Colors.grey, height: 1.4)),
           const SizedBox(height: 24),
@@ -1868,6 +2038,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
 
   Widget _buildReadyToDepartSection(BuildContext context) {
     return Container(
+      key: _boardingKey,
       color: Colors.white,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 80),
       child: Center(
@@ -1881,18 +2052,18 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
               ),
               child: const Text(
                 'FINAL BOARDING CALL',
-                style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFFC05621)),
+                style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFFC05621)),
               ),
             ),
             const SizedBox(height: 16),
             const Text(
               'Ready for departure?\nYour kitchen is the destination.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontFamily: 'Playfair Display', fontSize: 36, fontWeight: FontWeight.bold, color: Color(0xFF1E293B), height: 1.2),
+              style: TextStyle(fontFamily: 'PlayfairDisplay', fontSize: 36, fontWeight: FontWeight.bold, color: Color(0xFF1E293B), height: 1.2),
             ),
             const SizedBox(height: 16),
             const Text(
-              'Join 14,000+ home chefs mapping the silk routes in their kitchens. Get weekly curated heritage spice kits, localized recipes, and unlimited cooking chats.',
+              'Join home chefs mapping spice routes in their kitchens. Get curated heritage recipes, regional guides, and AI cooking chat.',
               textAlign: TextAlign.center,
               style: TextStyle(fontFamily: 'Inter', fontSize: 14, color: Color(0xFF64748B)),
             ),
@@ -1929,9 +2100,17 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
               ),
             ),
             const SizedBox(height: 16),
+            TextButton(
+              onPressed: _enterApp,
+              child: const Text(
+                'Or start exploring without email →',
+                style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFFC05621)),
+              ),
+            ),
+            const SizedBox(height: 8),
             const Text(
               'NO SEAT FEES REQUIRED. CANCEL SUBSCRIPTIONS AT ANY TERMINAL.',
-              style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 8, letterSpacing: 1.0, color: Colors.grey),
+              style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 8, letterSpacing: 1.0, color: Colors.grey),
             ),
           ],
         ),
@@ -1966,7 +2145,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
                         Text(
                           'Secure Server-Side API',
                           style: TextStyle(
-                            fontFamily: 'JetBrains Mono',
+                            fontFamily: 'JetBrainsMono',
                             fontSize: 10,
                             color: Colors.green,
                             fontWeight: FontWeight.bold,
@@ -1992,7 +2171,7 @@ class _SpiceRouteLandingPageState extends ConsumerState<SpiceRouteLandingPage> {
                         Text(
                           'Secure Server-Side API',
                           style: TextStyle(
-                            fontFamily: 'JetBrains Mono',
+                            fontFamily: 'JetBrainsMono',
                             fontSize: 10,
                             color: Colors.green,
                             fontWeight: FontWeight.bold,

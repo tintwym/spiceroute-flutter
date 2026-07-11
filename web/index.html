@@ -32,7 +32,14 @@
     default to a 980 px viewport and shrink the whole app.
   -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#5A5A40" media="(max-width: 599px)">
+  <!--
+    Phone browser chrome (Safari status bar / home-indicator band) follows
+    `theme-color`. Keep this the cream page surface (#FAF9F6), NOT sage —
+    otherwise olive bleeds above the brand AppBar and below the tab bar.
+    The in-app PhoneShellBrandBar still paints sage for the logo strip.
+  -->
+  <meta name="theme-color" content="#FAF9F6" media="(max-width: 599px)">
+  <meta name="theme-color" content="#FAF9F6" media="(min-width: 600px)">
 
   <!--
     Mobile web splash: inline critical CSS paints before Flutter JS loads.
@@ -47,7 +54,7 @@
       html, body {
         margin: 0;
         height: 100%;
-        background-color: #5A5A40;
+        background-color: #FAF9F6;
       }
       #sr-splash {
         position: fixed;
@@ -56,7 +63,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: #5A5A40;
+        background-color: #FAF9F6;
         padding:
           env(safe-area-inset-top, 0)
           env(safe-area-inset-right, 0)

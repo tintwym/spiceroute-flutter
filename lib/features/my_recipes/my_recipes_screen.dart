@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../shared/breakpoints.dart';
 import '../../shared/error_localization.dart';
+import '../../shared/page_tabs.dart';
 import '../../shared/widgets.dart';
 import '../../state/auth.dart';
 import '../../state/my_recipes.dart';
@@ -144,9 +145,22 @@ class MyRecipesScreen extends ConsumerWidget {
 
     final pagePad = pagePadding(context);
     final maxW = contentMaxWidth(context);
+    final isPhone = deviceClassOf(context).isPhone;
     return CustomScrollView(
       scrollCacheExtent: const ScrollCacheExtent.pixels(900), physics: const ClampingScrollPhysics(),
       slivers: [
+        if (!isPhone)
+          SliverPadding(
+            padding: pagePad.copyWith(top: 16, bottom: 0),
+            sliver: SliverToBoxAdapter(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: maxW),
+                  child: const PageTabs(),
+                ),
+              ),
+            ),
+          ),
         SliverPadding(
           padding: pagePad.copyWith(top: 16, bottom: 16),
           sliver: SliverToBoxAdapter(

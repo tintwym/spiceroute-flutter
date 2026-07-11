@@ -131,17 +131,25 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     });
   }
 
-  /// Same modal-aware navigation as [SignInScreen]: pop the auth modal
-  /// when possible (preserving any underlying recipe-detail / explore
-  /// stack), otherwise fall through to `redirectTo` (or `/`) for the
-  /// direct-URL case where the Navigator has nothing to pop.
+  /// Same modal-aware navigation as [SignInScreen]: honor `redirectTo`
+  /// when set (e.g. register → My Recipes); pop for recipe-detail flows
+  /// so the underlying modal stays mounted; otherwise fall back to `/`.
   void _goNext() {
+    final next = widget.redirectTo;
     final navigator = Navigator.of(context);
+    if (next != null && next.isNotEmpty) {
+      if (navigator.canPop() && next.startsWith('/recipes/')) {
+        navigator.pop();
+        return;
+      }
+      context.go(next);
+      return;
+    }
     if (navigator.canPop()) {
       navigator.pop();
       return;
     }
-    context.go(widget.redirectTo ?? '/');
+    context.go('/');
   }
 
   @override

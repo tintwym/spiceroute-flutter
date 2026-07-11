@@ -17,9 +17,8 @@ import '../state/auth.dart';
 ///     account", so they belong under the avatar (matches Gmail /
 ///     GitHub / Vercel patterns).
 ///
-/// "My Recipes" lives in the account menu (above Settings), not in the
-/// bottom tab bar — keeps four primary destinations on phone and avoids
-/// duplicating the same screen in two places.
+/// "My Recipes" lives under Me / the create sheet on phone, and in the
+/// account menu on tablet — not as its own bottom-tab destination.
 ///
 /// The trigger always renders the avatar:
 ///   - signed in  -> photo or initial on the theme's primary container
