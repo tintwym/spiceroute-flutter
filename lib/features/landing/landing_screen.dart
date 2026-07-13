@@ -6,6 +6,7 @@ import 'landing_state.dart';
 import 'landing_data.dart';
 import 'landing_palette.dart';
 import 'widgets/landing_shared.dart';
+import 'widgets/landing_spin_modal.dart';
 import 'widgets/landing_taste_map.dart';
 
 /// Compact labels for the hero quick-sectors ticker (full names live on the map).
@@ -78,10 +79,23 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
     );
   }
 
-  Future<void> _enterApp() async {
+  Future<void> _enterApp({String? fallback}) async {
     await ref.read(landingGateProvider.notifier).completeOnboarding();
     if (!mounted) return;
-    context.go('/');
+    final cont = GoRouterState.of(context).uri.queryParameters['continue'];
+    if (cont != null && cont.isNotEmpty) {
+      context.go(cont);
+      return;
+    }
+    context.go(fallback ?? '/');
+  }
+
+  Future<void> _openAiCreator() async {
+    await _enterApp(fallback: '/ai/creator');
+  }
+
+  Future<void> _openAiCompanion() async {
+    await _enterApp(fallback: '/ai/companion');
   }
 
   void _toast(String message) {
@@ -131,18 +145,6 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
     dishController.clear();
     reviewController.clear();
     _toast('Stamp posted to the global culinary board!');
-  }
-
-  Future<void> _openAiCreator() async {
-    await ref.read(landingGateProvider.notifier).completeOnboarding();
-    if (!mounted) return;
-    context.go('/ai/creator');
-  }
-
-  Future<void> _openAiCompanion() async {
-    await ref.read(landingGateProvider.notifier).completeOnboarding();
-    if (!mounted) return;
-    context.go('/ai/companion');
   }
 
   void _generateRecipe() {
@@ -209,19 +211,17 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
   String ticketGate = 'GATE 3B';
 
   void spinTheGlobe() {
-    final destinations = [
-      {'dest': 'Marrakesh, Morocco', 'dur': '45 MIN', 'gate': 'GATE 3B'},
-      {'dest': 'Chengdu, China', 'dur': '30 MIN', 'gate': 'GATE 8A'},
-      {'dest': 'Solo, Indonesia', 'dur': '3 HOURS', 'gate': 'GATE 12C'},
-      {'dest': 'Kochi, India', 'dur': '1 HOUR', 'gate': 'GATE 5F'},
-      {'dest': 'Oaxaca, Mexico', 'dur': '2 HOURS', 'gate': 'GATE 2B'},
-    ];
-    final randomIdx = (DateTime.now().millisecondsSinceEpoch % destinations.length);
-    setState(() {
-      ticketDestination = destinations[randomIdx]['dest']!;
-      ticketDuration = destinations[randomIdx]['dur']!;
-      ticketGate = destinations[randomIdx]['gate']!;
-    });
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => LandingSpinModal(
+        onClose: () => Navigator.of(ctx).pop(),
+        onExploreMap: () {
+          Navigator.of(ctx).pop();
+          _scrollTo(_tasteMapKey);
+        },
+      ),
+    );
   }
 
   @override

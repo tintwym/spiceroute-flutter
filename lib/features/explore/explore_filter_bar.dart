@@ -41,7 +41,10 @@ class ExploreFilterRow extends ConsumerWidget {
     final state = ref.watch(exploreProvider);
     // Prefer API total when no client-side course/dietary filter is
     // active — otherwise the counter only shows the loaded page size.
-    final count = (state.course == null && state.dietary == null)
+    // With client filters + more pages pending, append "+" so we don't
+    // claim a closed total for a partial in-memory filter.
+    final clientFiltered = state.course != null || state.dietary != null;
+    final count = !clientFiltered
         ? (state.total > 0 ? state.total : state.visibleItems.length)
         : state.visibleItems.length;
     final cuisine = state.cuisine;
@@ -52,8 +55,11 @@ class ExploreFilterRow extends ConsumerWidget {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
 
+    final counterLabel = clientFiltered && state.hasMore
+        ? '${l.exploreResultCount(count, scope)}+'
+        : l.exploreResultCount(count, scope);
     final counter = Text(
-      l.exploreResultCount(count, scope),
+      counterLabel,
       // Single-line + ellipsis so verbose locales ("Showing 12 recipes
       // in <long cuisine name>" in Korean / Vietnamese / Chinese) can't
       // wrap onto a second line and overflow the fixed `estimatedHeight`

@@ -120,6 +120,7 @@ class ChatController extends StateNotifier<ChatState> {
           streaming: false,
           error: e.message,
           rateLimited: e.isRateLimited,
+          messages: _withoutEmptyTrailingModel(state.messages),
         );
       }
     } catch (e) {
@@ -128,11 +129,28 @@ class ChatController extends StateNotifier<ChatState> {
           state = state.copyWith(streaming: false);
         }
       } else if (_isStillActive(cancel)) {
-        state = state.copyWith(streaming: false, error: e.toString());
+        state = state.copyWith(
+          streaming: false,
+          error: e.toString(),
+          messages: _withoutEmptyTrailingModel(state.messages),
+        );
       }
     } finally {
       if (identical(_cancel, cancel)) _cancel = null;
     }
+  }
+
+  /// Drop a trailing empty model placeholder left by a failed / aborted
+  /// stream so the UI doesn't keep an empty assistant bubble around.
+  static List<ChatMessage> _withoutEmptyTrailingModel(
+    List<ChatMessage> messages,
+  ) {
+    if (messages.isEmpty) return messages;
+    final last = messages.last;
+    if (last.role == ChatRole.model && last.content.isEmpty) {
+      return messages.sublist(0, messages.length - 1);
+    }
+    return messages;
   }
 
   /// True when [token] is still the controller's current in-flight
@@ -152,6 +170,10 @@ class ChatController extends StateNotifier<ChatState> {
     // catch branch in `send()` is cancel-aware, so it won't
     // double-flip into the error state when the cancellation
     // propagates through.
+    //
+    // Keep an empty trailing model bubble in place — the UI hides it
+    // when `!streaming`, and stripping it here races with an immediate
+    // resend that expects the prior turn to still be in `messages`.
     state = state.copyWith(streaming: false);
   }
 

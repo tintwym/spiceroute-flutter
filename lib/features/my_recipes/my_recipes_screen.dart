@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -147,7 +146,8 @@ class MyRecipesScreen extends ConsumerWidget {
     final maxW = contentMaxWidth(context);
     final isPhone = deviceClassOf(context).isPhone;
     return CustomScrollView(
-      scrollCacheExtent: const ScrollCacheExtent.pixels(900), physics: const ClampingScrollPhysics(),
+      cacheExtent: 900,
+      physics: const ClampingScrollPhysics(),
       slivers: [
         if (!isPhone)
           SliverPadding(

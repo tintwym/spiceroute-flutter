@@ -33,6 +33,8 @@ class PageTabs extends StatelessWidget {
       if (dests[i].path != '/' && location.startsWith(dests[i].path)) return i;
     }
     if (location.startsWith('/recipes/')) return 0;
+    // Creator is opened from + / Me — keep Explore selected on tablet tabs
+    // (matches phone shell auxiliary-path behaviour).
     if (location == '/ai/creator') return 0;
     return 0;
   }

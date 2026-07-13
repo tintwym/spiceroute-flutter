@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../models/spice_route.dart';
 import '../../shared/cuisine_pill_bar.dart';
+import '../../shared/error_localization.dart';
 import '../../shared/format.dart';
 import '../../shared/studio_page.dart';
 import '../../shared/widgets.dart';
@@ -25,6 +26,15 @@ class AiCreatorScreen extends ConsumerStatefulWidget {
 
 class _AiCreatorScreenState extends ConsumerState<AiCreatorScreen> {
   final _ideaCtl = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Keep the idea field aligned with provider state (e.g. after an
+    // auth modal remounts this screen via `go`).
+    final idea = ref.read(aiRecipeProvider).idea;
+    if (idea.isNotEmpty) _ideaCtl.text = idea;
+  }
 
   @override
   void dispose() {
@@ -66,10 +76,12 @@ class _AiCreatorScreenState extends ConsumerState<AiCreatorScreen> {
             onGenerate: () =>
                 controller.generate(language: locale.languageCode),
             onSave: () async {
-              final user = ref.read(authControllerProvider);
+              var user = ref.read(authControllerProvider);
               if (user == null) {
                 await showSignInPrompt(context, nextPath: '/ai/creator');
-                return;
+                if (!context.mounted) return;
+                user = ref.read(authControllerProvider);
+                if (user == null) return;
               }
               controller.generate(language: locale.languageCode, save: true);
             },
@@ -384,7 +396,9 @@ class _ErrorBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final message = state.rateLimited ? l.aiCreatorRateLimited : state.error!;
+    final message = state.rateLimited
+        ? l.aiCreatorRateLimited
+        : localizeApiErrorMessage(context, state.error!);
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),

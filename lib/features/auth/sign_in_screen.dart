@@ -149,12 +149,13 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 
   void _goNext() {
     // Prefer an explicit `next` destination (e.g. + sheet → My Recipes).
-    // Exception: recipe-detail sign-in — the detail modal is already under
-    // us, so pop to keep checklist / review draft state instead of remounting.
+    // When auth was pushed as a modal ON TOP of the destination itself
+    // (recipe detail, AI Creator), pop so we keep local state instead of
+    // remounting via `go`.
     final next = widget.redirectTo;
     final navigator = Navigator.of(context);
     if (next != null && next.isNotEmpty) {
-      if (navigator.canPop() && next.startsWith('/recipes/')) {
+      if (navigator.canPop() && _shouldPopToPreserve(next)) {
         navigator.pop();
         return;
       }
@@ -167,6 +168,11 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     }
     context.go('/');
   }
+
+  /// Destinations that launched sign-in as an overlay on themselves —
+  /// remounting with `go` would wipe draft / checklist / idea state.
+  static bool _shouldPopToPreserve(String next) =>
+      next.startsWith('/recipes/') || next == '/ai/creator';
 
   @override
   Widget build(BuildContext context) {

@@ -36,10 +36,13 @@ Future<bool> showSignInPrompt(
     // underneath it — both vanish; after auth the user lands on a
     // detail modal floating over a bare black scrim.
     //
-    // `next` is still passed as a fallback for the direct-deep-link
-    // path; the in-modal flow ignores it because `_goNext` prefers
-    // popping over navigating when a route exists to pop back to.
-    context.push('/sign-in?next=${Uri.encodeComponent(nextPath)}');
+    // `next` is honored by `_goNext`: pop when the destination is already
+    // under this auth modal (recipe detail / AI Creator — preserves draft
+    // state); otherwise navigate with `go(next)`.
+    context.push(
+      '/sign-in?next=${Uri.encodeComponent(nextPath)}',
+      extra: nextPath,
+    );
     return true;
   }
   return false;

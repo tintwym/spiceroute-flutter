@@ -5,6 +5,7 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../models/chat.dart';
 import '../../shared/breakpoints.dart';
 import '../../shared/cuisine_pill_bar.dart';
+import '../../shared/error_localization.dart';
 import '../../shared/studio_page.dart';
 import '../../state/chat.dart';
 import '../../state/explore.dart';
@@ -165,8 +166,10 @@ class _AiCompanionScreenState extends ConsumerState<AiCompanionScreen> {
                     controller: _scrollCtl,
                     padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
                     itemCount: state.messages.length,
-                    itemBuilder: (_, i) =>
-                        _MessageBubble(message: state.messages[i]),
+                    itemBuilder: (_, i) => _MessageBubble(
+                      message: state.messages[i],
+                      streaming: state.streaming,
+                    ),
                   ),
           ),
           if (isEmpty) _Suggestions(onPick: _send),
@@ -180,7 +183,9 @@ class _AiCompanionScreenState extends ConsumerState<AiCompanionScreen> {
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Text(
-                state.rateLimited ? l.aiCompanionRateLimited : state.error!,
+                state.rateLimited
+                    ? l.aiCompanionRateLimited
+                    : localizeApiErrorMessage(context, state.error!),
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: cs.onErrorContainer,
                 ),
@@ -401,14 +406,21 @@ class _Suggestions extends StatelessWidget {
 }
 
 class _MessageBubble extends StatelessWidget {
-  const _MessageBubble({required this.message});
+  const _MessageBubble({required this.message, required this.streaming});
   final ChatMessage message;
+  final bool streaming;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isUser = message.role == ChatRole.user;
-    final isPlaceholder = !isUser && message.content.isEmpty;
+    // Only show typing dots while a stream is in flight. An empty model
+    // bubble left after an error / stop must not animate forever.
+    final isPlaceholder =
+        !isUser && message.content.isEmpty && streaming;
+    if (!isUser && message.content.isEmpty && !streaming) {
+      return const SizedBox.shrink();
+    }
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: ConstrainedBox(

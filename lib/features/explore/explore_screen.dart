@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../l10n/generated/app_localizations.dart';
@@ -108,7 +107,8 @@ class ExploreScreen extends ConsumerWidget {
           return false;
         },
         child: CustomScrollView(
-          scrollCacheExtent: const ScrollCacheExtent.pixels(900), physics: const ClampingScrollPhysics(),
+          cacheExtent: 900,
+          physics: const ClampingScrollPhysics(),
           slivers: [
             // Editorial hero — badge + serif "SpiceRoute" + tagline.
             // Search and result counter USED to live in this hero's

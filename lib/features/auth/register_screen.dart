@@ -132,13 +132,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   /// Same modal-aware navigation as [SignInScreen]: honor `redirectTo`
-  /// when set (e.g. register → My Recipes); pop for recipe-detail flows
-  /// so the underlying modal stays mounted; otherwise fall back to `/`.
+  /// when set; pop for overlay destinations that must keep local state
+  /// (recipe detail, AI Creator); otherwise `go(next)` / `/`.
   void _goNext() {
     final next = widget.redirectTo;
     final navigator = Navigator.of(context);
     if (next != null && next.isNotEmpty) {
-      if (navigator.canPop() && next.startsWith('/recipes/')) {
+      if (navigator.canPop() &&
+          (next.startsWith('/recipes/') || next == '/ai/creator')) {
         navigator.pop();
         return;
       }

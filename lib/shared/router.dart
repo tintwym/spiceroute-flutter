@@ -46,7 +46,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (gate == LandingGatePhase.loading) return null;
 
       if (gate == LandingGatePhase.firstVisit && loc != '/landing') {
-        return '/landing';
+        // Keep the intended deep link so completing onboarding can resume
+        // it (cold start to /my-recipes, /recipes/:id, /sign-in?next=…).
+        final cont = state.uri.hasQuery
+            ? '${state.uri.path}?${state.uri.query}'
+            : state.uri.path;
+        return '/landing?continue=${Uri.encodeComponent(cont)}';
       }
 
       if (gate == LandingGatePhase.returning && loc == '/landing') {
